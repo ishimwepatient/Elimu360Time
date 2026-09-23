@@ -245,6 +245,10 @@ export const LessonPlanGeneratorHub: React.FC = () => {
 
         setGeneratedPlans(resultsWithIds);
         await saveMultipleLessonPlans(resultsWithIds);
+
+        if (resultsWithIds.length > 0) {
+          setViewingPlan(resultsWithIds[0]);
+        }
       } else {
         throw new Error('Failed parsing generated plans');
       }

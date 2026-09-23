@@ -184,228 +184,304 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
             {/* Document Title Header */}
-            <div className="border-b-2 border-slate-900 pb-4 text-center">
-              <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                <span>Rwanda Education Board (REB)</span>
-                <span>Competency-Based Curriculum (CBC)</span>
-              </div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 font-display uppercase">
-                Official Lesson Plan
+            <div className="text-center space-y-1 pb-2 border-b border-slate-900">
+              <h1 className="text-xl font-black tracking-wider text-slate-950 uppercase font-display">
+                LESSON PLAN
               </h1>
-              <p className="text-xs text-slate-500 font-medium">
-                Elimu360 Open System — Sovereign Lesson Planning Platform
-              </p>
             </div>
 
-            {/* School & Basic Info Table */}
+            {/* School Name & Teacher's Name Header Line */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs font-bold text-slate-950 px-1 py-1">
+              <div>
+                <span>School Name: </span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedPlan.schoolName}
+                    onChange={e => setEditedPlan({ ...editedPlan, schoolName: e.target.value })}
+                    className="p-1 bg-amber-50 border border-amber-300 rounded font-semibold"
+                  />
+                ) : (
+                  <span className="font-semibold text-slate-800">{plan.schoolName || 'GS Amahoro'}</span>
+                )}
+              </div>
+              <div>
+                <span>Teacher's Name: </span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedPlan.teacherName}
+                    onChange={e => setEditedPlan({ ...editedPlan, teacherName: e.target.value })}
+                    className="p-1 bg-amber-50 border border-amber-300 rounded font-semibold"
+                  />
+                ) : (
+                  <span className="font-semibold text-slate-800">{plan.teacherName || 'NISHIMWE Joel Patient'}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Main REB Table 1: Metadata */}
             <div className="overflow-x-auto">
-              <table className="w-full text-xs border-collapse border border-slate-800">
+              <table className="w-full text-xs border-collapse border border-slate-900">
                 <tbody>
-                  <tr className="border-b border-slate-800">
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800 w-1/4">School Name:</td>
-                    <td className="p-2.5 border-r border-slate-800 w-1/4 font-semibold">
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={editedPlan.schoolName}
-                          onChange={e => setEditedPlan({ ...editedPlan, schoolName: e.target.value })}
-                          className="w-full p-1 bg-amber-50 border border-amber-300 rounded text-slate-900 font-semibold"
-                        />
-                      ) : (plan.schoolName || 'GS AMAROHO KIGALI')}
+                  {/* Row 1: Term, Date, Subject, Class, Unit No, Lesson No, Duration, Class size */}
+                  <tr className="border-b border-slate-900 bg-slate-100/80 font-bold">
+                    <td className="p-1.5 border-r border-slate-900">Term</td>
+                    <td className="p-1.5 border-r border-slate-900">Date</td>
+                    <td className="p-1.5 border-r border-slate-900">Subject</td>
+                    <td className="p-1.5 border-r border-slate-900">Class</td>
+                    <td className="p-1.5 border-r border-slate-900">Unit No</td>
+                    <td className="p-1.5 border-r border-slate-900">Lesson No</td>
+                    <td className="p-1.5 border-r border-slate-900">Duration</td>
+                    <td className="p-1.5">Class size</td>
+                  </tr>
+                  <tr className="border-b border-slate-900 font-medium">
+                    <td className="p-1.5 border-r border-slate-900">{plan.term}</td>
+                    <td className="p-1.5 border-r border-slate-900 whitespace-nowrap">{plan.date}</td>
+                    <td className="p-1.5 border-r border-slate-900 font-semibold">{plan.subject}</td>
+                    <td className="p-1.5 border-r border-slate-900">{plan.classLevel}</td>
+                    <td className="p-1.5 border-r border-slate-900">{plan.unitNumber}</td>
+                    <td className="p-1.5 border-r border-slate-900">{plan.lessonNumber}</td>
+                    <td className="p-1.5 border-r border-slate-900">{plan.duration}</td>
+                    <td className="p-1.5">{plan.classSize}</td>
+                  </tr>
+
+                  {/* Row 2: Special Needs */}
+                  <tr className="border-b border-slate-900">
+                    <td colSpan={4} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
+                      Type of special educational needs to be catered for in this lesson and number of learners in each category
                     </td>
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800 w-1/4">Teacher's Name:</td>
-                    <td className="p-2.5 font-semibold">
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={editedPlan.teacherName}
-                          onChange={e => setEditedPlan({ ...editedPlan, teacherName: e.target.value })}
-                          className="w-full p-1 bg-amber-50 border border-amber-300 rounded text-slate-900 font-semibold"
-                        />
-                      ) : (plan.teacherName || 'TEACHER')}
+                    <td colSpan={4} className="p-2 font-medium">
+                      {plan.specialNeeds || 'Attention disorder'}
                     </td>
                   </tr>
-                  <tr className="border-b border-slate-800">
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Term:</td>
-                    <td className="p-2.5 border-r border-slate-800 font-semibold">{plan.term}</td>
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Date:</td>
-                    <td className="p-2.5 font-semibold">{plan.date}</td>
+
+                  {/* Row 3: Unit Title */}
+                  <tr className="border-b border-slate-900">
+                    <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
+                      Unit title
+                    </td>
+                    <td colSpan={6} className="p-2 font-bold text-slate-950 uppercase tracking-wide">
+                      {plan.unitTitle}
+                    </td>
                   </tr>
-                  <tr className="border-b border-slate-800">
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Subject:</td>
-                    <td className="p-2.5 border-r border-slate-800 font-semibold">{plan.subject}</td>
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Class Level:</td>
-                    <td className="p-2.5 font-semibold">{plan.classLevel}</td>
+
+                  {/* Row 4: Key Unit Competence */}
+                  <tr className="border-b border-slate-900">
+                    <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
+                      Key unit competence
+                    </td>
+                    <td colSpan={6} className="p-2 font-medium leading-relaxed">
+                      {plan.keyUnitCompetence}
+                    </td>
                   </tr>
-                  <tr className="border-b border-slate-800">
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Unit No:</td>
-                    <td className="p-2.5 border-r border-slate-800 font-semibold">{plan.unitNumber}</td>
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Lesson No:</td>
-                    <td className="p-2.5 font-semibold">{plan.lessonNumber}</td>
+
+                  {/* Row 5: Title of the lesson */}
+                  <tr className="border-b border-slate-900">
+                    <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
+                      Title of the lesson
+                    </td>
+                    <td colSpan={6} className="p-2 font-bold text-slate-950">
+                      {plan.lessonTitle}
+                    </td>
                   </tr>
-                  <tr className="border-b border-slate-800">
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Duration:</td>
-                    <td className="p-2.5 border-r border-slate-800 font-semibold">{plan.duration}</td>
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Class Size:</td>
-                    <td className="p-2.5 font-semibold">{plan.classSize} Learners</td>
+
+                  {/* Row 6: Instructional Objectives */}
+                  <tr className="border-b border-slate-900">
+                    <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
+                      Instructional objectives
+                    </td>
+                    <td colSpan={6} className="p-2 font-medium leading-relaxed">
+                      {plan.instructionalObjective}
+                    </td>
                   </tr>
+
+                  {/* Row 7: Plan of this class (Location) */}
+                  <tr className="border-b border-slate-900">
+                    <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
+                      Plan of this class (Location)
+                    </td>
+                    <td colSpan={6} className="p-2 font-medium">
+                      {plan.location || 'Classroom'}
+                    </td>
+                  </tr>
+
+                  {/* Row 8: Learning materials */}
+                  <tr className="border-b border-slate-900">
+                    <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
+                      Learning materials
+                    </td>
+                    <td colSpan={6} className="p-2 font-medium leading-relaxed">
+                      {plan.learningMaterials}
+                    </td>
+                  </tr>
+
+                  {/* Row 9: References */}
                   <tr>
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Location:</td>
-                    <td className="p-2.5 border-r border-slate-800 font-semibold">{plan.location}</td>
-                    <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Special Needs:</td>
-                    <td className="p-2.5 font-semibold text-slate-700">{plan.specialNeeds || 'None'}</td>
+                    <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
+                      References
+                    </td>
+                    <td colSpan={6} className="p-2 font-medium leading-relaxed whitespace-pre-line">
+                      {plan.references}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            {/* Titles & Competence Section */}
-            <div className="space-y-3 text-xs">
-              <div className="p-3 bg-slate-50 border border-slate-800 rounded-lg">
-                <span className="font-bold text-slate-900 block mb-1 uppercase tracking-wide">Unit Title:</span>
-                <p className="font-extrabold text-slate-950 text-sm">{plan.unitTitle}</p>
-              </div>
+            {/* Main REB Table 2: Detailed Lesson Execution */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs border-collapse border border-slate-900">
+                <thead>
+                  <tr className="border-b border-slate-900 bg-slate-100 font-bold">
+                    <th className="p-2 border-r border-slate-900 w-1/5 text-left align-middle">
+                      Timing for each step
+                    </th>
+                    <th colSpan={2} className="p-2 border-r border-slate-900 w-3/5 text-center align-middle">
+                      Description of teaching and learning activities
+                    </th>
+                    <th className="p-2 w-1/5 text-left align-middle">
+                      Generic competences and cross-cutting issues + some explanations
+                    </th>
+                  </tr>
+                  {/* Summary row across description column */}
+                  <tr className="border-b border-slate-900 italic text-slate-800 bg-slate-50/80">
+                    <td className="border-r border-slate-900"></td>
+                    <td colSpan={2} className="p-1.5 border-r border-slate-900 text-center font-medium">
+                      {plan.activitySummary || `Students will engage in discussions and structured group activities on ${plan.lessonTitle.toLowerCase()}.`}
+                    </td>
+                    <td></td>
+                  </tr>
+                  <tr className="border-b border-slate-900 bg-slate-100 font-bold">
+                    <td className="border-r border-slate-900"></td>
+                    <td className="p-1.5 border-r border-slate-900 text-left w-1/2">Teacher's activity</td>
+                    <td className="p-1.5 border-r border-slate-900 text-left w-1/2">Learner's activity</td>
+                    <td></td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* Step 1: Introduction */}
+                  <tr className="border-b border-slate-900">
+                    <td className="p-2 font-bold bg-slate-50 border-r border-slate-900 align-top">
+                      Introduction ({plan.steps.introduction.duration})
+                    </td>
+                    <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
+                      <ul className="space-y-1">
+                        {plan.steps.introduction.teacherActivities.map((act, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{act}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
+                      <ul className="space-y-1">
+                        {plan.steps.introduction.learnerActivities.map((act, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{act}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="p-2 align-top leading-relaxed">
+                      <ul className="space-y-1">
+                        {plan.steps.introduction.competencesAndCrossCutting.map((comp, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{comp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
 
-              <div className="p-3 bg-slate-50 border border-slate-800 rounded-lg">
-                <span className="font-bold text-slate-900 block mb-1 uppercase tracking-wide">Key Unit Competence:</span>
-                <p className="text-slate-800 leading-relaxed font-medium">{plan.keyUnitCompetence}</p>
-              </div>
+                  {/* Step 2: Lesson Development */}
+                  <tr className="border-b border-slate-900">
+                    <td className="p-2 font-bold bg-slate-50 border-r border-slate-900 align-top">
+                      Lesson Development ({plan.steps.development.duration})
+                    </td>
+                    <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
+                      <ul className="space-y-1.5">
+                        {plan.steps.development.teacherActivities.map((act, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{act}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
+                      <ul className="space-y-1.5">
+                        {plan.steps.development.learnerActivities.map((act, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{act}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="p-2 align-top leading-relaxed">
+                      <ul className="space-y-1.5">
+                        {plan.steps.development.competencesAndCrossCutting.map((comp, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{comp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
 
-              <div className="p-3 bg-amber-50 border border-amber-300 rounded-lg">
-                <span className="font-bold text-amber-900 block mb-1 uppercase tracking-wide">Lesson Title:</span>
-                <p className="font-black text-amber-950 text-sm">{plan.lessonTitle}</p>
-              </div>
+                  {/* Step 3: Conclusion */}
+                  <tr className="border-b border-slate-900">
+                    <td className="p-2 font-bold bg-slate-50 border-r border-slate-900 align-top">
+                      Conclusion ({plan.steps.conclusion.duration})
+                    </td>
+                    <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
+                      <ul className="space-y-1">
+                        {plan.steps.conclusion.teacherActivities.map((act, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{act}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
+                      <ul className="space-y-1">
+                        {plan.steps.conclusion.learnerActivities.map((act, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{act}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="p-2 align-top leading-relaxed">
+                      <ul className="space-y-1">
+                        {plan.steps.conclusion.competencesAndCrossCutting.map((comp, i) => (
+                          <li key={i} className="flex gap-1.5">
+                            <span className="shrink-0">-</span>
+                            <span>{comp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
 
-              <div className="p-3 bg-slate-50 border border-slate-800 rounded-lg">
-                <span className="font-bold text-slate-900 block mb-1 uppercase tracking-wide">Instructional Objective:</span>
-                <p className="text-slate-900 leading-relaxed font-semibold">{plan.instructionalObjective}</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3 bg-slate-50 border border-slate-800 rounded-lg">
-                  <span className="font-bold text-slate-900 block mb-1 uppercase tracking-wide">Learning Materials:</span>
-                  <p className="text-slate-800 leading-relaxed">{plan.learningMaterials}</p>
-                </div>
-                <div className="p-3 bg-slate-50 border border-slate-800 rounded-lg">
-                  <span className="font-bold text-slate-900 block mb-1 uppercase tracking-wide">References:</span>
-                  <p className="text-slate-800 leading-relaxed whitespace-pre-line">{plan.references}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Main REB Step-by-Step Activities Table */}
-            <div>
-              <h3 className="font-extrabold text-slate-950 uppercase text-xs mb-2 tracking-wider">
-                Detailed Lesson Execution & Competences
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs border-collapse border border-slate-900">
-                  <thead>
-                    <tr className="bg-slate-900 text-white font-bold border-b border-slate-900">
-                      <th className="p-2.5 border-r border-slate-700 w-1/6 text-left">Timing & Step</th>
-                      <th className="p-2.5 border-r border-slate-700 w-1/3 text-left">Teacher's Activities</th>
-                      <th className="p-2.5 border-r border-slate-700 w-1/3 text-left">Learner's Activities</th>
-                      <th className="p-2.5 w-1/4 text-left">Generic Competences & Cross-Cutting Issues</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Step 1: Introduction */}
-                    <tr className="border-b border-slate-800">
-                      <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800 align-top">
-                        <span className="text-slate-950 block font-extrabold">1. Introduction</span>
-                        <span className="text-slate-600 text-[11px]">({plan.steps.introduction.duration})</span>
-                      </td>
-                      <td className="p-2.5 border-r border-slate-800 align-top leading-relaxed">
-                        <ul className="list-disc pl-4 space-y-1">
-                          {plan.steps.introduction.teacherActivities.map((act, i) => (
-                            <li key={i}>{act}</li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td className="p-2.5 border-r border-slate-800 align-top leading-relaxed">
-                        <ul className="list-disc pl-4 space-y-1">
-                          {plan.steps.introduction.learnerActivities.map((act, i) => (
-                            <li key={i}>{act}</li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td className="p-2.5 align-top leading-relaxed bg-slate-50/50">
-                        <ul className="list-disc pl-4 space-y-1 text-slate-800">
-                          {plan.steps.introduction.competencesAndCrossCutting.map((comp, i) => (
-                            <li key={i}>{comp}</li>
-                          ))}
-                        </ul>
-                      </td>
-                    </tr>
-
-                    {/* Step 2: Development */}
-                    <tr className="border-b border-slate-800">
-                      <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800 align-top">
-                        <span className="text-slate-950 block font-extrabold">2. Lesson Development</span>
-                        <span className="text-slate-600 text-[11px]">({plan.steps.development.duration})</span>
-                      </td>
-                      <td className="p-2.5 border-r border-slate-800 align-top leading-relaxed">
-                        <ul className="list-disc pl-4 space-y-1.5">
-                          {plan.steps.development.teacherActivities.map((act, i) => (
-                            <li key={i}>{act}</li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td className="p-2.5 border-r border-slate-800 align-top leading-relaxed">
-                        <ul className="list-disc pl-4 space-y-1.5">
-                          {plan.steps.development.learnerActivities.map((act, i) => (
-                            <li key={i}>{act}</li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td className="p-2.5 align-top leading-relaxed bg-slate-50/50">
-                        <ul className="list-disc pl-4 space-y-1.5 text-slate-800">
-                          {plan.steps.development.competencesAndCrossCutting.map((comp, i) => (
-                            <li key={i}>{comp}</li>
-                          ))}
-                        </ul>
-                      </td>
-                    </tr>
-
-                    {/* Step 3: Conclusion */}
-                    <tr>
-                      <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800 align-top">
-                        <span className="text-slate-950 block font-extrabold">3. Conclusion & Assessment</span>
-                        <span className="text-slate-600 text-[11px]">({plan.steps.conclusion.duration})</span>
-                      </td>
-                      <td className="p-2.5 border-r border-slate-800 align-top leading-relaxed">
-                        <ul className="list-disc pl-4 space-y-1">
-                          {plan.steps.conclusion.teacherActivities.map((act, i) => (
-                            <li key={i}>{act}</li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td className="p-2.5 border-r border-slate-800 align-top leading-relaxed">
-                        <ul className="list-disc pl-4 space-y-1">
-                          {plan.steps.conclusion.learnerActivities.map((act, i) => (
-                            <li key={i}>{act}</li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td className="p-2.5 align-top leading-relaxed bg-slate-50/50">
-                        <ul className="list-disc pl-4 space-y-1 text-slate-800">
-                          {plan.steps.conclusion.competencesAndCrossCutting.map((comp, i) => (
-                            <li key={i}>{comp}</li>
-                          ))}
-                        </ul>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Self Evaluation */}
-            <div className="p-4 bg-slate-50 border border-slate-800 rounded-lg text-xs">
-              <span className="font-bold text-slate-900 block mb-1 uppercase tracking-wide">Teacher's Self-Evaluation:</span>
-              <p className="text-slate-800 italic leading-relaxed">
-                {plan.selfEvaluation || 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners engaged in cooperative group work and formative assessment.'}
-              </p>
+                  {/* Bottom Row: Teacher's self-evaluation */}
+                  <tr>
+                    <td className="p-2 font-bold bg-slate-50 border-r border-slate-900 align-top">
+                      Teacher's self-evaluation
+                    </td>
+                    <td colSpan={3} className="p-2 font-medium italic text-slate-900 leading-relaxed">
+                      {plan.selfEvaluation || 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners engaged in cooperative group work and formative assessment.'}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
             {/* Footer stamp */}
