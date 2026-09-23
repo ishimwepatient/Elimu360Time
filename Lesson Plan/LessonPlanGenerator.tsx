@@ -25,6 +25,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { useElimu } from '../src/context/ElimuContext';
 
 // Self-contained LessonPlanData interface
 export interface LessonPlanStepDetail {
@@ -622,6 +623,14 @@ export const LessonPlanGenerator: React.FC = () => {
   const [isExportingZip, setIsExportingZip] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
 
+  let saveMultipleLessonPlans: ((plans: any[]) => void) | null = null;
+  try {
+    const elimu = useElimu();
+    saveMultipleLessonPlans = elimu.saveMultipleLessonPlans;
+  } catch {
+    // Context unavailable
+  }
+
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const printRef = useRef<HTMLDivElement | null>(null);
@@ -729,6 +738,13 @@ export const LessonPlanGenerator: React.FC = () => {
 
         setGeneratedPlans(plansWithIds);
         setActivePlanIndex(0);
+        try {
+          if (saveMultipleLessonPlans) {
+            saveMultipleLessonPlans(plansWithIds as any[]);
+          }
+        } catch {
+          // Context unavailable
+        }
         setStatusMessage({
           text: `Successfully generated ${plansWithIds.length} lesson plan(s) for Unit ${payload.unitNumber}: ${payload.unitTitle}!`,
           type: 'success'
@@ -741,6 +757,13 @@ export const LessonPlanGenerator: React.FC = () => {
       const fallbackPlans = generateClientREBFallbackPlans(payload);
       setGeneratedPlans(fallbackPlans);
       setActivePlanIndex(0);
+      try {
+        if (saveMultipleLessonPlans) {
+          saveMultipleLessonPlans(fallbackPlans as any[]);
+        }
+      } catch {
+        // Context unavailable
+      }
       setStatusMessage({
         text: `Generated ${fallbackPlans.length} REB Competency-Based lesson plan(s) matching official Rwanda Education Board structure!`,
         type: 'success'

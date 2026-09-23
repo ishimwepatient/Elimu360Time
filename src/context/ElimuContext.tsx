@@ -1,31 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  onAuthStateChanged, 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut,
-  User as FirebaseUser 
-} from 'firebase/auth';
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  getDocFromServer,
-  setDoc, 
-  getDocs, 
-  query, 
-  where, 
-  deleteDoc, 
-  updateDoc 
-} from 'firebase/firestore';
-import { auth, db } from '../lib/firebase';
 import { LessonPlanData, UserProfile, UserPerks } from '../types';
 
 interface ElimuContextType {
   currentUser: UserProfile | null;
-  firebaseUser: FirebaseUser | null;
+  firebaseUser: any | null;
   isAuthenticated: boolean;
   authLoading: boolean;
   savedLessonPlans: LessonPlanData[];
@@ -56,17 +34,40 @@ interface ElimuContextType {
 
 const ElimuContext = createContext<ElimuContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'elimu360_guest_plans';
+const LOCAL_PLANS_KEY = 'elimu360_saved_lesson_plans';
+const LOCAL_USER_KEY = 'elimu360_current_user';
 const GUEST_PERKS_KEY = 'elimu360_guest_perks_unlocked';
 
+const defaultPerks: UserPerks = {
+  vipBatchingUnlocked: true,
+  customBrandingUnlocked: true,
+  schemeOfWorkUnlocked: true,
+  priorityProcessing: true,
+  ambassadorBadge: true,
+};
+
 export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [authLoading, setAuthLoading] = useState<boolean>(true);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
+    try {
+      const stored = localStorage.getItem(LOCAL_USER_KEY);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
 
-  const [savedLessonPlans, setSavedLessonPlans] = useState<LessonPlanData[]>([]);
+  const [authLoading, setAuthLoading] = useState<boolean>(false);
+
+  const [savedLessonPlans, setSavedLessonPlans] = useState<LessonPlanData[]>(() => {
+    try {
+      const stored = localStorage.getItem(LOCAL_PLANS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [plansLoading, setPlansLoading] = useState<boolean>(false);
-
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   // Auth modal state
@@ -79,6 +80,28 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [guestPerksUnlocked, setGuestPerksUnlocked] = useState<boolean>(() => {
     return localStorage.getItem(GUEST_PERKS_KEY) === 'true';
   });
+
+  // Sync saved plans to localStorage whenever state changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_PLANS_KEY, JSON.stringify(savedLessonPlans));
+    } catch (err) {
+      console.warn('LocalStorage save error:', err);
+    }
+  }, [savedLessonPlans]);
+
+  // Sync currentUser to localStorage whenever state changes
+  useEffect(() => {
+    try {
+      if (currentUser) {
+        localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem(LOCAL_USER_KEY);
+      }
+    } catch (err) {
+      console.warn('LocalStorage user save error:', err);
+    }
+  }, [currentUser]);
 
   const openAuthModal = (mode: 'login' | 'signup' = 'login', reason: string = '') => {
     setAuthModalMode(mode);
@@ -106,223 +129,55 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Helper to generate a unique teacher referral code
   const generateReferralCode = (uid: string) => {
     return `ELIMU360_${uid.substring(0, 6).toUpperCase()}`;
   };
 
-  const defaultPerks: UserPerks = {
-    vipBatchingUnlocked: true,
-    customBrandingUnlocked: true,
-    schemeOfWorkUnlocked: true,
-    priorityProcessing: true,
-    ambassadorBadge: true,
-  };
-
-  // Share and unlock perks
   const shareAndUnlockPerks = async (source: string = 'manual_share') => {
     setGuestPerksUnlocked(true);
     localStorage.setItem(GUEST_PERKS_KEY, 'true');
 
     if (currentUser) {
-      const updatedShares = (currentUser.sharesCount || 0) + 1;
       const updatedUser: UserProfile = {
         ...currentUser,
-        sharesCount: updatedShares,
+        sharesCount: (currentUser.sharesCount || 0) + 1,
         unlockedPerks: defaultPerks,
       };
-
       setCurrentUser(updatedUser);
-
-      try {
-        const userRef = doc(db, 'users', currentUser.id);
-        await updateDoc(userRef, {
-          sharesCount: updatedShares,
-          unlockedPerks: defaultPerks,
-        });
-      } catch (e) {
-        console.warn('Error updating Firestore sharesCount:', e);
-      }
     }
   };
 
   const isPerkUnlocked = (perk: keyof UserPerks): boolean => {
     if (guestPerksUnlocked) return true;
     if (currentUser?.unlockedPerks?.[perk]) return true;
-    // Default unlocked for all registered users who interact or share
-    if (currentUser) return true;
-    return false;
-  };
-
-  // 1. Firebase Auth listener & Connection test
-  useEffect(() => {
-    async function testConnection() {
-      try {
-        await getDocFromServer(doc(db, 'users', '_conn_test_'));
-      } catch (error) {
-        if (error instanceof Error && error.message.includes('the client is offline')) {
-          console.error("Please check your Firebase configuration.");
-        }
-      }
-    }
-    testConnection();
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setFirebaseUser(user);
-      if (user) {
-        const refCode = generateReferralCode(user.uid);
-        let userProfile: UserProfile = {
-          id: user.uid,
-          email: user.email || '',
-          name: user.displayName || user.email?.split('@')[0] || 'Teacher',
-          photoUrl: user.photoURL || '',
-          referralCode: refCode,
-          sharesCount: guestPerksUnlocked ? 1 : 0,
-          unlockedPerks: defaultPerks,
-          createdAt: new Date().toISOString()
-        };
-
-        // Save/Sync user profile doc in Firestore
-        try {
-          const userRef = doc(db, 'users', user.uid);
-          const userSnap = await getDoc(userRef);
-          if (userSnap.exists()) {
-            const data = userSnap.data();
-            userProfile = {
-              ...userProfile,
-              ...data,
-              referralCode: data.referralCode || refCode,
-              unlockedPerks: data.unlockedPerks || defaultPerks
-            };
-          } else {
-            await setDoc(userRef, userProfile);
-          }
-        } catch (err) {
-          console.warn('Error fetching/writing user profile doc:', err);
-        }
-
-        setCurrentUser(userProfile);
-
-        // Fetch user's Firestore saved plans
-        fetchUserLessonPlans(user.uid);
-      } else {
-        setCurrentUser(null);
-        // Load local guest plans
-        loadGuestPlans();
-      }
-      setAuthLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [guestPerksUnlocked]);
-
-  const loadGuestPlans = () => {
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        setSavedLessonPlans(Array.isArray(parsed) ? parsed : []);
-      } else {
-        setSavedLessonPlans([]);
-      }
-    } catch {
-      setSavedLessonPlans([]);
-    }
-  };
-
-  const saveGuestPlansToStorage = (plans: LessonPlanData[]) => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(plans));
-    } catch (err) {
-      console.warn('Error saving guest plans to localStorage:', err);
-    }
-  };
-
-  const fetchUserLessonPlans = async (userId: string) => {
-    setPlansLoading(true);
-    try {
-      const q = query(collection(db, 'lesson_plans'), where('user_id', '==', userId));
-      const querySnapshot = await getDocs(q);
-      const fetched: LessonPlanData[] = [];
-      querySnapshot.forEach((docSnap) => {
-        fetched.push({ id: docSnap.id, ...docSnap.data() } as LessonPlanData);
-      });
-
-      // Combine with local guest plans
-      const rawGuest = localStorage.getItem(LOCAL_STORAGE_KEY);
-      const guestPlans: LessonPlanData[] = rawGuest ? JSON.parse(rawGuest) : [];
-
-      if (guestPlans.length > 0) {
-        for (const plan of guestPlans) {
-          try {
-            const planRef = doc(db, 'lesson_plans', plan.id);
-            await setDoc(planRef, { ...plan, user_id: userId, createdAt: new Date().toISOString() });
-            fetched.push({ ...plan, user_id: userId });
-          } catch (e) {
-            console.warn('Failed migrating guest plan to firestore:', e);
-          }
-        }
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-      }
-
-      fetched.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-      setSavedLessonPlans(fetched);
-    } catch (err) {
-      console.warn('Error fetching Firestore lesson plans:', err);
-      loadGuestPlans();
-    } finally {
-      setPlansLoading(false);
-    }
+    return true; // Unlocked by default for seamless standalone operation
   };
 
   const saveLessonPlan = async (plan: LessonPlanData) => {
     const planToSave = {
       ...plan,
-      user_id: currentUser?.id || undefined,
+      user_id: currentUser?.id || 'guest',
       createdAt: plan.createdAt || new Date().toISOString()
     };
 
-    if (currentUser) {
-      try {
-        const planRef = doc(db, 'lesson_plans', plan.id);
-        await setDoc(planRef, planToSave);
-      } catch (err) {
-        console.error('Error saving plan to Firestore:', err);
-      }
-    }
-
     setSavedLessonPlans(prev => {
       const exists = prev.some(p => p.id === plan.id);
-      const nextList = exists
+      return exists
         ? prev.map(p => p.id === plan.id ? planToSave : p)
         : [planToSave, ...prev];
-      if (!currentUser) saveGuestPlansToStorage(nextList);
-      return nextList;
     });
   };
 
   const saveMultipleLessonPlans = async (plans: LessonPlanData[]) => {
     const formattedPlans = plans.map(p => ({
       ...p,
-      user_id: currentUser?.id || undefined,
+      user_id: currentUser?.id || 'guest',
       createdAt: p.createdAt || new Date().toISOString()
     }));
 
-    if (currentUser) {
-      for (const p of formattedPlans) {
-        try {
-          const planRef = doc(db, 'lesson_plans', p.id);
-          await setDoc(planRef, p);
-        } catch (err) {
-          console.error('Error saving batch plan to Firestore:', err);
-        }
-      }
-    }
-
     setSavedLessonPlans(prev => {
-      const nextList = [...formattedPlans, ...prev.filter(p => !formattedPlans.some(fp => fp.id === p.id))];
-      if (!currentUser) saveGuestPlansToStorage(nextList);
-      return nextList;
+      const filterOutExisting = prev.filter(p => !formattedPlans.some(fp => fp.id === p.id));
+      return [...formattedPlans, ...filterOutExisting];
     });
   };
 
@@ -331,78 +186,59 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const deleteLessonPlan = async (id: string) => {
-    if (currentUser) {
-      try {
-        await deleteDoc(doc(db, 'lesson_plans', id));
-      } catch (err) {
-        console.error('Error deleting plan from Firestore:', err);
-      }
-    }
-
-    setSavedLessonPlans(prev => {
-      const nextList = prev.filter(p => p.id !== id);
-      if (!currentUser) saveGuestPlansToStorage(nextList);
-      return nextList;
-    });
+    setSavedLessonPlans(prev => prev.filter(p => p.id !== id));
   };
 
   const signInWithGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      closeAuthModal();
-    } catch (err) {
-      console.error('Google Sign In Error:', err);
-      throw err;
-    }
+    const mockUser: UserProfile = {
+      id: 'google_user_' + Date.now(),
+      email: 'teacher.google@school.rw',
+      name: 'Educator Google Account',
+      referralCode: generateReferralCode('google'),
+      sharesCount: 1,
+      unlockedPerks: defaultPerks,
+      createdAt: new Date().toISOString()
+    };
+    setCurrentUser(mockUser);
+    closeAuthModal();
   };
 
   const signUpWithEmail = async (email: string, pass: string, name?: string) => {
-    try {
-      // Firebase Authentication hashes passwords using scrypt/bcrypt algorithms on Google's cloud servers
-      const res = await createUserWithEmailAndPassword(auth, email, pass);
-      if (res.user) {
-        const refCode = generateReferralCode(res.user.uid);
-        const userProfile: UserProfile = {
-          id: res.user.uid,
-          email,
-          name: name || email.split('@')[0],
-          referralCode: refCode,
-          sharesCount: guestPerksUnlocked ? 1 : 0,
-          unlockedPerks: defaultPerks,
-          createdAt: new Date().toISOString()
-        };
-        await setDoc(doc(db, 'users', res.user.uid), userProfile);
-        setCurrentUser(userProfile);
-      }
-      closeAuthModal();
-    } catch (err) {
-      console.error('Sign Up Error:', err);
-      throw err;
-    }
+    const mockUser: UserProfile = {
+      id: 'usr_' + Date.now(),
+      email,
+      name: name || email.split('@')[0],
+      referralCode: generateReferralCode(Date.now().toString()),
+      sharesCount: 1,
+      unlockedPerks: defaultPerks,
+      createdAt: new Date().toISOString()
+    };
+    setCurrentUser(mockUser);
+    closeAuthModal();
   };
 
   const signInWithEmail = async (email: string, pass: string) => {
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-      closeAuthModal();
-    } catch (err) {
-      console.error('Sign In Error:', err);
-      throw err;
-    }
+    const mockUser: UserProfile = {
+      id: 'usr_' + Date.now(),
+      email,
+      name: email.split('@')[0],
+      referralCode: generateReferralCode(Date.now().toString()),
+      sharesCount: 1,
+      unlockedPerks: defaultPerks,
+      createdAt: new Date().toISOString()
+    };
+    setCurrentUser(mockUser);
+    closeAuthModal();
   };
 
   const logout = async () => {
-    await signOut(auth);
     setCurrentUser(null);
-    setFirebaseUser(null);
-    loadGuestPlans();
   };
 
   return (
     <ElimuContext.Provider value={{
       currentUser,
-      firebaseUser,
+      firebaseUser: null,
       isAuthenticated: !!currentUser,
       authLoading,
       savedLessonPlans,
