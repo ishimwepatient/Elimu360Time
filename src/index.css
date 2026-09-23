@@ -196,20 +196,92 @@ html.light .academic-mesh-bg {
   }
 }
 
-/* High Fidelity Print Styles for Report Cards & Bursar Sheets */
+/* High Fidelity Print Styles for REB CBC Lesson Plans & Official Documents */
 @media print {
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-    font-size: 11pt;
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
   }
 
-  .no-print {
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 10pt !important;
+    line-height: 1.35 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Hide UI elements during print */
+  header, footer, nav, button, .no-print, [role="dialog"] > div:first-child, .print\:hidden {
     display: none !important;
   }
 
-  .print-only {
+  /* Ensure modal backdrop and scroll wrappers expand for full page printing */
+  .fixed, .backdrop-blur-md {
+    position: static !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Print document container */
+  #reb-lesson-plan-print-area {
     display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Force table borders and cell backgrounds to print clearly */
+  #reb-lesson-plan-print-area table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1px solid #1e293b !important;
+    page-break-inside: auto !important;
+  }
+
+  #reb-lesson-plan-print-area tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  #reb-lesson-plan-print-area td,
+  #reb-lesson-plan-print-area th {
+    border: 1px solid #334155 !important;
+    color: #000000 !important;
+    padding: 6px 8px !important;
+    font-size: 9.5pt !important;
+  }
+
+  #reb-lesson-plan-print-area th,
+  #reb-lesson-plan-print-area .bg-slate-900 {
+    background-color: #f1f5f9 !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+  }
+
+  #reb-lesson-plan-print-area .bg-slate-100,
+  #reb-lesson-plan-print-area .bg-slate-50,
+  #reb-lesson-plan-print-area .bg-amber-50 {
+    background-color: #f8fafc !important;
+  }
+
+  #reb-lesson-plan-print-area h1,
+  #reb-lesson-plan-print-area h2,
+  #reb-lesson-plan-print-area h3 {
+    color: #000000 !important;
   }
 
   .print-sheet {

@@ -161,10 +161,10 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
 
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1.5 transition"
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition shadow-sm"
             >
               <Printer className="w-4 h-4" />
-              <span>Instant Print</span>
+              <span>Print Lesson Plan</span>
             </button>
 
             <button

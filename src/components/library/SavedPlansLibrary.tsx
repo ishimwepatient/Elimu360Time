@@ -12,7 +12,8 @@ import {
   Calendar, 
   User, 
   Check, 
-  Download 
+  Download,
+  Printer
 } from 'lucide-react';
 import { useElimu } from '../../context/ElimuContext';
 import { LessonPlanData } from '../../types';
@@ -195,14 +196,26 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setViewingPlan(plan)}
-                  className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold text-xs flex items-center gap-1.5 transition"
-                >
-                  <Eye className="w-4 h-4" /> View & Print
-                </button>
+              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setViewingPlan(plan)}
+                    className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1 transition"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-amber-400" /> View
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewingPlan(plan);
+                      setTimeout(() => window.print(), 350);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1 transition shadow-sm"
+                  >
+                    <Printer className="w-3.5 h-3.5" /> Print Lesson Plan
+                  </button>
+                </div>
 
                 <button
                   type="button"

@@ -12,6 +12,7 @@ import {
   collection, 
   doc, 
   getDoc, 
+  getDocFromServer,
   setDoc, 
   getDocs, 
   query, 
@@ -153,8 +154,19 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return false;
   };
 
-  // 1. Firebase Auth listener
+  // 1. Firebase Auth listener & Connection test
   useEffect(() => {
+    async function testConnection() {
+      try {
+        await getDocFromServer(doc(db, 'users', '_conn_test_'));
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('the client is offline')) {
+          console.error("Please check your Firebase configuration.");
+        }
+      }
+    }
+    testConnection();
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setFirebaseUser(user);
       if (user) {
