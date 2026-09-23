@@ -591,9 +591,9 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
 }
 
 export const LessonPlanGenerator: React.FC = () => {
-  // Form input states
-  const [schoolName, setSchoolName] = useState<string>('GS Amahoro Kigali');
-  const [teacherName, setTeacherName] = useState<string>('NISHIMWE Joel Patient');
+  // Form input states - Clean initial states with placeholders
+  const [schoolName, setSchoolName] = useState<string>('');
+  const [teacherName, setTeacherName] = useState<string>('');
   const [educationLevel, setEducationLevel] = useState<string>('PRIMARY');
   const [classLevel, setClassLevel] = useState<string>('Primary 6 (P6)');
   const [subject, setSubject] = useState<string>('English Language');
@@ -603,15 +603,11 @@ export const LessonPlanGenerator: React.FC = () => {
   const [classSize, setClassSize] = useState<number>(40);
   const [location, setLocation] = useState<string>('Classroom');
   const [specialNeeds, setSpecialNeeds] = useState<string>('');
-  const [unitNumber, setUnitNumber] = useState<string>('1');
-  const [unitTitle, setUnitTitle] = useState<string>('LEISURE AND SPORTS ACTIVITIES');
+  const [unitNumber, setUnitNumber] = useState<string>('');
+  const [unitTitle, setUnitTitle] = useState<string>('');
   
   // Multiple Lesson Titles for Bulk Generation
-  const [lessonTitles, setLessonTitles] = useState<string[]>([
-    'Vocabulary related to sports, indoor games and hobbies',
-    'Using present simple tense to describe leisure routines',
-    'Formulating dialogue questions about favorite Rwandan traditional games'
-  ]);
+  const [lessonTitles, setLessonTitles] = useState<string[]>([]);
   const [newLessonInput, setNewLessonInput] = useState<string>('');
   const [selfEvaluation, setSelfEvaluation] = useState<string>('');
 
@@ -624,9 +620,11 @@ export const LessonPlanGenerator: React.FC = () => {
   const [editMode, setEditMode] = useState<boolean>(false);
 
   let saveMultipleLessonPlans: ((plans: any[]) => void) | null = null;
+  let openShareModal: (() => void) | null = null;
   try {
     const elimu = useElimu();
     saveMultipleLessonPlans = elimu.saveMultipleLessonPlans;
+    openShareModal = elimu.openShareModal;
   } catch {
     // Context unavailable
   }
@@ -634,29 +632,6 @@ export const LessonPlanGenerator: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const printRef = useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    if (generatedPlans.length === 0) {
-      const initialPlans = generateClientREBFallbackPlans({
-        schoolName,
-        teacherName,
-        educationLevel,
-        classLevel,
-        subject,
-        term,
-        date,
-        duration,
-        classSize,
-        location,
-        specialNeeds,
-        unitNumber,
-        unitTitle,
-        lessonTitles,
-        selfEvaluation
-      });
-      setGeneratedPlans(initialPlans);
-    }
-  }, []);
 
   const handleLoadBlankForm = () => {
     const blank = createBlankUnfilledA4Plan(schoolName, teacherName);

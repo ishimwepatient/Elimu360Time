@@ -20,7 +20,7 @@ import { LessonPlanData } from '../../types';
 import { LessonPlanViewModal } from '../generator/LessonPlanViewModal';
 
 export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> = ({ onNavigateToGenerator }) => {
-  const { savedLessonPlans, plansLoading, isAuthenticated, deleteLessonPlan, openAuthModal } = useElimu();
+  const { savedLessonPlans, plansLoading, deleteLessonPlan } = useElimu();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('ALL');
@@ -58,9 +58,7 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
             My Saved Lesson Plans ({savedLessonPlans.length})
           </h1>
           <p className="text-xs text-slate-400">
-            {isAuthenticated 
-              ? 'Synchronized securely across all your devices.' 
-              : 'Stored locally on this device. Sign in free to back up to the cloud!'}
+            Stored locally on your device for instant access anytime.
           </p>
         </div>
 
@@ -72,27 +70,6 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
           <span>Create New Lesson Plan</span>
         </button>
       </div>
-
-      {/* Guest Lock Notice (If guest user) */}
-      {!isAuthenticated && (
-        <div className="p-4 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="p-2 rounded-2xl bg-amber-500/20 text-amber-400">
-              <Lock className="w-5 h-5" />
-            </span>
-            <div>
-              <span className="font-bold text-amber-200 block">Want to save plans permanently across devices?</span>
-              <span className="text-slate-300">Sign in or create a free account to back up all your lesson plans to your personal cloud library.</span>
-            </div>
-          </div>
-          <button
-            onClick={() => openAuthModal('signup', 'Sign up free to sync your saved lesson plans across all devices!')}
-            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 transition"
-          >
-            Sign Up Free
-          </button>
-        </div>
-      )}
 
       {/* Search & Filters */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
