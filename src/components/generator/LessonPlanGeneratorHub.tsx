@@ -332,7 +332,13 @@ export const LessonPlanGeneratorHub: React.FC = () => {
 
         {/* Left Column: Form Controls */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleGenerate();
+            }}
+            className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6"
+          >
             
             <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
               <div className="flex items-center gap-2">
@@ -358,7 +364,7 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                   <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                     <FileText className="w-4 h-4" /> REB Textbook & Curriculum AI Extractor
                   </span>
-                  <button onClick={() => setExtractorOpen(false)} className="text-slate-400 hover:text-white text-xs">
+                  <button type="button" onClick={() => setExtractorOpen(false)} className="text-slate-400 hover:text-white text-xs">
                     Close
                   </button>
                 </div>
@@ -552,6 +558,7 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                   </span>
                 ) : (
                   <button
+                    type="button"
                     onClick={openRewardsModal}
                     className="text-[11px] text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30 font-semibold transition"
                   >
@@ -582,8 +589,8 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               {/* List of Titles */}
               {lessonTitles.length === 0 ? (
                 <div className="p-4 rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 text-center text-xs text-slate-500 space-y-1">
-                  <p className="font-semibold text-slate-400">No lesson titles added yet.</p>
-                  <p className="text-[11px]">Type a title above or click "⚡ Auto-Extract from REB Textbook" to pull unit titles automatically!</p>
+                  <p className="font-semibold text-slate-400">No specific lesson titles added yet.</p>
+                  <p className="text-[11px]">Click "🚀 Auto-Generate" to automatically create lesson plans for <strong className="text-amber-400">{unitTitle || subject}</strong>!</p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -625,9 +632,8 @@ export const LessonPlanGeneratorHub: React.FC = () => {
             {/* Submit Generation Button */}
             <div className="pt-2">
               <button
-                type="button"
-                onClick={handleGenerate}
-                disabled={isGenerating || lessonTitles.length === 0}
+                type="submit"
+                disabled={isGenerating}
                 className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-base shadow-xl transition flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
               >
                 {isGenerating ? (
@@ -638,14 +644,14 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5" />
-                    <span>🚀 Auto-Generate {lessonTitles.length > 0 ? lessonTitles.length : ''} REB Lesson Plan{lessonTitles.length > 1 ? 's' : ''} Now</span>
+                    <span>🚀 Auto-Generate REB CBC Lesson Plan{lessonTitles.length > 1 ? 's' : ''} Now</span>
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
               </button>
             </div>
 
-          </div>
+          </form>
         </div>
 
         {/* Right Column: Information & Results Showcase */}

@@ -178,6 +178,16 @@ function generateFallbackREBLessonPlans(payload: any) {
     const lessonDate = getSequentialDate(payload.date, idx);
     const lessonNumStr = `${idx + 1} Out of ${total}`;
 
+    const lowerTitle = title.toLowerCase();
+    let actionVerbs = 'identify, describe, and analyze';
+    if (lowerTitle.includes('calculate') || lowerTitle.includes('math') || lowerTitle.includes('solve')) {
+      actionVerbs = 'calculate, solve, and evaluate';
+    } else if (lowerTitle.includes('type') || lowerTitle.includes('classify') || lowerTitle.includes('group')) {
+      actionVerbs = 'classify, differentiate, and compare';
+    } else if (lowerTitle.includes('practical') || lowerTitle.includes('experiment') || lowerTitle.includes('build')) {
+      actionVerbs = 'demonstrate, execute, and construct';
+    }
+
     return {
       schoolName: payload.schoolName || 'GS Amahoro Kigali',
       teacherName: payload.teacherName || 'Teacher',
@@ -193,7 +203,7 @@ function generateFallbackREBLessonPlans(payload: any) {
       unitTitle: (payload.unitTitle || 'UNIT TITLE').toUpperCase(),
       keyUnitCompetence: `Learners will be able to demonstrate thorough mastery and practical application of ${payload.unitTitle || 'unit topic'} using core REB CBC language structures, analytical techniques, and collaborative problem-solving methods.`,
       lessonTitle: title,
-      instructionalObjective: `By using locally made visual charts, textbook excerpts, real objects, and structured pair-share exercises, ${payload.classLevel || 'P6'} learners who attend will be able to ${title.toLowerCase()} accurately at more than 6/10 within ${payload.duration || '40 minutes'}.`,
+      instructionalObjective: `By using locally made visual charts, textbook excerpts, real objects, and structured pair-share exercises, ${payload.classLevel || 'P6'} learners who attend will be able to ${actionVerbs} ${title.toLowerCase()} accurately at more than 7/10 within ${payload.duration || '40 minutes'}.`,
       location: payload.location || 'Classroom & Outdoor Learning Area',
       learningMaterials: 'Exercise books, wall charts, chalkboard, markers, real objects, flashcards, differentiated activity worksheets, and REB textbook excerpts',
       references: `Rwanda Education Board. (2025). ${payload.subject || 'Subject'} Learner's Book ${payload.classLevel || 'P6'}. Kigali: REB.\nRwanda Education Board. (2025). ${payload.subject || 'Subject'} Teacher's Guide ${payload.classLevel || 'P6'}. Kigali: REB.`,
@@ -204,17 +214,17 @@ function generateFallbackREBLessonPlans(payload: any) {
           teacherActivities: [
             `Greets the class warmly, checks attendance, and sets a supportive, inclusive classroom climate.`,
             `Displays an illustrated wall chart and real-life concrete objects illustrating key principles of ${title.toLowerCase()}.`,
-            `Poses diagnostic questions (e.g. "How does ${title.toLowerCase()} relate to our daily life in Rwanda?") to reactivate prior knowledge and stimulate critical thinking.`,
-            `Writes the lesson title "${title}" and articulates the specific instructional objective on the chalkboard.`
+            `Poses diagnostic questions requiring learners to identify and recall prior knowledge of ${title.toLowerCase()} in full sentences.`,
+            `Writes the lesson title "${title}" and articulates the specific instructional objective using predefined REB describing action verbs on the chalkboard.`
           ],
           learnerActivities: [
             `Respond warmly to the teacher's greeting and settle into designated heterogeneous learning groups.`,
             `Observe the displayed visual chart attentively, taking mental note of key vocabulary and structures.`,
-            `Actively volunteer answers to diagnostic questions in clear full sentences, drawing on daily life experiences.`,
+            `Actively volunteer answers to diagnostic questions in clear full sentences, identifying real-world examples.`,
             `Copy the lesson title and instructional objectives neatly into their exercise books.`
           ],
           competencesAndCrossCutting: [
-            'Critical Thinking: Reactivating prior knowledge to analyze real-life visual prompts accurately.',
+            'Critical Thinking: Reactivating prior knowledge to identify and analyze real-life visual prompts accurately.',
             'Effective Communication: Articulating initial thoughts and vocabulary in clear, full sentences.',
             'Inclusive Education: Arranging seating to ensure learners with special educational needs have full sight of chalkboard prompts.'
           ]
@@ -222,23 +232,23 @@ function generateFallbackREBLessonPlans(payload: any) {
         development: {
           duration: '25 min',
           teacherActivities: [
-            `Conducts a step-by-step interactive exposition on ${title.toLowerCase()}, writing clear definitions, formulas, and structural examples on the chalkboard.`,
-            `Models the correct application of ${title.toLowerCase()} using real classroom scenarios, guiding learners through two worked-out demonstration problems.`,
-            `Organizes learners into heterogeneous cooperative groups of 5-6, ensuring gender balance and assigning specific roles (Leader, Secretary, Timekeeper, Presenter).`,
-            `Distributes structured group activity cards requiring synthesis and practical execution of ${title.toLowerCase()}.`,
+            `Conducts a step-by-step interactive exposition on ${title.toLowerCase()}, guiding learners to define, describe, and differentiate key concepts on the chalkboard.`,
+            `Models how to demonstrate and execute tasks related to ${title.toLowerCase()} using real classroom scenarios and worked examples.`,
+            `Organizes learners into heterogeneous cooperative groups of 5-6 with assigned roles (Leader, Secretary, Timekeeper, Presenter).`,
+            `Distributes structured group activity cards requiring learners to analyze, classify, and solve practical problems on ${title.toLowerCase()}.`,
             `Roams the classroom to monitor group dynamics, offering scaffolding for struggling learners and extension challenges for fast finishers.`,
             `Invites selected group presenters to the chalkboard to share their solutions and defend their methodology before the class.`
           ],
           learnerActivities: [
             `Follow the teacher's interactive chalkboard exposition attentively, taking structured notes and diagrams in exercise books.`,
             `Analyze the modeled examples step-by-step, asking clarifying questions to confirm conceptual understanding.`,
-            `Execute group work collaboratively, discussing ideas, solving assigned problems, and recording findings systematically.`,
+            `Execute group work collaboratively, discussing ideas, solving assigned problems, and classifying findings systematically.`,
             `Engage in active peer coaching, explaining challenging steps to group members including peers with special educational needs.`,
-            `Present group outcomes at the chalkboard confidently, answering peer questions and validating results together.`
+            `Present group outcomes at the chalkboard confidently, demonstrating how to solve exercises correctly.`
           ],
           competencesAndCrossCutting: [
             'Cooperation & Leadership: Working productively in diverse teams with assigned roles and shared accountability.',
-            'Problem Solving & Innovation: Applying theoretical concepts of ' + title.toLowerCase() + ' to solve practical contextual scenarios.',
+            'Problem Solving & Innovation: Applying theoretical concepts of ' + title.toLowerCase() + ' to analyze and solve practical contextual scenarios.',
             'Gender Equity & Inclusion: Ensuring equal turn-taking, speaking opportunities, and leadership roles for female and male learners alike.',
             'Financial & Environmental Education: Connecting topic applications to sustainable resource management in local Rwandan communities.'
           ]
@@ -247,7 +257,7 @@ function generateFallbackREBLessonPlans(payload: any) {
           duration: '8 min',
           teacherActivities: [
             `Leads a 3-minute class synthesis, summarizing main takeaways regarding ${title.toLowerCase()} on the chalkboard.`,
-            `Administers a brisk 2-question formative exit ticket to assess individual learning gains and check objective mastery.`,
+            `Administers a brisk 2-question formative exit ticket to evaluate individual learning gains and check objective mastery.`,
             `Commends learners for effective teamwork, inclusive collaboration, and disciplined time management during group tasks.`,
             `Assigns targeted homework from the official REB Learner's Book to consolidate learning at home.`
           ],
@@ -263,7 +273,7 @@ function generateFallbackREBLessonPlans(payload: any) {
           ]
         }
       },
-      selfEvaluation: payload.selfEvaluation || 'Lesson successfully delivered following official REB competency-based curriculum guidelines. Instructional objectives met; learners actively engaged in cooperative group work and formative assessment.'
+      selfEvaluation: payload.selfEvaluation || 'Lesson successfully delivered following official REB competency-based curriculum guidelines using predefined describing action verbs. Instructional objectives met; learners actively engaged in cooperative group work and formative assessment.'
     };
   });
 }
@@ -448,13 +458,13 @@ Return structured JSON.`
           return;
         }
 
-        if (req.url?.startsWith('/api/gemini/lesson-plan') && req.method === 'POST') {
+        if ((req.url?.includes('/api/gemini/lesson-plan') || req.originalUrl?.includes('/api/gemini/lesson-plan')) && req.method === 'POST') {
           const chunks: Buffer[] = [];
           req.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
           req.on('end', async () => {
             try {
               const rawBody = Buffer.concat(chunks).toString('utf-8');
-              const payload = JSON.parse(rawBody);
+              const payload = rawBody ? JSON.parse(rawBody) : {};
 
               const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 
@@ -487,6 +497,8 @@ Lesson Titles in this Unit:
 ${(payload.lessonTitles || ['Lesson 1']).map((title: string, idx: number) => `Lesson ${idx + 1} Out of ${totalLessons}: "${title}"`).join('\n')}
 
 For EACH lesson title listed above, generate a complete structured lesson plan in exact accordance with REB guidelines.
+IMPORTANT REB CBC REQUIREMENT: Instructional Objectives MUST use predefined describing action verbs (e.g. Identify, Describe, Analyze, Differentiate, Demonstrate, Calculate, Classify, Solve, Compare, Evaluate, Construct, Formulate).
+
 Required Fields for each lesson:
 1. "schoolName": "${payload.schoolName}"
 2. "teacherName": "${payload.teacherName}"
@@ -502,7 +514,7 @@ Required Fields for each lesson:
 12. "unitTitle": "${payload.unitTitle}"
 13. "keyUnitCompetence": Key competence sentence describing what pupils will be able to do in this unit using vocabulary/language structures.
 14. "lessonTitle": The exact title of the lesson
-15. "instructionalObjective": Format: "By using [learning materials], ${payload.classLevel} learners who attend will be able to [action related to lesson title] clearly at more than 6/10 within ${payload.duration || '40 minutes'}."
+15. "instructionalObjective": Format: "By using [learning materials], ${payload.classLevel} learners who attend will be able to [predefined REB describing action verbs + task] accurately at more than 7/10 within ${payload.duration || '40 minutes'}."
 16. "location": "${payload.location || 'Classroom'}"
 17. "learningMaterials": e.g. "exercise books, locally made charts, real objects, markers, flashcards"
 18. "references": Official REB reference books (e.g., "Rwanda Education Board. (2025). ${payload.subject} Learner's Book ${payload.classLevel}. Kigali: REB.\nRwanda Education Board. (2025). ${payload.subject} Teacher's Guide ${payload.classLevel}. Kigali: REB.")
@@ -517,7 +529,7 @@ Required Fields for each lesson:
                     model: 'gemini-2.5-flash',
                     contents: promptText,
                     config: {
-                      systemInstruction: "You are an expert curriculum designer and inspector for the Rwanda Education Board (REB) Competency-Based Curriculum. Return a JSON array of lesson plan objects matching the required schema.",
+                      systemInstruction: "You are an official curriculum inspector and master educator for the Rwanda Education Board (REB) Competency-Based Curriculum (CBC). Every Instructional Objective and activity description MUST strictly begin with REB predefined describing action verbs (such as Identify, Describe, Analyze, Differentiate, Demonstrate, Calculate, Classify, Solve, Evaluate, Construct). Return a JSON array of lesson plan objects matching the required schema.",
                       responseMimeType: "application/json",
                       responseSchema: {
                         type: Type.ARRAY,
