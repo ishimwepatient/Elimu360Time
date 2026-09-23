@@ -1,295 +1,240 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { 
+  Sparkles, 
+  BookOpen, 
+  User, 
+  LogOut, 
+  Sun, 
+  Moon, 
+  Layers, 
+  Award, 
+  Lock, 
+  Menu, 
+  X,
+  ChevronDown
+} from 'lucide-react';
 import { ElimuProvider, useElimu } from './context/ElimuContext';
-import { LandingPage } from './components/landing/LandingPage';
-import { LoginPage } from './components/auth/LoginPage';
-import { AppLayout } from './components/layout/AppLayout';
-import { SchoolDashboard } from './components/dashboard/SchoolDashboard';
-import { FinancialPortal } from './components/finance/FinancialPortal';
-import { GradeManagement } from './components/academics/GradeManagement';
-import { AssessmentsTracking } from './components/academics/AssessmentsTracking';
-import { ReportsGeneration } from './components/academics/ReportsGeneration';
-import { OfficialRwandanReportModal } from './components/academics/OfficialRwandanReportModal';
-import { generateClassReportCards } from './utils/reportCardGenerator';
-import { StudentReportCard } from './types';
-import { TimetableManagement } from './components/academics/TimetableManagement';
-import { ClassAndTermManager } from './components/academics/ClassAndTermManager';
-import { ELearningModule } from './components/elearning/ELearningModule';
-import { LessonPlanGenerator } from './components/academics/LessonPlanGenerator';
-import { StudentDirectory } from './components/students/StudentDirectory';
-import { DisciplineManagement } from './components/discipline/DisciplineManagement';
-import { LibraryPortal } from './components/library/LibraryPortal';
-import { ParentPortal } from './components/parent/ParentPortal';
-import { SMSDispatcher } from './components/communication/SMSDispatcher';
-import { SystemSettings } from './components/settings/SystemSettings';
-import { StaffManagement } from './components/staff/StaffManagement';
-import { MasterUserAccountsManager } from './components/admin/MasterUserAccountsManager';
-import { CoordinatorGovernanceHub } from './components/admin/CoordinatorGovernanceHub';
-import { RegistrarPortal } from './components/admin/RegistrarPortal';
-import { AuditAndSurveyReportsHub } from './components/admin/AuditAndSurveyReportsHub';
-import { FieldTrainingAcademy } from './components/training/FieldTrainingAcademy';
-import { DemoSystemHub } from './components/demo/DemoSystemHub';
-import { SchoolProfileManager } from './components/schools/SchoolProfileManager';
-import { TermsOfService } from './components/legal/TermsOfService';
-import { PrivacyPolicy } from './components/legal/PrivacyPolicy';
-import { AboutElimu360 } from './components/about/AboutElimu360';
-import { ContactUs } from './components/legal/ContactUs';
+import { ElimuLogo } from './components/brand/ElimuLogo';
+import { AuthModal } from './components/auth/AuthModal';
+import { LessonPlanGeneratorHub } from './components/generator/LessonPlanGeneratorHub';
+import { SavedPlansLibrary } from './components/library/SavedPlansLibrary';
+import { REBCBCGuide } from './components/guide/REBCBCGuide';
 
-import { ErrorBoundary } from './components/common/ErrorBoundary';
+type ActiveTab = 'generator' | 'library' | 'guide';
 
-const MainRouter: React.FC = () => {
-  const { currentView, setCurrentView, isAuthenticated, currentUser, students, classes, subjects, grades, activeSchool } = useElimu();
-
-  const [verifiedReport, setVerifiedReport] = useState<StudentReportCard | null>(null);
-  const [isAutoDownload, setIsAutoDownload] = useState<boolean>(false);
-
-  // Scanned QR Verification & Auto-Download Listener
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const viewParam = urlParams.get('view');
-    if (viewParam === 'demo') {
-      setCurrentView('DEMO_SYSTEM');
-    }
-
-    const targetStudentId = urlParams.get('verify_report');
-    const targetRegNo = urlParams.get('registration');
-    const shouldAutoDownload = urlParams.get('autodownload') === 'true';
-
-    if ((targetStudentId || targetRegNo) && students.length > 0 && classes.length > 0) {
-      const matchedStudent = students.find(s => 
-        (targetStudentId && s.id === targetStudentId) || 
-        (targetRegNo && s.registration_number?.toLowerCase() === targetRegNo.toLowerCase())
-      );
-
-      if (matchedStudent) {
-        const matchedClass = classes.find(c => c.id === matchedStudent.class_id) || classes[0];
-        if (matchedClass) {
-          const reports = generateClassReportCards({
-            selectedClass: matchedClass,
-            students: [matchedStudent],
-            subjects,
-            grades,
-            term: activeSchool?.active_term || 'Term 1',
-            academicYear: activeSchool?.active_academic_year || '2026',
-            reportType: 'PROGRESSIVE',
-            school: activeSchool
-          });
-
-          if (reports.length > 0) {
-            setVerifiedReport(reports[0]);
-            setIsAutoDownload(shouldAutoDownload);
-          }
-        }
-      }
-    }
-  }, [students, classes, subjects, grades, activeSchool]);
-
-  if (verifiedReport) {
-    return (
-      <OfficialRwandanReportModal
-        report={verifiedReport}
-        school={activeSchool}
-        autoDownloadOnMount={isAutoDownload}
-        onClose={() => {
-          window.history.replaceState({}, document.title, window.location.pathname);
-          setVerifiedReport(null);
-        }}
-      />
-    );
-  }
-
-  // Public Legal & Informational Pages
-  if (currentView === 'TERMS_OF_SERVICE') {
-    return <TermsOfService onBack={() => setCurrentView(isAuthenticated ? 'DASHBOARD' : 'LANDING')} />;
-  }
-
-  if (currentView === 'PRIVACY_POLICY') {
-    return <PrivacyPolicy onBack={() => setCurrentView(isAuthenticated ? 'DASHBOARD' : 'LANDING')} />;
-  }
-
-  if (currentView === 'ABOUT_SYSTEM') {
-    return <AboutElimu360 onBack={() => setCurrentView(isAuthenticated ? 'DASHBOARD' : 'LANDING')} />;
-  }
-
-  if (currentView === 'CONTACT_US') {
-    return <ContactUs onBack={() => setCurrentView(isAuthenticated ? 'DASHBOARD' : 'LANDING')} />;
-  }
-
-  // If user is authenticated and hits LOGIN, redirect to dashboard layout
-  if (isAuthenticated && currentView === 'LOGIN') {
-    return (
-      <AppLayout>
-        <SchoolDashboard />
-      </AppLayout>
-    );
-  }
-
-  if (currentView === 'LANDING') {
-    return <LandingPage />;
-  }
-
-  if (currentView === 'LOGIN' || !isAuthenticated) {
-    return <LoginPage />;
-  }
-
-  const renderModuleView = () => {
-    // Strict Institutional Privacy Safeguard: Super Admin, Coordinator, and Registrar cannot view private school internal records
-    if (['SUPER_ADMIN', 'COORDINATOR', 'REGISTER'].includes(currentUser.role)) {
-      const privateAcademicViews = [
-        'ACADEMICS_REPORTS', 
-        'ACADEMICS_GRADES', 
-        'ACADEMICS_ASSESSMENTS', 
-        'ACADEMICS_CLASSES', 
-        'FINANCIAL_PORTAL', 
-        'STUDENTS_DISCIPLINE', 
-        'STUDENTS_PERMISSIONS',
-        'STUDENTS_DIRECTORY',
-        'LIBRARY_PORTAL'
-      ];
-      if (privateAcademicViews.includes(currentView)) {
-        return (
-          <div className="max-w-2xl mx-auto my-12 bg-slate-900 rounded-2xl p-8 border border-amber-500/30 shadow-2xl text-center space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
-              <span className="text-2xl font-bold">🔒</span>
-            </div>
-            <h2 className="text-xl font-bold text-white">Institutional Privacy Policy Enforced</h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Under national educational data sovereignty regulations, <strong>{currentUser.role}</strong> accounts are strictly restricted from viewing private school marks, student disciplinary records, or financial ledgers of tenant institutions.
-            </p>
-            <p className="text-xs text-slate-400">
-              Individual institution data is sovereign to the respective school administrators. For demonstrations and pitch presentations, use the isolated <strong>Live Pitch & Demo System</strong>.
-            </p>
-            <div className="pt-2 flex flex-wrap justify-center gap-3">
-              <button
-                onClick={() => setCurrentView(currentUser.role === 'COORDINATOR' ? 'COORDINATOR_HUB' : currentUser.role === 'REGISTER' ? 'REGISTRAR_PORTAL' : 'DASHBOARD')}
-                className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs shadow-md transition"
-              >
-                Return to {currentUser.role === 'COORDINATOR' ? 'Governance Hub' : currentUser.role === 'REGISTER' ? 'Registrar Portal' : 'Console'}
-              </button>
-              <button
-                onClick={() => setCurrentView('DEMO_SYSTEM')}
-                className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition"
-              >
-                Open Pitch & Demo Sandbox
-              </button>
-            </div>
-          </div>
-        );
-      }
-    }
-
-    // Strict Institutional Role Safeguard: Director of Discipline (DOD) is restricted to discipline, conduct, gate permissions & SMS alerts
-    if (currentUser.role === 'DOD') {
-      const restrictedForDOD = [
-        'ACADEMICS_TIMETABLE', 
-        'ACADEMICS_REPORTS', 
-        'ACADEMICS_GRADES', 
-        'ACADEMICS_CLASSES', 
-        'ACADEMICS_ASSESSMENTS', 
-        'FINANCIAL_PORTAL', 
-        'LIBRARY_PORTAL', 
-        'STAFF_MANAGEMENT', 
-        'MASTER_USERS', 
-        'SCHOOLS_MANAGEMENT', 
-        'SETTINGS_CONFIG'
-      ];
-      if (restrictedForDOD.includes(currentView)) {
-        return (
-          <div className="max-w-2xl mx-auto my-12 bg-white rounded-2xl p-8 border border-rose-200 shadow-lg text-center space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center mx-auto">
-              <span className="text-2xl font-bold">🛡️</span>
-            </div>
-            <h2 className="text-xl font-bold text-slate-900">Institutional Responsibility Scope Enforced</h2>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              As <strong>Director of Discipline (DOD)</strong>, access to academic timetables, report card generation, class/curriculum creation, and financial ledgers is restricted. Your authority is focused on student conduct evaluation, disciplinary logs, gate exit permissions, and guardian communication.
-            </p>
-            <div className="pt-2">
-              <button
-                onClick={() => setCurrentView('STUDENTS_DISCIPLINE')}
-                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition"
-              >
-                Go to Discipline & Conduct Hub
-              </button>
-            </div>
-          </div>
-        );
-      }
-    }
-
-    switch (currentView) {
-      case 'COORDINATOR_HUB':
-        return <CoordinatorGovernanceHub />;
-      case 'REGISTRAR_PORTAL':
-        return <RegistrarPortal />;
-      case 'DASHBOARD':
-        if (currentUser.role === 'COORDINATOR') return <CoordinatorGovernanceHub />;
-        if (currentUser.role === 'REGISTER') return <RegistrarPortal />;
-        if (currentUser.role === 'BURSAR') return <FinancialPortal />;
-        return <SchoolDashboard />;
-      case 'FINANCIAL_PORTAL':
-        return <FinancialPortal />;
-      case 'ACADEMICS_CLASSES':
-        return <ClassAndTermManager />;
-      case 'ACADEMICS_ASSESSMENTS':
-        return <AssessmentsTracking />;
-      case 'ACADEMICS_REPORTS':
-        return <ReportsGeneration />;
-      case 'ACADEMICS_GRADES':
-        return <GradeManagement />;
-      case 'ACADEMICS_TIMETABLE':
-        return <TimetableManagement />;
-      case 'ACADEMICS_ELEARNING':
-      case 'STUDENT_PORTAL':
-        return <ELearningModule />;
-      case 'LESSON_PLANNER':
-        return <LessonPlanGenerator />;
-      case 'STUDENTS_DIRECTORY':
-        return <StudentDirectory />;
-      case 'STUDENTS_DISCIPLINE':
-      case 'STUDENTS_PERMISSIONS':
-        return <DisciplineManagement />;
-      case 'LIBRARY_PORTAL':
-        return <LibraryPortal />;
-      case 'PARENT_PORTAL':
-        return <ParentPortal />;
-      case 'STAFF_MANAGEMENT':
-        return <StaffManagement />;
-      case 'MASTER_USERS':
-        return <MasterUserAccountsManager />;
-      case 'SCHOOLS_MANAGEMENT':
-        return <SchoolProfileManager />;
-      case 'SMS_DISPATCHER':
-        return <SMSDispatcher />;
-      case 'SETTINGS_CONFIG':
-        return <SystemSettings />;
-      case 'AUDIT_LOGS':
-        return <AuditAndSurveyReportsHub />;
-      case 'TRAINING_ACADEMY':
-        return <FieldTrainingAcademy />;
-      case 'DEMO_SYSTEM':
-        return <DemoSystemHub />;
-      default:
-        if (currentUser.role === 'BURSAR') {
-          return <FinancialPortal />;
-        }
-        return <SchoolDashboard />;
-    }
-  };
+const MainAppContent: React.FC = () => {
+  const { currentUser, isAuthenticated, logout, theme, toggleTheme, openAuthModal, savedLessonPlans } = useElimu();
+  const [activeTab, setActiveTab] = useState<ActiveTab>('generator');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   return (
-    <AppLayout>
-      {renderModuleView()}
-    </AppLayout>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans transition-colors duration-300">
+      
+      {/* Top Header Navbar */}
+      <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+          
+          {/* Logo */}
+          <div className="cursor-pointer" onClick={() => setActiveTab('generator')}>
+            <ElimuLogo size="md" />
+          </div>
+
+          {/* Desktop Navigation Tabs */}
+          <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
+            <button
+              onClick={() => setActiveTab('generator')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                activeTab === 'generator'
+                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>AI Generator</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('library')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                activeTab === 'library'
+                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Saved Plans ({savedLessonPlans.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('guide')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                activeTab === 'guide'
+                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Award className="w-4 h-4" />
+              <span>CBC Standards</span>
+            </button>
+          </nav>
+
+          {/* Right Header Actions */}
+          <div className="hidden md:flex items-center gap-3">
+            
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition"
+              title="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-400" />}
+            </button>
+
+            {/* Auth Button / Profile Dropdown */}
+            {isAuthenticated && currentUser ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-bold text-white transition"
+                >
+                  <div className="w-6 h-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center font-black">
+                    {currentUser.name?.[0]?.toUpperCase() || 'T'}
+                  </div>
+                  <span className="line-clamp-1 max-w-[120px]">{currentUser.name}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                </button>
+
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50 text-xs space-y-1 animate-fade-in">
+                    <div className="p-2.5 border-b border-slate-800/80">
+                      <p className="font-bold text-white line-clamp-1">{currentUser.name}</p>
+                      <p className="text-[11px] text-slate-400 line-clamp-1">{currentUser.email}</p>
+                    </div>
+                    <button
+                      onClick={() => { logout(); setUserDropdownOpen(false); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-rose-400 hover:bg-rose-500/10 font-medium flex items-center gap-2 transition"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => openAuthModal('login')}
+                className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg"
+              >
+                <User className="w-4 h-4" />
+                <span>Sign In / Sign Up</span>
+              </button>
+            )}
+
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center md:hidden gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+
+        </div>
+
+        {/* Mobile Navigation Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-800 bg-slate-950 p-4 space-y-3 animate-fade-in">
+            <nav className="flex flex-col space-y-2">
+              <button
+                onClick={() => { setActiveTab('generator'); setMobileMenuOpen(false); }}
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
+                  activeTab === 'generator' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" /> AI Generator
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('library'); setMobileMenuOpen(false); }}
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
+                  activeTab === 'library' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                }`}
+              >
+                <BookOpen className="w-4 h-4" /> Saved Plans ({savedLessonPlans.length})
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('guide'); setMobileMenuOpen(false); }}
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
+                  activeTab === 'guide' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                }`}
+              >
+                <Award className="w-4 h-4" /> CBC Standards Guide
+              </button>
+            </nav>
+
+            <div className="pt-2 border-t border-slate-800">
+              {isAuthenticated && currentUser ? (
+                <div className="flex items-center justify-between p-2">
+                  <span className="text-xs font-bold text-white">{currentUser.name}</span>
+                  <button
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="text-xs font-bold text-rose-400 flex items-center gap-1"
+                  >
+                    <LogOut className="w-4 h-4" /> Sign Out
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => { openAuthModal('login'); setMobileMenuOpen(false); }}
+                  className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2"
+                >
+                  <User className="w-4 h-4" /> Sign In / Sign Up
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Main Workspace Body */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'generator' && <LessonPlanGeneratorHub />}
+        {activeTab === 'library' && <SavedPlansLibrary onNavigateToGenerator={() => setActiveTab('generator')} />}
+        {activeTab === 'guide' && <REBCBCGuide />}
+      </main>
+
+      {/* Global Auth Modal */}
+      <AuthModal />
+
+      {/* Global Footer */}
+      <footer className="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500 space-y-2">
+        <p className="font-semibold text-slate-400">
+          Elimu360 Open System — Sovereign AI Lesson Plan Generator
+        </p>
+        <p className="text-[11px]">
+          Free and open for all educators • Grounded in REB & Competency-Based Curriculum Standards
+        </p>
+      </footer>
+
+    </div>
   );
 };
 
-export function App() {
+export default function App() {
   return (
-    <ErrorBoundary>
-      <ElimuProvider>
-        <MainRouter />
-      </ElimuProvider>
-    </ErrorBoundary>
+    <ElimuProvider>
+      <MainAppContent />
+    </ElimuProvider>
   );
 }
-
-export default App;

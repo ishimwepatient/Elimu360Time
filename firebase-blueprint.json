@@ -1,401 +1,59 @@
 {
   "entities": {
-    "schools": {
-      "title": "Schools",
-      "description": "Educational institutions registered in the multi-tenant SIMS.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "code": { "type": "string" },
-        "curriculum_type": { "type": "string", "enum": ["REB", "CAMBRIDGE", "IB"] },
-        "country": { "type": "string" },
-        "city": { "type": "string" },
-        "contact_email": { "type": "string" },
-        "phone": { "type": "string" },
-        "motto": { "type": "string" },
-        "logo_url": { "type": "string" },
-        "active_academic_year": { "type": "string" },
-        "active_term": { "type": "string" },
-        "currency": { "type": "string" },
-        "is_active": { "type": "boolean" },
-        "created_at": { "type": "string" }
-      },
-      "required": ["id", "name", "code", "curriculum_type", "is_active"]
-    },
     "users": {
       "title": "Users",
-      "description": "System accounts including Super Admin, Director, DOS, Bursar, Teachers, Librarians, Parents, and Students.",
+      "description": "User accounts for teachers and educators using Elimu360 Open System.",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
         "email": { "type": "string" },
-        "role": { 
-          "type": "string", 
-          "enum": ["SUPER_ADMIN", "SCHOOL_ADMIN", "DOS", "TEACHER", "BURSAR", "LIBRARIAN", "PARENT", "STUDENT"] 
-        },
-        "school_id": { "type": "string" },
-        "avatar_url": { "type": "string" },
-        "phone": { "type": "string" },
-        "national_id": { "type": "string" },
-        "subject_names": { "type": "array", "items": { "type": "string" } },
-        "assigned_class_id": { "type": "string" },
-        "linked_student_ids": { "type": "array", "items": { "type": "string" } },
-        "title": { "type": "string" },
-        "is_claimed": { "type": "boolean" },
-        "activation_token": { "type": "string" },
-        "password_hash": { "type": "string" },
-        "created_at": { "type": "string" },
-        "created_by": { "type": "string" }
-      },
-      "required": ["id", "name", "email", "role"]
-    },
-    "students": {
-      "title": "Students",
-      "description": "Enrolled student records.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "registration_number": { "type": "string" },
-        "first_name": { "type": "string" },
-        "last_name": { "type": "string" },
-        "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
-        "date_of_birth": { "type": "string" },
-        "class_id": { "type": "string" },
-        "class_name": { "type": "string" },
-        "enrollment_date": { "type": "string" },
-        "status": { "type": "string", "enum": ["ACTIVE", "GRADUATED", "SUSPENDED", "TRANSFERRED"] },
-        "guardian_name": { "type": "string" },
-        "guardian_phone": { "type": "string" },
-        "guardian_email": { "type": "string" },
-        "guardian_relation": { "type": "string" },
-        "address": { "type": "string" },
-        "medical_notes": { "type": "string" },
         "photo_url": { "type": "string" },
-        "boarding_status": { "type": "string", "enum": ["DAY", "BOARDING"] }
-      },
-      "required": ["id", "school_id", "registration_number", "first_name", "last_name", "class_id", "status"]
-    },
-    "classes": {
-      "title": "Classrooms",
-      "description": "Grade levels and streams.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "name": { "type": "string" },
-        "level": { "type": "string" },
-        "stream": { "type": "string" },
-        "capacity": { "type": "number" },
-        "class_teacher_id": { "type": "string" },
-        "class_teacher_name": { "type": "string" },
-        "room_number": { "type": "string" }
-      },
-      "required": ["id", "school_id", "name", "level", "stream"]
-    },
-    "subjects": {
-      "title": "Subjects",
-      "description": "Academic subjects offered.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "name": { "type": "string" },
-        "code": { "type": "string" },
-        "department": { "type": "string" },
-        "credits": { "type": "number" },
-        "pass_mark": { "type": "number" }
-      },
-      "required": ["id", "school_id", "name", "code"]
-    },
-    "timetables": {
-      "title": "Timetable Slots",
-      "description": "Weekly scheduling slots.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "class_id": { "type": "string" },
-        "class_name": { "type": "string" },
-        "subject_id": { "type": "string" },
-        "subject_name": { "type": "string" },
-        "teacher_id": { "type": "string" },
-        "teacher_name": { "type": "string" },
-        "room": { "type": "string" },
-        "day_of_week": { "type": "string" },
-        "start_time": { "type": "string" },
-        "end_time": { "type": "string" },
-        "term": { "type": "string" }
-      },
-      "required": ["id", "school_id", "class_id", "subject_id", "teacher_id", "day_of_week", "start_time", "end_time"]
-    },
-    "grades": {
-      "title": "Grades",
-      "description": "Student academic marks.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "student_id": { "type": "string" },
-        "student_name": { "type": "string" },
-        "subject_id": { "type": "string" },
-        "subject_name": { "type": "string" },
-        "class_id": { "type": "string" },
-        "term": { "type": "string" },
-        "academic_year": { "type": "string" },
-        "assessment_type": { "type": "string", "enum": ["CAT", "MID_TERM", "END_OF_TERM"] },
-        "marks": { "type": "number" },
-        "max_marks": { "type": "number" },
-        "teacher_id": { "type": "string" },
-        "teacher_name": { "type": "string" },
-        "entered_at": { "type": "string" },
-        "remarks": { "type": "string" }
-      },
-      "required": ["id", "school_id", "student_id", "subject_id", "assessment_type", "marks", "max_marks"]
-    },
-    "attendance": {
-      "title": "Attendance",
-      "description": "Daily or subject attendance records.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "student_id": { "type": "string" },
-        "student_name": { "type": "string" },
-        "class_id": { "type": "string" },
-        "class_name": { "type": "string" },
-        "subject_id": { "type": "string" },
-        "subject_name": { "type": "string" },
-        "date": { "type": "string" },
-        "status": { "type": "string", "enum": ["PRESENT", "ABSENT", "LATE", "EXCUSED"] },
-        "marked_by_id": { "type": "string" },
-        "marked_by_name": { "type": "string" },
-        "marked_at": { "type": "string" }
-      },
-      "required": ["id", "school_id", "student_id", "date", "status"]
-    },
-    "fee_structures": {
-      "title": "Fee Structures",
-      "description": "Tuition and operational fees scheduled per level.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "academic_year": { "type": "string" },
-        "term": { "type": "string" },
-        "class_level": { "type": "string" },
-        "category": { "type": "string" },
-        "category_label": { "type": "string" },
-        "amount": { "type": "number" },
-        "currency": { "type": "string" },
-        "due_date": { "type": "string" },
-        "mandatory": { "type": "boolean" }
-      },
-      "required": ["id", "school_id", "category", "amount", "term"]
-    },
-    "payments": {
-      "title": "Fee Payments",
-      "description": "Student fee collection transactions.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "receipt_number": { "type": "string" },
-        "student_id": { "type": "string" },
-        "student_name": { "type": "string" },
-        "student_reg": { "type": "string" },
-        "class_name": { "type": "string" },
-        "fee_category": { "type": "string" },
-        "amount_paid": { "type": "number" },
-        "payment_date": { "type": "string" },
-        "payment_method": { "type": "string" },
-        "transaction_reference": { "type": "string" },
-        "bursar_id": { "type": "string" },
-        "bursar_name": { "type": "string" },
-        "payer_name": { "type": "string" },
-        "term": { "type": "string" },
-        "academic_year": { "type": "string" },
-        "remarks": { "type": "string" },
+        "school_name": { "type": "string" },
         "created_at": { "type": "string" }
       },
-      "required": ["id", "school_id", "receipt_number", "student_id", "amount_paid", "payment_method"]
+      "required": ["id", "email"]
     },
-    "discipline_incidents": {
-      "title": "Discipline Incidents",
-      "description": "Student disciplinary logs.",
+    "lesson_plans": {
+      "title": "Lesson Plans",
+      "description": "AI-generated and customized competency-based lesson plans.",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "student_id": { "type": "string" },
-        "student_name": { "type": "string" },
-        "class_name": { "type": "string" },
-        "date": { "type": "string" },
-        "category": { "type": "string" },
-        "severity": { "type": "string" },
-        "description": { "type": "string" },
-        "action_taken": { "type": "string" },
-        "recorded_by_name": { "type": "string" },
-        "term": { "type": "string" },
-        "parent_notified": { "type": "boolean" }
-      },
-      "required": ["id", "school_id", "student_id", "date", "category", "severity"]
-    },
-    "books": {
-      "title": "Library Books",
-      "description": "Catalog of available school books.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "title": { "type": "string" },
-        "author": { "type": "string" },
-        "isbn": { "type": "string" },
-        "category": { "type": "string" },
-        "total_copies": { "type": "number" },
-        "available_copies": { "type": "number" },
-        "location_shelf": { "type": "string" },
-        "replacement_fee_rwf": { "type": "number" }
-      },
-      "required": ["id", "school_id", "title", "author", "isbn", "total_copies"]
-    },
-    "borrow_records": {
-      "title": "Borrow Records",
-      "description": "Library book loan and fine records.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "book_id": { "type": "string" },
-        "book_title": { "type": "string" },
-        "student_id": { "type": "string" },
-        "student_name": { "type": "string" },
-        "student_reg": { "type": "string" },
-        "borrow_date": { "type": "string" },
-        "due_date": { "type": "string" },
-        "return_date": { "type": "string" },
-        "status": { "type": "string" },
-        "fine_amount_rwf": { "type": "number" }
-      },
-      "required": ["id", "school_id", "book_id", "student_id", "borrow_date", "due_date", "status"]
-    },
-    "permissions": {
-      "title": "Permission Gate Passes",
-      "description": "Exeat gate exit passes.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "student_id": { "type": "string" },
-        "student_name": { "type": "string" },
-        "student_reg": { "type": "string" },
-        "class_name": { "type": "string" },
-        "departure_time": { "type": "string" },
-        "expected_return_time": { "type": "string" },
-        "actual_return_time": { "type": "string" },
-        "reason": { "type": "string" },
-        "destination": { "type": "string" },
-        "authorized_by": { "type": "string" },
-        "parent_notified": { "type": "boolean" },
-        "status": { "type": "string" }
-      },
-      "required": ["id", "school_id", "student_id", "departure_time", "expected_return_time", "status"]
-    },
-    "materials": {
-      "title": "E-Learning Materials",
-      "description": "Course materials, PDFs, and notes.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "class_id": { "type": "string" },
-        "subject_id": { "type": "string" },
-        "subject_name": { "type": "string" },
-        "title": { "type": "string" },
-        "description": { "type": "string" },
-        "file_type": { "type": "string" },
-        "file_url": { "type": "string" },
-        "uploaded_by_name": { "type": "string" },
-        "created_at": { "type": "string" },
-        "download_count": { "type": "number" }
-      },
-      "required": ["id", "school_id", "class_id", "subject_id", "title"]
-    },
-    "assignments": {
-      "title": "Assignments & Quizzes",
-      "description": "E-learning homework and auto-graded quizzes.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "class_id": { "type": "string" },
-        "class_name": { "type": "string" },
-        "subject_id": { "type": "string" },
-        "subject_name": { "type": "string" },
-        "title": { "type": "string" },
-        "description": { "type": "string" },
-        "due_date": { "type": "string" },
-        "total_points": { "type": "number" },
-        "is_quiz": { "type": "boolean" },
-        "created_by_name": { "type": "string" },
-        "created_at": { "type": "string" }
-      },
-      "required": ["id", "school_id", "class_id", "subject_id", "title", "due_date"]
-    },
-    "assignment_submissions": {
-      "title": "Assignment Submissions",
-      "description": "Student submitted answers and teacher feedback.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "assignment_id": { "type": "string" },
-        "student_id": { "type": "string" },
-        "student_name": { "type": "string" },
-        "submitted_at": { "type": "string" },
-        "score": { "type": "number" },
-        "teacher_feedback": { "type": "string" },
-        "status": { "type": "string" }
-      },
-      "required": ["id", "assignment_id", "student_id", "submitted_at", "status"]
-    },
-    "notifications": {
-      "title": "SMS & Email Notifications",
-      "description": "Carrier broadcast logs and telemetry.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
-        "recipient_name": { "type": "string" },
-        "recipient_phone": { "type": "string" },
-        "channel": { "type": "string" },
-        "trigger": { "type": "string" },
-        "content": { "type": "string" },
-        "status": { "type": "string" },
-        "cost_rwf": { "type": "number" },
-        "timestamp": { "type": "string" }
-      },
-      "required": ["id", "school_id", "recipient_phone", "content", "status"]
-    },
-    "audit_logs": {
-      "title": "Audit Logs",
-      "description": "Security and compliance audit trails.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "school_id": { "type": "string" },
         "user_id": { "type": "string" },
-        "user_name": { "type": "string" },
-        "user_role": { "type": "string" },
-        "action": { "type": "string" },
-        "entity_type": { "type": "string" },
-        "entity_id": { "type": "string" },
-        "details": { "type": "string" },
-        "timestamp": { "type": "string" },
-        "ip_address": { "type": "string" }
+        "school_name": { "type": "string" },
+        "teacher_name": { "type": "string" },
+        "term": { "type": "string" },
+        "date": { "type": "string" },
+        "subject": { "type": "string" },
+        "class_level": { "type": "string" },
+        "unit_number": { "type": "string" },
+        "lesson_number": { "type": "string" },
+        "duration": { "type": "string" },
+        "class_size": { "type": "number" },
+        "special_needs": { "type": "string" },
+        "unit_title": { "type": "string" },
+        "key_unit_competence": { "type": "string" },
+        "lesson_title": { "type": "string" },
+        "instructional_objective": { "type": "string" },
+        "location": { "type": "string" },
+        "learning_materials": { "type": "string" },
+        "references": { "type": "string" },
+        "activity_summary": { "type": "string" },
+        "self_evaluation": { "type": "string" },
+        "created_at": { "type": "string" }
       },
-      "required": ["id", "school_id", "user_id", "action", "timestamp"]
+      "required": ["id", "subject", "class_level", "unit_title", "lesson_title"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "users",
+      "description": "User account documents."
+    },
+    "lesson_plans/{planId}": {
+      "schema": "lesson_plans",
+      "description": "Saved lesson plans collection."
     }
   }
 }
