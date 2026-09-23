@@ -8,19 +8,20 @@ import {
   Share2, 
   Menu, 
   X,
-  FileText,
   RefreshCw,
-  Heart
+  Heart,
+  Home
 } from 'lucide-react';
 import { ElimuProvider, useElimu } from './context/ElimuContext';
 import { ElimuLogo } from './components/brand/ElimuLogo';
+import { ServicesOverviewHome } from './components/home/ServicesOverviewHome';
 import { DocumentConverter } from './components/converter/DocumentConverter';
 import { LessonPlanGeneratorHub } from './components/generator/LessonPlanGeneratorHub';
 import { SavedPlansLibrary } from './components/library/SavedPlansLibrary';
 import { REBCBCGuide } from './components/guide/REBCBCGuide';
 import { ShareSystemModal } from './components/share/ShareSystemModal';
 
-type ActiveTab = 'converter' | 'generator' | 'library' | 'guide';
+type ActiveTab = 'home' | 'converter' | 'generator' | 'library' | 'guide';
 
 const MainAppContent: React.FC = () => {
   const { 
@@ -32,8 +33,8 @@ const MainAppContent: React.FC = () => {
     closeShareModal
   } = useElimu();
 
-  // App starts from Documents Converter as requested
-  const [activeTab, setActiveTab] = useState<ActiveTab>('converter');
+  // App starts from Home / Services Overview as explicitly requested
+  const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -44,39 +45,51 @@ const MainAppContent: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
           {/* Logo */}
-          <div className="cursor-pointer" onClick={() => setActiveTab('converter')}>
+          <div className="cursor-pointer" onClick={() => setActiveTab('home')}>
             <ElimuLogo size="md" />
           </div>
 
           {/* Desktop Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
+          <nav className="hidden md:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800 text-xs">
             <button
-              onClick={() => setActiveTab('converter')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                activeTab === 'converter'
+              onClick={() => setActiveTab('home')}
+              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+                activeTab === 'home'
                   ? 'bg-amber-500 text-slate-950 shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <RefreshCw className="w-4 h-4 text-slate-950" />
-              <span>Documents Converter</span>
+              <Home className="w-4 h-4" />
+              <span>Overview</span>
             </button>
 
             <button
               onClick={() => setActiveTab('generator')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
                 activeTab === 'generator'
                   ? 'bg-amber-500 text-slate-950 shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
               <Sparkles className="w-4 h-4" />
-              <span>AI Lesson Plan Generator</span>
+              <span>Lesson Generator</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('converter')}
+              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+                activeTab === 'converter'
+                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Document Converter</span>
             </button>
 
             <button
               onClick={() => setActiveTab('library')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
                 activeTab === 'library'
                   ? 'bg-amber-500 text-slate-950 shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
@@ -88,7 +101,7 @@ const MainAppContent: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('guide')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
                 activeTab === 'guide'
                   ? 'bg-amber-500 text-slate-950 shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
@@ -114,7 +127,7 @@ const MainAppContent: React.FC = () => {
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition"
+              className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition cursor-pointer"
               title="Toggle theme"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-400" />}
@@ -151,12 +164,12 @@ const MainAppContent: React.FC = () => {
           <div className="md:hidden border-t border-slate-800 bg-slate-950 p-4 space-y-3 animate-fade-in">
             <nav className="flex flex-col space-y-2">
               <button
-                onClick={() => { setActiveTab('converter'); setMobileMenuOpen(false); }}
+                onClick={() => { setActiveTab('home'); setMobileMenuOpen(false); }}
                 className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'converter' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                  activeTab === 'home' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
                 }`}
               >
-                <RefreshCw className="w-4 h-4" /> Documents Converter
+                <Home className="w-4 h-4" /> Services Overview
               </button>
 
               <button
@@ -166,6 +179,15 @@ const MainAppContent: React.FC = () => {
                 }`}
               >
                 <Sparkles className="w-4 h-4" /> AI Lesson Plan Generator
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('converter'); setMobileMenuOpen(false); }}
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
+                  activeTab === 'converter' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                }`}
+              >
+                <RefreshCw className="w-4 h-4" /> Documents Converter
               </button>
 
               <button
@@ -199,6 +221,7 @@ const MainAppContent: React.FC = () => {
 
       {/* Main Workspace Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'home' && <ServicesOverviewHome onNavigate={tab => setActiveTab(tab)} />}
         {activeTab === 'converter' && <DocumentConverter />}
         {activeTab === 'generator' && <LessonPlanGeneratorHub />}
         {activeTab === 'library' && <SavedPlansLibrary onNavigateToGenerator={() => setActiveTab('generator')} />}
