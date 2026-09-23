@@ -1,0 +1,147 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == "ishimwepatient001@gmail.com" ||
+        getUserData().role == "SUPER_ADMIN"
+      );
+    }
+
+    function isSameSchool(schoolId) {
+      return isAuthenticated() && (
+        isSuperAdmin() || 
+        getUserData().school_id == schoolId
+      );
+    }
+
+    // Schools collection
+    match /schools/{schoolId} {
+      allow read, write: if true;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Students collection
+    match /students/{studentId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Classes & Subjects
+    match /classes/{classId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /subjects/{subjectId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Academics & Timetable
+    match /timetables/{slotId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /timetable_configs/{configId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /grades/{gradeId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /attendance/{attendanceId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /education_levels/{levelId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /teacher_assignments/{assignId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /student_conducts/{conductId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Financial Portal
+    match /fee_structures/{structureId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /payments/{paymentId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Discipline & Gate passes
+    match /discipline_incidents/{incidentId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /permissions/{permissionId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Library
+    match /books/{bookId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /borrow_records/{borrowId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // E-Learning
+    match /materials/{materialId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /assignments/{assignmentId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /assignment_submissions/{subId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Telecommunications & Audits
+    match /notifications/{notifId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /communication_messages/{msgId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /audit_logs/{logId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Default fallback
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

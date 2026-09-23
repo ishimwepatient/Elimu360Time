@@ -1,0 +1,6 @@
+{
+  "name": "Elimu360 SIMS",
+  "description": "Comprehensive School Information Management System for student enrollment, fee tracking, and teacher-parent communication by The Palace Tech House.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
