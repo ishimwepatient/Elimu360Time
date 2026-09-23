@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Printer, Download, Copy, Check, Edit3, Save, Sparkles } from 'lucide-react';
+import { X, Printer, Download, Copy, Check, Edit3, Save, Sparkles, Award } from 'lucide-react';
 import { LessonPlanData } from '../../types';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -88,7 +88,6 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
       pdf.save(fileName);
     } catch (err) {
       console.error('PDF export failed:', err);
-      // Fallback print dialog
       window.print();
     } finally {
       setDownloading(false);
@@ -130,7 +129,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition"
                 >
                   <Save className="w-4 h-4" />
-                  <span>Save Changes</span>
+                  <span>Save Plan Changes</span>
                 </button>
               ) : (
                 <button
@@ -138,7 +137,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition"
                 >
                   <Edit3 className="w-4 h-4 text-amber-400" />
-                  <span>Edit</span>
+                  <span>Edit Plan</span>
                 </button>
               )
             )}
@@ -148,24 +147,24 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-              <span>{copied ? 'Copied!' : 'Copy'}</span>
+              <span>{copied ? 'Text Copied!' : 'Copy Text'}</span>
             </button>
 
             <button
               onClick={handleDownloadPDF}
               disabled={downloading}
-              className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition shadow-md disabled:opacity-50"
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition shadow-md disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
-              <span>{downloading ? 'Exporting...' : 'PDF'}</span>
+              <span>{downloading ? 'Exporting PDF...' : 'Export PDF Now'}</span>
             </button>
 
             <button
               onClick={handlePrint}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition"
+              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1.5 transition"
             >
               <Printer className="w-4 h-4" />
-              <span className="hidden sm:inline">Print</span>
+              <span>Instant Print</span>
             </button>
 
             <button
@@ -212,7 +211,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                           onChange={e => setEditedPlan({ ...editedPlan, schoolName: e.target.value })}
                           className="w-full p-1 bg-amber-50 border border-amber-300 rounded text-slate-900 font-semibold"
                         />
-                      ) : plan.schoolName}
+                      ) : (plan.schoolName || 'GS AMAROHO KIGALI')}
                     </td>
                     <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800 w-1/4">Teacher's Name:</td>
                     <td className="p-2.5 font-semibold">
@@ -223,7 +222,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                           onChange={e => setEditedPlan({ ...editedPlan, teacherName: e.target.value })}
                           className="w-full p-1 bg-amber-50 border border-amber-300 rounded text-slate-900 font-semibold"
                         />
-                      ) : plan.teacherName}
+                      ) : (plan.teacherName || 'TEACHER')}
                     </td>
                   </tr>
                   <tr className="border-b border-slate-800">
@@ -254,7 +253,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                     <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Location:</td>
                     <td className="p-2.5 border-r border-slate-800 font-semibold">{plan.location}</td>
                     <td className="p-2.5 font-bold bg-slate-100 border-r border-slate-800">Special Needs:</td>
-                    <td className="p-2.5 font-semibold text-slate-700">{plan.specialNeeds}</td>
+                    <td className="p-2.5 font-semibold text-slate-700">{plan.specialNeeds || 'None'}</td>
                   </tr>
                 </tbody>
               </table>
@@ -411,7 +410,9 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
 
             {/* Footer stamp */}
             <div className="pt-4 border-t border-slate-300 flex justify-between items-center text-[10px] text-slate-500 font-semibold">
-              <span>Verified REB Format — Generated via Elimu360 Open System</span>
+              <span className="flex items-center gap-1">
+                <Award className="w-3.5 h-3.5 text-amber-600 inline" /> Verified REB Format — Generated via Elimu360 Open System
+              </span>
               <span>Document ID: {plan.id}</span>
             </div>
 

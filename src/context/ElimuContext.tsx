@@ -20,7 +20,7 @@ import {
   updateDoc 
 } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
-import { LessonPlanData, UserProfile } from '../types';
+import { LessonPlanData, UserProfile, UserPerks } from '../types';
 
 interface ElimuContextType {
   currentUser: UserProfile | null;
@@ -44,11 +44,19 @@ interface ElimuContextType {
   authModalOpen: boolean;
   authModalMode: 'login' | 'signup';
   authModalReason: string;
+  // Referral & Rewards System
+  rewardsModalOpen: boolean;
+  openRewardsModal: () => void;
+  closeRewardsModal: () => void;
+  shareAndUnlockPerks: (source?: string) => Promise<void>;
+  isPerkUnlocked: (perk: keyof UserPerks) => boolean;
+  guestPerksUnlocked: boolean;
 }
 
 const ElimuContext = createContext<ElimuContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_KEY = 'elimu360_guest_plans';
+const GUEST_PERKS_KEY = 'elimu360_guest_perks_unlocked';
 
 export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
@@ -65,6 +73,12 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   const [authModalReason, setAuthModalReason] = useState<string>('');
 
+  // Rewards modal state
+  const [rewardsModalOpen, setRewardsModalOpen] = useState<boolean>(false);
+  const [guestPerksUnlocked, setGuestPerksUnlocked] = useState<boolean>(() => {
+    return localStorage.getItem(GUEST_PERKS_KEY) === 'true';
+  });
+
   const openAuthModal = (mode: 'login' | 'signup' = 'login', reason: string = '') => {
     setAuthModalMode(mode);
     setAuthModalReason(reason);
@@ -75,6 +89,9 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setAuthModalOpen(false);
     setAuthModalReason('');
   };
+
+  const openRewardsModal = () => setRewardsModalOpen(true);
+  const closeRewardsModal = () => setRewardsModalOpen(false);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -88,30 +105,91 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Helper to generate a unique teacher referral code
+  const generateReferralCode = (uid: string) => {
+    return `ELIMU360_${uid.substring(0, 6).toUpperCase()}`;
+  };
+
+  const defaultPerks: UserPerks = {
+    vipBatchingUnlocked: true,
+    customBrandingUnlocked: true,
+    schemeOfWorkUnlocked: true,
+    priorityProcessing: true,
+    ambassadorBadge: true,
+  };
+
+  // Share and unlock perks
+  const shareAndUnlockPerks = async (source: string = 'manual_share') => {
+    setGuestPerksUnlocked(true);
+    localStorage.setItem(GUEST_PERKS_KEY, 'true');
+
+    if (currentUser) {
+      const updatedShares = (currentUser.sharesCount || 0) + 1;
+      const updatedUser: UserProfile = {
+        ...currentUser,
+        sharesCount: updatedShares,
+        unlockedPerks: defaultPerks,
+      };
+
+      setCurrentUser(updatedUser);
+
+      try {
+        const userRef = doc(db, 'users', currentUser.id);
+        await updateDoc(userRef, {
+          sharesCount: updatedShares,
+          unlockedPerks: defaultPerks,
+        });
+      } catch (e) {
+        console.warn('Error updating Firestore sharesCount:', e);
+      }
+    }
+  };
+
+  const isPerkUnlocked = (perk: keyof UserPerks): boolean => {
+    if (guestPerksUnlocked) return true;
+    if (currentUser?.unlockedPerks?.[perk]) return true;
+    // Default unlocked for all registered users who interact or share
+    if (currentUser) return true;
+    return false;
+  };
+
   // 1. Firebase Auth listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setFirebaseUser(user);
       if (user) {
-        const userProfile: UserProfile = {
+        const refCode = generateReferralCode(user.uid);
+        let userProfile: UserProfile = {
           id: user.uid,
           email: user.email || '',
           name: user.displayName || user.email?.split('@')[0] || 'Teacher',
           photoUrl: user.photoURL || '',
+          referralCode: refCode,
+          sharesCount: guestPerksUnlocked ? 1 : 0,
+          unlockedPerks: defaultPerks,
           createdAt: new Date().toISOString()
         };
-        setCurrentUser(userProfile);
 
         // Save/Sync user profile doc in Firestore
         try {
           const userRef = doc(db, 'users', user.uid);
           const userSnap = await getDoc(userRef);
-          if (!userSnap.exists()) {
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            userProfile = {
+              ...userProfile,
+              ...data,
+              referralCode: data.referralCode || refCode,
+              unlockedPerks: data.unlockedPerks || defaultPerks
+            };
+          } else {
             await setDoc(userRef, userProfile);
           }
         } catch (err) {
           console.warn('Error fetching/writing user profile doc:', err);
         }
+
+        setCurrentUser(userProfile);
 
         // Fetch user's Firestore saved plans
         fetchUserLessonPlans(user.uid);
@@ -124,7 +202,7 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [guestPerksUnlocked]);
 
   const loadGuestPlans = () => {
     try {
@@ -158,11 +236,10 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         fetched.push({ id: docSnap.id, ...docSnap.data() } as LessonPlanData);
       });
 
-      // Also combine with any local guest plans that haven't been saved yet
+      // Combine with local guest plans
       const rawGuest = localStorage.getItem(LOCAL_STORAGE_KEY);
       const guestPlans: LessonPlanData[] = rawGuest ? JSON.parse(rawGuest) : [];
 
-      // If there are guest plans, migrate them to Firestore for the newly logged-in user
       if (guestPlans.length > 0) {
         for (const plan of guestPlans) {
           try {
@@ -176,7 +253,6 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         localStorage.removeItem(LOCAL_STORAGE_KEY);
       }
 
-      // Sort newest first
       fetched.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
       setSavedLessonPlans(fetched);
     } catch (err) {
@@ -271,12 +347,17 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const signUpWithEmail = async (email: string, pass: string, name?: string) => {
     try {
+      // Firebase Authentication hashes passwords using scrypt/bcrypt algorithms on Google's cloud servers
       const res = await createUserWithEmailAndPassword(auth, email, pass);
       if (res.user) {
+        const refCode = generateReferralCode(res.user.uid);
         const userProfile: UserProfile = {
           id: res.user.uid,
           email,
           name: name || email.split('@')[0],
+          referralCode: refCode,
+          sharesCount: guestPerksUnlocked ? 1 : 0,
+          unlockedPerks: defaultPerks,
           createdAt: new Date().toISOString()
         };
         await setDoc(doc(db, 'users', res.user.uid), userProfile);
@@ -328,7 +409,13 @@ export const ElimuProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       closeAuthModal,
       authModalOpen,
       authModalMode,
-      authModalReason
+      authModalReason,
+      rewardsModalOpen,
+      openRewardsModal,
+      closeRewardsModal,
+      shareAndUnlockPerks,
+      isPerkUnlocked,
+      guestPerksUnlocked
     }}>
       {children}
     </ElimuContext.Provider>

@@ -34,6 +34,16 @@ export interface LessonPlanData {
   };
   selfEvaluation?: string;
   createdAt?: string;
+  customLogoUrl?: string;
+  teacherSignatureTitle?: string;
+}
+
+export interface UserPerks {
+  vipBatchingUnlocked: boolean; // Batch generate 10+ plans at once
+  customBrandingUnlocked: boolean; // Custom school logo & signature stamp on exports
+  schemeOfWorkUnlocked: boolean; // AI Scheme of Work Auto-Generator
+  priorityProcessing: boolean; // Fast-track AI generation
+  ambassadorBadge: boolean;
 }
 
 export interface UserProfile {
@@ -42,6 +52,10 @@ export interface UserProfile {
   name?: string;
   photoUrl?: string;
   schoolName?: string;
+  referralCode?: string;
+  sharesCount?: number;
+  referralsCount?: number;
+  unlockedPerks?: UserPerks;
   createdAt?: string;
 }
 

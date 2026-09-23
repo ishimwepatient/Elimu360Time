@@ -6,9 +6,9 @@ import {
   LogOut, 
   Sun, 
   Moon, 
-  Layers, 
+  Gift, 
   Award, 
-  Lock, 
+  Share2, 
   Menu, 
   X,
   ChevronDown
@@ -16,6 +16,7 @@ import {
 import { ElimuProvider, useElimu } from './context/ElimuContext';
 import { ElimuLogo } from './components/brand/ElimuLogo';
 import { AuthModal } from './components/auth/AuthModal';
+import { ReferralRewardsModal } from './components/rewards/ReferralRewardsModal';
 import { LessonPlanGeneratorHub } from './components/generator/LessonPlanGeneratorHub';
 import { SavedPlansLibrary } from './components/library/SavedPlansLibrary';
 import { REBCBCGuide } from './components/guide/REBCBCGuide';
@@ -23,7 +24,19 @@ import { REBCBCGuide } from './components/guide/REBCBCGuide';
 type ActiveTab = 'generator' | 'library' | 'guide';
 
 const MainAppContent: React.FC = () => {
-  const { currentUser, isAuthenticated, logout, theme, toggleTheme, openAuthModal, savedLessonPlans } = useElimu();
+  const { 
+    currentUser, 
+    isAuthenticated, 
+    logout, 
+    theme, 
+    toggleTheme, 
+    openAuthModal, 
+    savedLessonPlans,
+    rewardsModalOpen,
+    openRewardsModal,
+    closeRewardsModal
+  } = useElimu();
+
   const [activeTab, setActiveTab] = useState<ActiveTab>('generator');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -82,6 +95,15 @@ const MainAppContent: React.FC = () => {
           {/* Right Header Actions */}
           <div className="hidden md:flex items-center gap-3">
             
+            {/* Share & Earn Rewards Button */}
+            <button
+              onClick={openRewardsModal}
+              className="px-3.5 py-2 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition"
+            >
+              <Gift className="w-4 h-4 text-emerald-400 animate-pulse" />
+              <span>Share & Earn Perks</span>
+            </button>
+
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
@@ -112,6 +134,13 @@ const MainAppContent: React.FC = () => {
                       <p className="text-[11px] text-slate-400 line-clamp-1">{currentUser.email}</p>
                     </div>
                     <button
+                      onClick={openRewardsModal}
+                      className="w-full text-left px-3 py-2 rounded-xl text-amber-300 hover:bg-amber-500/10 font-bold flex items-center gap-2 transition"
+                    >
+                      <Gift className="w-4 h-4 text-amber-400" />
+                      <span>Sharing Rewards</span>
+                    </button>
+                    <button
                       onClick={() => { logout(); setUserDropdownOpen(false); }}
                       className="w-full text-left px-3 py-2 rounded-xl text-rose-400 hover:bg-rose-500/10 font-medium flex items-center gap-2 transition"
                     >
@@ -124,7 +153,7 @@ const MainAppContent: React.FC = () => {
             ) : (
               <button
                 onClick={() => openAuthModal('login')}
-                className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg"
+                className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg cursor-pointer"
               >
                 <User className="w-4 h-4" />
                 <span>Sign In / Sign Up</span>
@@ -135,6 +164,12 @@ const MainAppContent: React.FC = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center md:hidden gap-2">
+            <button
+              onClick={openRewardsModal}
+              className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold"
+            >
+              <Gift className="w-4 h-4 text-emerald-400" />
+            </button>
             <button
               onClick={toggleTheme}
               className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300"
@@ -181,6 +216,13 @@ const MainAppContent: React.FC = () => {
               >
                 <Award className="w-4 h-4" /> CBC Standards Guide
               </button>
+
+              <button
+                onClick={() => { openRewardsModal(); setMobileMenuOpen(false); }}
+                className="p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+              >
+                <Gift className="w-4 h-4 text-emerald-400" /> Share Link & Unlock Perks
+              </button>
             </nav>
 
             <div className="pt-2 border-t border-slate-800">
@@ -216,6 +258,12 @@ const MainAppContent: React.FC = () => {
 
       {/* Global Auth Modal */}
       <AuthModal />
+
+      {/* Global Referral / Rewards Modal */}
+      <ReferralRewardsModal
+        isOpen={rewardsModalOpen}
+        onClose={closeRewardsModal}
+      />
 
       {/* Global Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500 space-y-2">

@@ -15,7 +15,8 @@ import {
   Lock, 
   RefreshCw,
   Sliders,
-  HelpCircle
+  Gift,
+  Share2
 } from 'lucide-react';
 import { useElimu } from '../../context/ElimuContext';
 import { GenerationParams, LessonPlanData, ExtractedBookData } from '../../types';
@@ -37,28 +38,24 @@ const CLASS_LEVEL_PRESETS = [
 ];
 
 export const LessonPlanGeneratorHub: React.FC = () => {
-  const { isAuthenticated, saveMultipleLessonPlans, openAuthModal } = useElimu();
+  const { isAuthenticated, saveMultipleLessonPlans, openAuthModal, openRewardsModal, isPerkUnlocked } = useElimu();
 
-  // Form Fields
-  const [schoolName, setSchoolName] = useState('GS Amahoro Kigali');
-  const [teacherName, setTeacherName] = useState('Teacher Murekezi');
+  // Form Fields - Clean initial state with placeholders only
+  const [schoolName, setSchoolName] = useState('');
+  const [teacherName, setTeacherName] = useState('');
   const [subject, setSubject] = useState('English');
   const [classLevel, setClassLevel] = useState('Primary 6 (P6)');
   const [term, setTerm] = useState('Term 1');
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [unitNumber, setUnitNumber] = useState('1');
-  const [unitTitle, setUnitTitle] = useState('OUR ENVIRONMENT & LEISURE');
+  const [unitNumber, setUnitNumber] = useState('');
+  const [unitTitle, setUnitTitle] = useState('');
   const [duration, setDuration] = useState('40 min');
-  const [classSize, setClassSize] = useState(45);
+  const [classSize, setClassSize] = useState(40);
   const [location, setLocation] = useState('Classroom & School Yard');
-  const [specialNeeds, setSpecialNeeds] = useState('2 learners with mild hearing impairment seated in front with gesture aids.');
+  const [specialNeeds, setSpecialNeeds] = useState('');
 
-  // Lesson Titles list
-  const [lessonTitles, setLessonTitles] = useState<string[]>([
-    'Introduction to Environmental Terms',
-    'Identifying Local Environmental Features',
-    'Describing Community Leisure Activities'
-  ]);
+  // Lesson Titles list - Clean empty initial array
+  const [lessonTitles, setLessonTitles] = useState<string[]>([]);
   const [newTitleInput, setNewTitleInput] = useState('');
 
   // Extractor State
@@ -69,19 +66,18 @@ export const LessonPlanGeneratorHub: React.FC = () => {
 
   // Generation State
   const [isGenerating, setIsGenerating] = useState(false);
-  const [currentGeneratingIdx, setCurrentGeneratingIdx] = useState(0);
   const [generatedPlans, setGeneratedPlans] = useState<LessonPlanData[]>([]);
   const [viewingPlan, setViewingPlan] = useState<LessonPlanData | null>(null);
   const [error, setError] = useState('');
 
-  // Max titles limit check for guest
-  const maxAllowedForGuest = 3;
-  const isOverGuestLimit = !isAuthenticated && lessonTitles.length > maxAllowedForGuest;
+  // Max titles limit check for guest unless VIP perk unlocked via sharing
+  const isVipUnlocked = isPerkUnlocked('vipBatchingUnlocked');
+  const maxAllowedForGuest = isVipUnlocked ? 15 : 3;
 
   const handleAddTitle = () => {
     if (!newTitleInput.trim()) return;
-    if (!isAuthenticated && lessonTitles.length >= maxAllowedForGuest) {
-      openAuthModal('signup', 'To generate more than 3 lesson plans at once, sign up or log in for free!');
+    if (!isAuthenticated && !isVipUnlocked && lessonTitles.length >= maxAllowedForGuest) {
+      openAuthModal('signup', 'To generate more than 3 lesson plans at once, sign up or share our link for free VIP perks!');
       return;
     }
     setLessonTitles(prev => [...prev, newTitleInput.trim()]);
@@ -118,7 +114,9 @@ export const LessonPlanGeneratorHub: React.FC = () => {
             setUnitNumber(firstUnit.unitNumber);
             setUnitTitle(firstUnit.unitTitle);
             if (firstUnit.lessonTitles && firstUnit.lessonTitles.length > 0) {
-              const titles = !isAuthenticated ? firstUnit.lessonTitles.slice(0, 3) : firstUnit.lessonTitles;
+              const titles = (!isAuthenticated && !isVipUnlocked) 
+                ? firstUnit.lessonTitles.slice(0, 3) 
+                : firstUnit.lessonTitles;
               setLessonTitles(titles);
             }
           }
@@ -161,7 +159,9 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               setUnitNumber(firstUnit.unitNumber);
               setUnitTitle(firstUnit.unitTitle);
               if (firstUnit.lessonTitles && firstUnit.lessonTitles.length > 0) {
-                const titles = !isAuthenticated ? firstUnit.lessonTitles.slice(0, 3) : firstUnit.lessonTitles;
+                const titles = (!isAuthenticated && !isVipUnlocked) 
+                  ? firstUnit.lessonTitles.slice(0, 3) 
+                  : firstUnit.lessonTitles;
                 setLessonTitles(titles);
               }
             }
@@ -181,34 +181,32 @@ export const LessonPlanGeneratorHub: React.FC = () => {
   const handleGenerate = async () => {
     setError('');
     if (lessonTitles.length === 0) {
-      setError('Please add at least one lesson title to generate.');
+      setError('Please add at least one lesson title or extract from a textbook.');
       return;
     }
 
-    // Guest enforcement limit
-    if (!isAuthenticated && lessonTitles.length > maxAllowedForGuest) {
-      openAuthModal('signup', 'Free guest mode allows generating up to 3 lesson plans at once. Sign up or log in to generate unlimited batch lesson plans!');
+    if (!isAuthenticated && !isVipUnlocked && lessonTitles.length > maxAllowedForGuest) {
+      openAuthModal('signup', 'Free guest mode allows generating up to 3 lesson plans at once. Sign up or share our link for unlimited batching!');
       return;
     }
 
     setIsGenerating(true);
-    setCurrentGeneratingIdx(0);
     setGeneratedPlans([]);
 
     try {
       const payload = {
-        schoolName,
-        teacherName,
+        schoolName: schoolName || 'GS Amahoro Kigali',
+        teacherName: teacherName || 'Teacher',
         subject,
         classLevel,
         term,
         date,
-        unitNumber,
-        unitTitle,
+        unitNumber: unitNumber || '1',
+        unitTitle: unitTitle || 'UNIT TITLE',
         duration,
         classSize,
         location,
-        specialNeeds,
+        specialNeeds: specialNeeds || 'None',
         lessonTitles
       };
 
@@ -231,7 +229,6 @@ export const LessonPlanGeneratorHub: React.FC = () => {
         }));
 
         setGeneratedPlans(resultsWithIds);
-        // Automatically save to context (and Firestore if logged in)
         await saveMultipleLessonPlans(resultsWithIds);
       } else {
         throw new Error('Failed parsing generated plans');
@@ -247,35 +244,72 @@ export const LessonPlanGeneratorHub: React.FC = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       
-      {/* Hero Banner Header */}
+      {/* Hero Banner Header with CTA */}
       <div className="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 shadow-2xl">
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-gradient-to-br from-amber-500/20 via-emerald-500/10 to-transparent rounded-full blur-3xl pointer-events-none"></div>
         
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider">
-            <Zap className="w-3.5 h-3.5" /> REB Competency-Based Curriculum (CBC) Ready
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider">
+              <Zap className="w-3.5 h-3.5" /> REB Competency-Based Curriculum (CBC) Ready
+            </span>
+
+            <button
+              onClick={openRewardsModal}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold cursor-pointer transition"
+            >
+              <Gift className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Share Link & Unlock Extra VIP Perks</span>
+            </button>
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white font-display tracking-tight leading-tight">
-            AI Lesson Plan Generator for <span className="text-amber-400">Educators</span>
+            Auto-Draft Official REB Lesson Plans in <span className="text-amber-400">1 Click</span>
           </h1>
 
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-            Generate official, inspectorate-ready Rwanda Education Board (REB) competency-based lesson plans in seconds. Free for all teachers!
+            Elimu360 Open System translates unit titles and textbook excerpts into inspectorate-ready Rwanda Education Board (REB) CBC lesson plans.
           </p>
 
-          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-medium text-slate-400">
-            <span className="flex items-center gap-1.5 text-slate-200">
-              <Check className="w-4 h-4 text-emerald-400" /> Free 3-Lesson Guest Batching
-            </span>
+          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-medium text-slate-300">
+            <button 
+              onClick={openRewardsModal}
+              className="flex items-center gap-1.5 text-amber-300 hover:underline font-bold"
+            >
+              <Share2 className="w-4 h-4 text-amber-400" /> Share & Receive 10+ VIP Batching
+            </button>
             <span className="flex items-center gap-1.5 text-slate-200">
               <Check className="w-4 h-4 text-emerald-400" /> Instant PDF & Print Export
             </span>
             <span className="flex items-center gap-1.5 text-slate-200">
-              <Check className="w-4 h-4 text-emerald-400" /> Textbook PDF/Text Extractor
+              <Check className="w-4 h-4 text-emerald-400" /> Auto-Extract Textbook Units
             </span>
           </div>
         </div>
+      </div>
+
+      {/* Sharing Rewards Banner CTA */}
+      <div className="p-4 rounded-3xl bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-slate-900 border border-amber-500/30 text-amber-200 text-xs flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+        <div className="flex items-center gap-3">
+          <span className="p-2 rounded-2xl bg-amber-500/20 text-amber-300 shrink-0">
+            <Gift className="w-5 h-5" />
+          </span>
+          <div>
+            <span className="font-extrabold text-white block text-sm">
+              🚀 Want Custom School Headers & 10+ Unlimited Lesson Batching?
+            </span>
+            <span className="text-slate-300 text-xs">
+              Share Elimu360 Open System with 1 teacher to unlock custom school logo stamps, AI Scheme of Work generation, and priority fast processing!
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={openRewardsModal}
+          className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shrink-0 transition flex items-center gap-2 shadow-md"
+        >
+          <Share2 className="w-4 h-4" />
+          <span>Share & Receive Extra Perks</span>
+        </button>
       </div>
 
       {/* Main Generator Card Grid */}
@@ -295,10 +329,10 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setExtractorOpen(!extractorOpen)}
-                className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 transition"
+                className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold flex items-center gap-2 transition"
               >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Extract from Textbook</span>
+                <Upload className="w-4 h-4" />
+                <span>⚡ Auto-Extract from REB Textbook</span>
               </button>
             </div>
 
@@ -307,14 +341,14 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               <div className="p-4 rounded-2xl bg-slate-950 border border-amber-500/30 space-y-3 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                    <FileText className="w-4 h-4" /> Textbook & Curriculum Extractor
+                    <FileText className="w-4 h-4" /> REB Textbook & Curriculum AI Extractor
                   </span>
                   <button onClick={() => setExtractorOpen(false)} className="text-slate-400 hover:text-white text-xs">
                     Close
                   </button>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Upload a PDF textbook excerpt or paste a Table of Contents to auto-extract Unit details & Lesson titles.
+                  Upload a PDF textbook excerpt or paste a Table of Contents to auto-extract Unit details & Lesson titles in 1 click.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -337,16 +371,16 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                       rows={2}
                       value={pastedText}
                       onChange={e => setPastedText(e.target.value)}
-                      placeholder="Paste unit title and lesson list here..."
-                      className="w-full p-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                      placeholder="Paste REB Unit titles and lesson titles here..."
+                      className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                     />
                     <button
                       type="button"
                       onClick={handleExtractFromText}
                       disabled={extracting || !pastedText.trim()}
-                      className="mt-2 w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition disabled:opacity-50"
+                      className="mt-2 w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs transition disabled:opacity-50"
                     >
-                      {extracting ? 'Extracting with AI...' : 'Auto-Extract Units & Lessons'}
+                      {extracting ? 'Extracting with AI...' : '⚡ Extract REB Units & Lessons Now'}
                     </button>
                   </div>
                 </div>
@@ -361,7 +395,7 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               </div>
             )}
 
-            {/* Form Fields Grid */}
+            {/* Form Fields Grid - Clean placeholders without pre-filled values */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">School Name</label>
@@ -369,7 +403,8 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                   type="text"
                   value={schoolName}
                   onChange={e => setSchoolName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
+                  placeholder="e.g. GS Amahoro Kigali / E.S. Nyarugenge"
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                 />
               </div>
 
@@ -379,12 +414,13 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                   type="text"
                   value={teacherName}
                   onChange={e => setTeacherName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
+                  placeholder="Enter teacher's full name (e.g. Teacher Murekezi)"
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Subject</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Select REB Subject</label>
                 <select
                   value={subject}
                   onChange={e => setSubject(e.target.value)}
@@ -397,7 +433,7 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Class Level</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Select Class Level</label>
                 <select
                   value={classLevel}
                   onChange={e => setClassLevel(e.target.value)}
@@ -431,21 +467,21 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Duration & Size</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Duration & Class Size</label>
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     type="text"
                     value={duration}
                     onChange={e => setDuration(e.target.value)}
-                    placeholder="40 min"
-                    className="px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
+                    placeholder="e.g. 40 min"
+                    className="px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                   />
                   <input
                     type="number"
-                    value={classSize}
-                    onChange={e => setClassSize(parseInt(e.target.value) || 40)}
-                    placeholder="Learners"
-                    className="px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
+                    value={classSize || ''}
+                    onChange={e => setClassSize(parseInt(e.target.value) || 0)}
+                    placeholder="No. of learners (e.g. 45)"
+                    className="px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
@@ -457,32 +493,32 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                     type="text"
                     value={unitNumber}
                     onChange={e => setUnitNumber(e.target.value)}
-                    placeholder="e.g. 1"
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
+                    placeholder="e.g. Unit 1"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Unit Title</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Official REB Unit Title</label>
                   <input
                     type="text"
                     value={unitTitle}
                     onChange={e => setUnitTitle(e.target.value)}
                     placeholder="e.g. OUR ENVIRONMENT AND NATURAL RESOURCES"
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white uppercase focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 uppercase focus:outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Special Educational Needs & Inclusivity Notes
+                  Special Educational Needs & Inclusivity Adaptations
                 </label>
                 <input
                   type="text"
                   value={specialNeeds}
                   onChange={e => setSpecialNeeds(e.target.value)}
-                  placeholder="e.g. 2 learners with mild hearing impairment seated near the chalkboard."
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
+                  placeholder="e.g. 2 learners with low vision seated near chalkboard with gesture aids"
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                 />
               </div>
             </div>
@@ -495,10 +531,17 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                   <span>Lesson Titles in Batch ({lessonTitles.length})</span>
                 </label>
 
-                {!isAuthenticated && (
-                  <span className="text-[11px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
-                    Guest Free Limit: Max 3
+                {isVipUnlocked ? (
+                  <span className="text-[11px] text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30 font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-emerald-400" /> VIP Unlimited Batching Active
                   </span>
+                ) : (
+                  <button
+                    onClick={openRewardsModal}
+                    className="text-[11px] text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30 font-semibold transition"
+                  >
+                    Guest Limit: Max 3 (Share to Unlock VIP 10+)
+                  </button>
                 )}
               </div>
 
@@ -509,49 +552,56 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                   value={newTitleInput}
                   onChange={e => setNewTitleInput(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddTitle(); } }}
-                  placeholder="e.g. Types of Soil and Properties"
-                  className="flex-1 px-3.5 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
+                  placeholder="Enter lesson title (e.g. Types of Soil and Properties)..."
+                  className="flex-1 px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                 />
                 <button
                   type="button"
                   onClick={handleAddTitle}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center gap-1 transition shrink-0"
+                  className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition shrink-0 shadow-md"
                 >
-                  <Plus className="w-4 h-4" /> Add Lesson
+                  <Plus className="w-4 h-4" /> Add Lesson Title
                 </button>
               </div>
 
               {/* List of Titles */}
-              <div className="space-y-2">
-                {lessonTitles.map((title, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200">
-                    <span className="font-semibold line-clamp-1">
-                      Lesson {idx + 1}: {title}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTitle(idx)}
-                      className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+              {lessonTitles.length === 0 ? (
+                <div className="p-4 rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 text-center text-xs text-slate-500 space-y-1">
+                  <p className="font-semibold text-slate-400">No lesson titles added yet.</p>
+                  <p className="text-[11px]">Type a title above or click "⚡ Auto-Extract from REB Textbook" to pull unit titles automatically!</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {lessonTitles.map((title, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200">
+                      <span className="font-semibold line-clamp-1">
+                        Lesson {idx + 1}: {title}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTitle(idx)}
+                        className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Guest Limit Warning Notice */}
-              {!isAuthenticated && lessonTitles.length >= 3 && (
-                <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between gap-3">
+              {!isAuthenticated && !isVipUnlocked && lessonTitles.length >= 3 && (
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
                     <Lock className="w-4 h-4 shrink-0 text-amber-400" />
-                    <span>Free guest limit: 3 lesson plans at once. Sign up free for unlimited batching!</span>
+                    <span>Guest limit: 3 lesson plans at once. Share link to unlock VIP 10+ batching!</span>
                   </div>
                   <button
                     type="button"
-                    onClick={() => openAuthModal('signup', 'Sign up free to generate more than 3 lesson plans at once!')}
-                    className="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] shrink-0"
+                    onClick={openRewardsModal}
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 transition"
                   >
-                    Sign Up Free
+                    Share & Unlock VIP
                   </button>
                 </div>
               )}
@@ -563,17 +613,17 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                 type="button"
                 onClick={handleGenerate}
                 disabled={isGenerating || lessonTitles.length === 0}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-base shadow-xl transition flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-base shadow-xl transition flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
               >
                 {isGenerating ? (
                   <>
                     <RefreshCw className="w-5 h-5 animate-spin" />
-                    <span>Generating REB Lesson Plans...</span>
+                    <span>Auto-Drafting REB CBC Lesson Plans...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5" />
-                    <span>Generate {lessonTitles.length} Lesson Plan{lessonTitles.length > 1 ? 's' : ''} Now</span>
+                    <span>🚀 Auto-Generate {lessonTitles.length > 0 ? lessonTitles.length : ''} REB Lesson Plan{lessonTitles.length > 1 ? 's' : ''} Now</span>
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
@@ -619,19 +669,19 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               </div>
 
               <h4 className="text-base font-bold text-white font-display">
-                Save & Access Your Plans Anywhere
+                Claim Your Educator Portal
               </h4>
 
               <p className="text-xs text-slate-300 leading-relaxed">
-                Create a free account to back up your lesson plans safely in the cloud, batch create 10+ plans at once, and export to PDF anytime.
+                Sign in or register free to back up your lesson plans securely in the cloud, sync across mobile/desktop, and access fast-track AI pipelines.
               </p>
 
               <button
                 type="button"
                 onClick={() => openAuthModal('signup', 'Sign up free for unlimited lesson plan cloud storage & batching!')}
-                className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition shadow-md"
+                className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs transition shadow-md"
               >
-                Create Free Account
+                Create Free Educator Account
               </button>
             </div>
           )}
@@ -648,10 +698,10 @@ export const LessonPlanGeneratorHub: React.FC = () => {
               <Check className="w-6 h-6 text-emerald-400 p-1 bg-emerald-500/20 rounded-lg border border-emerald-500/40" />
               <div>
                 <h3 className="text-lg font-bold text-white font-display">
-                  Generated Lesson Plans ({generatedPlans.length})
+                  Generated REB Lesson Plans ({generatedPlans.length})
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Ready for printing, exporting to PDF, or editing.
+                  Ready for instant printing, PDF export, or saving to your cloud library.
                 </p>
               </div>
             </div>
@@ -685,7 +735,7 @@ export const LessonPlanGeneratorHub: React.FC = () => {
                     onClick={() => setViewingPlan(plan)}
                     className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold text-xs flex items-center gap-1 transition"
                   >
-                    <Eye className="w-3.5 h-3.5" /> View & Print
+                    <Eye className="w-3.5 h-3.5" /> View & Export PDF
                   </button>
                 </div>
               </div>
