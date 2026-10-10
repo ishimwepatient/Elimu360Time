@@ -20,6 +20,7 @@ import {
 import jsPDF from 'jspdf';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
 import { 
   Document, 
   Packer, 
@@ -1080,6 +1081,12 @@ export const DocumentConverter: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* Adsterra Native Banner Unit */}
+      <AdsterraNativeBanner 
+        badgeLabel="Sponsored Document Tools & Cloud Utilities" 
+        className="mt-8"
+      />
 
     </div>
   );

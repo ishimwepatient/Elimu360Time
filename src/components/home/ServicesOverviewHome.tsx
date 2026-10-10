@@ -19,6 +19,7 @@ import {
   Check
 } from 'lucide-react';
 import { useElimu } from '../../context/ElimuContext';
+import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
 
 interface ServicesOverviewHomeProps {
   onNavigate: (tab: 'generator' | 'converter' | 'library' | 'guide') => void;
@@ -251,6 +252,9 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
 
         </div>
       </div>
+
+      {/* Adsterra Native Banner - Strategic Monetization Unit */}
+      <AdsterraNativeBanner badgeLabel="Sponsored Educational & Career Resources" />
 
       {/* Local Saved Plans & Share Banner */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

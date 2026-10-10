@@ -234,13 +234,24 @@ const MainAppContent: React.FC = () => {
         onClose={closeShareModal}
       />
 
-      {/* Global Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500 space-y-2">
-        <p className="font-semibold text-slate-400">
-          Elimu360 Open System — Sovereign AI Lesson Plan Generator & Universal Document Converter
+      {/* Global Footer with Official Developer & Owner Attribution */}
+      <footer className="border-t border-slate-800/80 bg-slate-950 py-10 px-4 text-center text-xs text-slate-500 space-y-3">
+        <div className="flex flex-wrap items-center justify-center gap-2 font-medium">
+          <span className="font-bold text-slate-300">
+            The Palace, Inc — The Palace Tech House
+          </span>
+          <span className="text-slate-600 hidden sm:inline">•</span>
+          <span className="text-amber-400 font-semibold">
+            Developer and Owner of Everything in the System
+          </span>
+        </div>
+
+        <p className="text-slate-400 max-w-2xl mx-auto text-[11px] leading-relaxed">
+          Elimu360 Open System is an advanced educational technology platform providing sovereign AI Lesson Plan Generation, CBC curriculum alignment, and universal document conversion.
         </p>
-        <p className="text-[11px]">
-          Free, sovereign, and open for all educators • Grounded in REB & Competency-Based Curriculum Standards
+
+        <p className="text-[10px] text-slate-600 pt-1">
+          © {new Date().getFullYear()} The Palace, Inc. All rights reserved. Sovereign Educational Systems Division.
         </p>
       </footer>
 

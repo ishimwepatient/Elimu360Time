@@ -26,6 +26,7 @@ import { saveAs } from 'file-saver';
 import { useElimu } from '../src/context/ElimuContext';
 import { exportFilesToNativeFolder, FileToSave } from '../src/utils/folderExportHelper';
 import { getRichDifferentiatedLesson, PEDAGOGICAL_APPROACHES, BLOOM_ACTION_VERBS } from '../src/utils/pedagogicalWordBank';
+import { AdsterraNativeBanner } from '../src/components/ads/AdsterraNativeBanner';
 
 // Self-contained LessonPlanData interface
 export interface LessonPlanStepDetail {
@@ -1251,6 +1252,12 @@ export const LessonPlanGenerator: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Adsterra Native Banner Unit */}
+      <AdsterraNativeBanner 
+        badgeLabel="Educational Resources & Teaching Tools" 
+        className="mt-8"
+      />
 
     </div>
   );
