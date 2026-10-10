@@ -174,19 +174,199 @@ function generateFallbackREBLessonPlans(payload: any) {
     : [payload.lessonTitle || 'Introduction to Subject Topic'];
   const total = titles.length;
 
+  // Rich pedagogical pools to make each lesson plan differ significantly
+  const introTeacherProfiles = [
+    (title: string, unit: string) => [
+      `Greets the learners with warmth, conducts a rapid visual roll-call, and establishes a supportive classroom environment.`,
+      `Displays a large, locally crafted wall chart and authentic concrete objects illustrating key concepts of "${title}" in Unit ${unit}.`,
+      `Asks probing diagnostic questions (e.g. "How does ${title.toLowerCase()} relate to our daily domestic routines?") to reactivate prior knowledge.`,
+      `Inscribes the lesson title "${title}" and articulates achievable performance goals on the chalkboard.`
+    ],
+    (title: string, unit: string) => [
+      `Welcomes the pupils with high energy and conducts a 2-minute concentration energizer to prime active listening.`,
+      `Presents a brief real-world Rwandan case narrative highlighting practical applications of "${title}".`,
+      `Leads a 3-minute Think-Pair-Share brainstorm, prompting learners to identify connections with previous unit topics.`,
+      `Writes the lesson title "${title}" and explains expected competency indicators clearly on the board.`
+    ],
+    (title: string, unit: string) => [
+      `Checks classroom arrangement, seating learners with special educational needs in optimal sight and sound range.`,
+      `Distributes flashcards and illustrated textbook excerpts highlighting core terminology for "${title}".`,
+      `Facilitates a brisk 3-question diagnostic review, seamlessly bridging prior learning to today's focus on "${title}".`,
+      `Articulates the learning objectives, outlining group tasks and assessment criteria for the session.`
+    ],
+    (title: string, unit: string) => [
+      `Greets the class and presents a thought-provoking paradox dilemma related to "${title}" on the chalkboard.`,
+      `Invites a quick show of hands and records contrasting learner viewpoints to ignite intellectual curiosity.`,
+      `Guides learners to establish baseline definitions using their personal daily life experiences in Rwanda.`,
+      `Writes "${title}" prominently and outlines the collaborative scientific inquiry goals for the period.`
+    ]
+  ];
+
+  const introLearnerProfiles = [
+    (title: string) => [
+      `Respond enthusiastically to the teacher's greeting and organize their exercise books and stationery neatly.`,
+      `Examine the displayed wall chart and realia specimens attentively, noting distinctive structural patterns.`,
+      `Raise hands eagerly to answer diagnostic review questions, providing clear, well-structured sentences.`,
+      `Copy the lesson heading and instructional target accurately into their exercise books.`
+    ],
+    (title: string) => [
+      `Participate actively in the energizer and settle down with focus and readiness for learning.`,
+      `Listen carefully to the contextual narrative, identifying key community links to "${title.toLowerCase()}".`,
+      `Engage in pair-share discussions for 3 minutes, taking down preliminary thoughts in notebooks.`,
+      `Read the written lesson objectives aloud as a class, clarifying expectations with the teacher.`
+    ],
+    (title: string) => [
+      `Assist peers with special needs in adjusting their desks and sharing textbook resources equitably.`,
+      `Read terminology flashcards in pairs, pronouncing technical terms and noting spellings.`,
+      `Recall prior concepts confidently and volunteer responses during the diagnostic check.`,
+      `Acknowledge lesson goals and prepare group collaboration roles responsibly.`
+    ],
+    (title: string) => [
+      `Reflect on the opening paradox question, formulating initial hypotheses with their desk partners.`,
+      `Volunteer reasoned explanations defending their initial thoughts before the classroom.`,
+      `Transcribe the lesson heading and inquiry questions into their study portfolios.`,
+      `Organize task materials and verify safety protocols for group activities.`
+    ]
+  ];
+
+  const devTeacherProfiles = [
+    (title: string) => [
+      `Conducts a step-by-step interactive exposition on "${title}", writing clear formulas, definitions, and schematics on the chalkboard.`,
+      `Models the correct procedural technique using authentic classroom materials, walking through two demonstration problems.`,
+      `Organizes learners into heterogeneous cooperative learning circles of 4-5 pupils, ensuring balanced gender leadership.`,
+      `Distributes structured analytical task worksheets requiring learners to classify and solve practical exercises on "${title}".`,
+      `Circulates proactively to facilitate peer coaching, providing scaffolding for struggling learners and extension tasks for fast finishers.`,
+      `Invites group representatives to the chalkboard to demonstrate solutions and defend their methodology.`
+    ],
+    (title: string) => [
+      `Introduces core principles of "${title}" through guided Socratic questioning, enabling learners to deduce rules independently.`,
+      `Demonstrates analytical problem-solving algorithms on the board, systematically deconstructing complex elements.`,
+      `Assigns distinct group roles (Group Leader, Timekeeper, Secretary, Presenter) to instill mutual accountability.`,
+      `Provides real-world case study challenge cards demanding collaborative synthesis of "${title}" in local community contexts.`,
+      `Monitors team progress attentively, offering targeted guidance prompts to stimulate higher-order critical thinking.`,
+      `Coordinates peer-assessment where groups critique and validate each other's computational outputs constructively.`
+    ],
+    (title: string) => [
+      `Presents a rich visual and textual demonstration of "${title}", highlighting common misconceptions and error-prevention steps.`,
+      `Guides the whole class through a joint problem-solving exercise, asking strategic questions at each milestone.`,
+      `Establishes differentiated learning stations across the room, pairing emerging learners with supportive peer mentors.`,
+      `Provides hands-on tactile activity cards focused on empirical calculations and textual interpretation of "${title}".`,
+      `Offers individual supportive coaching to learners with learning difficulties, using simplified visual gestures.`,
+      `Facilitates a whole-class synthesis panel where station spokespersons showcase their discoveries.`
+    ],
+    (title: string) => [
+      `Facilitates a hands-on kinesthetic simulation and modeling lab, demonstrating safety and precision techniques for "${title}".`,
+      `Leads a timed station rotation exercise (Station A: Modeling, Station B: Testing, Station C: Comparative Evaluation).`,
+      `Monitors station intervals with rhythmic cues, ensuring equitable time distribution across all tasks.`,
+      `Challenges learners to connect mathematical calculations of "${title}" to sustainable resource management.`,
+      `Assists introverted learners by offering gentle verbal prompts and encouraging peer support.`,
+      `Moderates an interactive plenary showcase where teams display their completed models and findings.`
+    ]
+  ];
+
+  const devLearnerProfiles = [
+    (title: string) => [
+      `Follow the teacher's exposition attentively, recording detailed notes, chalkboard schematics, and definitions.`,
+      `Analyze modeled demonstrations systematically, asking clarifying questions to confirm conceptual mastery.`,
+      `Work collaboratively within cooperative circles, respecting peers with special needs and sharing tasks equitably.`,
+      `Execute assigned worksheet exercises, discussing problem-solving steps and verifying calculations collectively.`,
+      `Engage in active peer tutoring, explaining difficult procedural steps to group mates patiently.`,
+      `Present team results at the chalkboard with confidence, explaining reasoning clearly to the class.`
+    ],
+    (title: string) => [
+      `Participate in guided inquiry, identifying underlying patterns and deducing core rules regarding "${title}".`,
+      `Observe algorithmic demonstrations closely, taking neat notes and double-checking equations against peer slates.`,
+      `Fulfill designated team responsibilities conscientiously (Secretary logging data, Presenter preparing speech).`,
+      `Analyze case study cards collaboratively, applying syllabus principles to solve community-based scenarios.`,
+      `Seek feedback proactively from the teacher, refining their calculations and logical deductions.`,
+      `Participate in peer evaluation respectfully, offering constructive feedback based on scoring rubrics.`
+    ],
+    (title: string) => [
+      `Examine visual diagrams and textual examples, noting common pitfalls to avoid during practical execution.`,
+      `Contribute solutions during the joint problem-solving session, volunteering intermediate answers.`,
+      `Rotate through learning stations cooperatively, supporting peers and working through activity cards.`,
+      `Complete practice problems diligently, applying core principles to diverse contextual scenarios.`,
+      `Learners requiring extra support engage directly with modified visual aids and peer assistance.`,
+      `Share station summaries during the plenary panel, explaining key insights and answering peer questions.`
+    ],
+    (title: string) => [
+      `Construct physical models and execute simulations using supplied local materials with precision.`,
+      `Record empirical data systematically in laboratory tables, checking measurements for accuracy.`,
+      `Collaborate across rotation stations, ensuring every team member operates equipment equitably.`,
+      `Analyze gathered data, comparing observed outcomes against theoretical textbook benchmarks.`,
+      `Support peers with motor or visual challenges, fostering an encouraging and inclusive environment.`,
+      `Showcase finished models during the plenary review, justifying technical choices to classmates.`
+    ]
+  ];
+
+  const concTeacherProfiles = [
+    (title: string) => [
+      `Guides the class through a comprehensive 3-minute synthesis of the lesson, summarizing main takeaways on the chalkboard.`,
+      `Administers a quick 2-question formative exit ticket to assess individual learning gains and verify objective mastery.`,
+      `Provides constructive verbal appraisal, commending active participation, inclusive teamwork, and disciplined effort.`,
+      `Assigns a clear, relevant homework exercise from the official REB Learner's Book to consolidate learning at home.`
+    ],
+    (title: string) => [
+      `Leads a brisk, interactive Q&A review where learners summarize three essential principles mastered about "${title}".`,
+      `Clarifies lingering questions and corrects misconceptions observed during group activities and board presentations.`,
+      `Commends the class for effective collaboration, mutual respect, and disciplined time management.`,
+      `Writes homework directions clearly on the chalkboard and instructs learners to complete it before the next session.`
+    ],
+    (title: string) => [
+      `Summarizes how today's lesson on "${title}" directly reinforces the Key Unit Competence for the unit.`,
+      `Conducts a self-reflection check encouraging learners to rate their confidence on a scale of 1 to 5.`,
+      `Offers encouraging closing remarks, acknowledging individual perseverance and exceptional team achievements.`,
+      `Assigns targeted review exercises and research questions for home practice, ensuring exercise books are packed neatly.`
+    ],
+    (title: string) => [
+      `Facilitates a rapid 2-minute "One Sentence Summary" wrap-up where volunteer learners synthesize the main rule.`,
+      `Provides individualized affirmative appraisal to learners who demonstrated notable progress during the lesson.`,
+      `Directs a structured classroom cleanup, ensuring all learning materials and workstations are restored neatly.`,
+      `Prescribes an applied home exercise challenging learners to demonstrate the concept to their family members.`
+    ]
+  ];
+
+  const concLearnerProfiles = [
+    (title: string) => [
+      `Participate actively in the lesson synthesis, contributing key bullet points for the final chalkboard summary.`,
+      `Complete the 2-question exit ticket individually on paper slips, demonstrating personal content mastery.`,
+      `Receive teacher appraisal with enthusiasm, celebrating peer contributions and group success.`,
+      `Copy the assigned homework accurately from the chalkboard into their exercise books for home practice.`
+    ],
+    (title: string) => [
+      `State three major learning points about "${title}" aloud during the interactive review session.`,
+      `Listen carefully to the teacher's clarification of misconceptions, making necessary corrections in their notes.`,
+      `Acknowledge feedback on group performance and appreciate classmates for collaborative teamwork.`,
+      `Record the homework assignment neatly and verify instructions with the teacher before leaving.`
+    ],
+    (title: string) => [
+      `Reflect on how "${title}" links to broader unit goals, recognizing its practical importance in daily life.`,
+      `Engage in self-reflection by indicating their confidence level and identifying areas where they need further practice.`,
+      `Applaud individual and team milestones acknowledged by the teacher.`,
+      `Copy review exercises into exercise books and organize their desks and learning materials before dismissal.`
+    ],
+    (title: string) => [
+      `Share concise one-sentence summaries during the final wrap-up, capturing core principles in their own words.`,
+      `Receive constructive teacher praise graciously and encourage classmates who showed notable improvement.`,
+      `Participate in organizing and cleaning the classroom, restoring learning materials to designated storage.`,
+      `Record homework tasks with care and pack study materials neatly in school bags.`
+    ]
+  ];
+
+  const actionVerbSets = [
+    'identify, describe, and illustrate',
+    'analyze, calculate, and solve',
+    'differentiate, compare, and explain',
+    'demonstrate, construct, and evaluate',
+    'synthesize, formulate, and defend'
+  ];
+
   return titles.map((title: string, idx: number) => {
     const lessonDate = getSequentialDate(payload.date, idx);
     const lessonNumStr = `${idx + 1} Out of ${total}`;
-
-    const lowerTitle = title.toLowerCase();
-    let actionVerbs = 'identify, describe, and analyze';
-    if (lowerTitle.includes('calculate') || lowerTitle.includes('math') || lowerTitle.includes('solve')) {
-      actionVerbs = 'calculate, solve, and evaluate';
-    } else if (lowerTitle.includes('type') || lowerTitle.includes('classify') || lowerTitle.includes('group')) {
-      actionVerbs = 'classify, differentiate, and compare';
-    } else if (lowerTitle.includes('practical') || lowerTitle.includes('experiment') || lowerTitle.includes('build')) {
-      actionVerbs = 'demonstrate, execute, and construct';
-    }
+    const pIdx = idx % introTeacherProfiles.length;
+    const vIdx = idx % actionVerbSets.length;
+    const actionVerbs = actionVerbSets[vIdx];
 
     return {
       schoolName: payload.schoolName || 'GS Amahoro Kigali',
@@ -203,7 +383,7 @@ function generateFallbackREBLessonPlans(payload: any) {
       unitTitle: (payload.unitTitle || 'UNIT TITLE').toUpperCase(),
       keyUnitCompetence: `Learners will be able to demonstrate thorough mastery and practical application of ${payload.unitTitle || 'unit topic'} using core REB CBC language structures, analytical techniques, and collaborative problem-solving methods.`,
       lessonTitle: title,
-      instructionalObjective: `By using locally made visual charts, textbook excerpts, real objects, and structured pair-share exercises, ${payload.classLevel || 'P6'} learners who attend will be able to ${actionVerbs} ${title.toLowerCase()} accurately at more than 7/10 within ${payload.duration || '40 minutes'}.`,
+      instructionalObjective: `By using locally made visual charts, textbook excerpts, real objects, and structured cooperative exercises, ${payload.classLevel || 'P6'} learners who attend will be able to ${actionVerbs} ${title.toLowerCase()} accurately at more than 7/10 within ${payload.duration || '40 minutes'}.`,
       location: payload.location || 'Classroom & Outdoor Learning Area',
       learningMaterials: 'Exercise books, wall charts, chalkboard, markers, real objects, flashcards, differentiated activity worksheets, and REB textbook excerpts',
       references: `Rwanda Education Board. (2025). ${payload.subject || 'Subject'} Learner's Book ${payload.classLevel || 'P6'}. Kigali: REB.\nRwanda Education Board. (2025). ${payload.subject || 'Subject'} Teacher's Guide ${payload.classLevel || 'P6'}. Kigali: REB.`,
@@ -211,18 +391,8 @@ function generateFallbackREBLessonPlans(payload: any) {
       steps: {
         introduction: {
           duration: '7 min',
-          teacherActivities: [
-            `Greets the class warmly, checks attendance, and sets a supportive, inclusive classroom climate.`,
-            `Displays an illustrated wall chart and real-life concrete objects illustrating key principles of ${title.toLowerCase()}.`,
-            `Poses diagnostic questions requiring learners to identify and recall prior knowledge of ${title.toLowerCase()} in full sentences.`,
-            `Writes the lesson title "${title}" and articulates the specific instructional objective using predefined REB describing action verbs on the chalkboard.`
-          ],
-          learnerActivities: [
-            `Respond warmly to the teacher's greeting and settle into designated heterogeneous learning groups.`,
-            `Observe the displayed visual chart attentively, taking mental note of key vocabulary and structures.`,
-            `Actively volunteer answers to diagnostic questions in clear full sentences, identifying real-world examples.`,
-            `Copy the lesson title and instructional objectives neatly into their exercise books.`
-          ],
+          teacherActivities: introTeacherProfiles[pIdx](title, payload.unitNumber || '1'),
+          learnerActivities: introLearnerProfiles[pIdx](title),
           competencesAndCrossCutting: [
             'Critical Thinking: Reactivating prior knowledge to identify and analyze real-life visual prompts accurately.',
             'Effective Communication: Articulating initial thoughts and vocabulary in clear, full sentences.',
@@ -231,21 +401,8 @@ function generateFallbackREBLessonPlans(payload: any) {
         },
         development: {
           duration: '25 min',
-          teacherActivities: [
-            `Conducts a step-by-step interactive exposition on ${title.toLowerCase()}, guiding learners to define, describe, and differentiate key concepts on the chalkboard.`,
-            `Models how to demonstrate and execute tasks related to ${title.toLowerCase()} using real classroom scenarios and worked examples.`,
-            `Organizes learners into heterogeneous cooperative groups of 5-6 with assigned roles (Leader, Secretary, Timekeeper, Presenter).`,
-            `Distributes structured group activity cards requiring learners to analyze, classify, and solve practical problems on ${title.toLowerCase()}.`,
-            `Roams the classroom to monitor group dynamics, offering scaffolding for struggling learners and extension challenges for fast finishers.`,
-            `Invites selected group presenters to the chalkboard to share their solutions and defend their methodology before the class.`
-          ],
-          learnerActivities: [
-            `Follow the teacher's interactive chalkboard exposition attentively, taking structured notes and diagrams in exercise books.`,
-            `Analyze the modeled examples step-by-step, asking clarifying questions to confirm conceptual understanding.`,
-            `Execute group work collaboratively, discussing ideas, solving assigned problems, and classifying findings systematically.`,
-            `Engage in active peer coaching, explaining challenging steps to group members including peers with special educational needs.`,
-            `Present group outcomes at the chalkboard confidently, demonstrating how to solve exercises correctly.`
-          ],
+          teacherActivities: devTeacherProfiles[pIdx](title),
+          learnerActivities: devLearnerProfiles[pIdx](title),
           competencesAndCrossCutting: [
             'Cooperation & Leadership: Working productively in diverse teams with assigned roles and shared accountability.',
             'Problem Solving & Innovation: Applying theoretical concepts of ' + title.toLowerCase() + ' to analyze and solve practical contextual scenarios.',
@@ -255,18 +412,8 @@ function generateFallbackREBLessonPlans(payload: any) {
         },
         conclusion: {
           duration: '8 min',
-          teacherActivities: [
-            `Leads a 3-minute class synthesis, summarizing main takeaways regarding ${title.toLowerCase()} on the chalkboard.`,
-            `Administers a brisk 2-question formative exit ticket to evaluate individual learning gains and check objective mastery.`,
-            `Commends learners for effective teamwork, inclusive collaboration, and disciplined time management during group tasks.`,
-            `Assigns targeted homework from the official REB Learner's Book to consolidate learning at home.`
-          ],
-          learnerActivities: [
-            `Participate actively in the lesson synthesis, volunteering key bullet points for the chalkboard summary.`,
-            `Complete the 2-question exit ticket individually on paper slips, demonstrating individual content mastery.`,
-            `Receive teacher feedback enthusiastically and applaud peer contributions.`,
-            `Copy the assigned homework assignment accurately into exercise books before dismissal.`
-          ],
+          teacherActivities: concTeacherProfiles[pIdx](title),
+          learnerActivities: concLearnerProfiles[pIdx](title),
           competencesAndCrossCutting: [
             'Lifelong Learning & Metacognition: Engaging in self-evaluation exit tickets to gauge personal mastery of the lesson objective.',
             'Peace & Values Education: Demonstrating mutual respect, active listening, and constructive feedback during peer presentations.'
@@ -496,8 +643,14 @@ Unit Title: ${payload.unitTitle}
 Lesson Titles in this Unit:
 ${(payload.lessonTitles || ['Lesson 1']).map((title: string, idx: number) => `Lesson ${idx + 1} Out of ${totalLessons}: "${title}"`).join('\n')}
 
-For EACH lesson title listed above, generate a complete structured lesson plan in exact accordance with REB guidelines.
-IMPORTANT REB CBC REQUIREMENT: Instructional Objectives MUST use predefined describing action verbs (e.g. Identify, Describe, Analyze, Differentiate, Demonstrate, Calculate, Classify, Solve, Compare, Evaluate, Construct, Formulate).
+CRITICAL DIVERSITY & VOCABULARY REQUIREMENT (MAKE EACH LESSON PLAN COMPLETELY DIFFERENT):
+- Do NOT repeat the same teacher phrases, learner responses, or action verbs across lessons!
+- Utilize thousands of varied pedagogical action verbs and Bloom's Taxonomy descriptors across different levels:
+  * Early/Foundational lessons: "Identify, observe, differentiate, categorize, define, illustrate, state, investigate, label, examine"
+  * Intermediate/Analytical lessons: "Analyze, calculate, demonstrate, solve, compare, deconstruct, simulate, compute, manipulate"
+  * Advanced/Synthesizing lessons: "Evaluate, construct, synthesize, design, formulate, appraise, validate, judge, devise"
+- Vary the pedagogical methodologies across the lessons (e.g. Lesson 1: Realia & Visual Scavenger Hunt; Lesson 2: Think-Pair-Share & Algorithmic Problem-Solving; Lesson 3: Socratic Dialogue & Guided Debate; Lesson 4: Station Rotation & Hands-on Kinesthetic Lab; Lesson 5: Dramatic Simulation & Socio-Pedagogical Role-Play).
+- Ensure rich, descriptive classroom interactions (each step should have 3-4 detailed, realistic bullet points detailing what the teacher says/models and what the learners do, write, and discuss).
 
 Required Fields for each lesson:
 1. "schoolName": "${payload.schoolName}"
@@ -520,16 +673,16 @@ Required Fields for each lesson:
 18. "references": Official REB reference books (e.g., "Rwanda Education Board. (2025). ${payload.subject} Learner's Book ${payload.classLevel}. Kigali: REB.\nRwanda Education Board. (2025). ${payload.subject} Teacher's Guide ${payload.classLevel}. Kigali: REB.")
 19. "activitySummary": A concise 1-sentence description of overall lesson activity flow (e.g., "Through group discussion, learners will explore...").
 20. "steps":
-    - "introduction": duration (~7 min), 2-3 "teacherActivities", 2-3 "learnerActivities", 1-2 "competencesAndCrossCutting"
-    - "development": duration (~25 min), 3-4 "teacherActivities", 3-4 "learnerActivities", 2 "competencesAndCrossCutting"
-    - "conclusion": duration (~8 min), 2 "teacherActivities", 2 "learnerActivities", 1 "competencesAndCrossCutting"
+    - "introduction": duration (~7 min), 3-4 distinct "teacherActivities", 3-4 distinct "learnerActivities", 2-3 "competencesAndCrossCutting"
+    - "development": duration (~25 min), 4-6 rich "teacherActivities", 4-6 rich "learnerActivities", 3-4 "competencesAndCrossCutting"
+    - "conclusion": duration (~8 min), 3-4 distinct "teacherActivities", 3-4 distinct "learnerActivities", 2 "competencesAndCrossCutting"
 21. "selfEvaluation": "${payload.selfEvaluation || ''}"`;
 
                   const geminiResponse = await ai.models.generateContent({
                     model: 'gemini-2.5-flash',
                     contents: promptText,
                     config: {
-                      systemInstruction: "You are an official curriculum inspector and master educator for the Rwanda Education Board (REB) Competency-Based Curriculum (CBC). Every Instructional Objective and activity description MUST strictly begin with REB predefined describing action verbs (such as Identify, Describe, Analyze, Differentiate, Demonstrate, Calculate, Classify, Solve, Evaluate, Construct). Return a JSON array of lesson plan objects matching the required schema.",
+                      systemInstruction: "You are an official master curriculum inspector for the Rwanda Education Board (REB) Competency-Based Curriculum (CBC). Every lesson plan in a batch MUST have distinct vocabulary, different pedagogical strategies, unique teacher-learner dialogues, and rich variety in Bloom's action verbs. Never generate repetitive cookie-cutter content. Return a JSON array of lesson plan objects matching the required schema.",
                       responseMimeType: "application/json",
                       responseSchema: {
                         type: Type.ARRAY,

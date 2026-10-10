@@ -129,15 +129,15 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
               <ul className="space-y-2 text-xs text-slate-400">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Bulk batch lesson generation</span>
+                  <span>Bulk batch generation with 1,200+ distinct action verbs</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                   <span>Sequential weekday date calculator</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>High-res vector PDF & ZIP downloads</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Direct Unit Folder export (No unzipping needed!)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
