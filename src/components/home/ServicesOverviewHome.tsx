@@ -16,7 +16,9 @@ import {
   Zap,
   Globe,
   Users,
-  Check
+  Check,
+  MessageCircle,
+  Phone
 } from 'lucide-react';
 import { useElimu } from '../../context/ElimuContext';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
@@ -253,8 +255,46 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
         </div>
       </div>
 
-      {/* Adsterra Native Banner - Strategic Monetization Unit */}
-      <AdsterraNativeBanner badgeLabel="Sponsored Educational & Career Resources" />
+      {/* Adsterra Native Banner - Strategic Monetization Unit (Separated Slot 4) */}
+      <AdsterraNativeBanner 
+        badgeLabel="Sponsored Educational & Career Resources" 
+        slotIndex={4} 
+      />
+
+      {/* 24/7 Teacher WhatsApp Help Banner (Everywhere Accessible) */}
+      <div className="rounded-3xl bg-gradient-to-r from-emerald-950/80 via-slate-900 to-teal-950/80 border border-emerald-500/40 p-6 sm:p-7 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0 text-emerald-400">
+            <MessageCircle className="w-6 h-6 fill-emerald-400" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
+                24/7 Teacher Support
+              </span>
+              <span className="text-xs font-bold text-slate-400">
+                The Palace, Inc — The Palace Tech House
+              </span>
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
+              Need Instant Help with Lesson Plans or CBC Alignment?
+            </h3>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Chat directly with educational curriculum specialists on WhatsApp: <strong>+250 792 612 139</strong>
+            </p>
+          </div>
+        </div>
+
+        <a
+          href="https://wa.me/250792612139?text=Hello%20Elimu360%20Tech%20House%2C%20I%20need%20assistance%20with%20teaching%20tools"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="shrink-0 px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 transition cursor-pointer"
+        >
+          <MessageCircle className="w-4 h-4 fill-slate-950" />
+          <span>Chat on WhatsApp (+250 792 612 139)</span>
+        </a>
+      </div>
 
       {/* Local Saved Plans & Share Banner */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

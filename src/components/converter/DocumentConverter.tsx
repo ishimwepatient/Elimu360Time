@@ -1082,9 +1082,10 @@ export const DocumentConverter: React.FC = () => {
         </div>
       )}
 
-      {/* Adsterra Native Banner Unit */}
+      {/* Adsterra Native Banner Unit - Separated slot 2 */}
       <AdsterraNativeBanner 
         badgeLabel="Sponsored Document Tools & Cloud Utilities" 
+        slotIndex={2}
         className="mt-8"
       />
 

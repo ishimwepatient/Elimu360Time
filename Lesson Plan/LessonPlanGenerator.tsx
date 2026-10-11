@@ -27,6 +27,9 @@ import { useElimu } from '../src/context/ElimuContext';
 import { exportFilesToNativeFolder, FileToSave } from '../src/utils/folderExportHelper';
 import { getRichDifferentiatedLesson, PEDAGOGICAL_APPROACHES, BLOOM_ACTION_VERBS } from '../src/utils/pedagogicalWordBank';
 import { AdsterraNativeBanner } from '../src/components/ads/AdsterraNativeBanner';
+import { BulkExportModal } from '../src/components/generator/BulkExportModal';
+import { PostGenerationActionModal } from '../src/components/generator/PostGenerationActionModal';
+import { Layers } from 'lucide-react';
 
 // Self-contained LessonPlanData interface
 export interface LessonPlanStepDetail {
@@ -418,7 +421,11 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
   return doc;
 }
 
-export const LessonPlanGenerator: React.FC = () => {
+interface LessonPlanGeneratorProps {
+  onNavigate?: (tab: 'home' | 'converter' | 'generator' | 'library' | 'guide' | 'faq' | 'privacy') => void;
+}
+
+export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavigate }) => {
   // Form input states
   const [schoolName, setSchoolName] = useState<string>('');
   const [teacherName, setTeacherName] = useState<string>('');
@@ -450,6 +457,10 @@ export const LessonPlanGenerator: React.FC = () => {
   const [isExportingFolder, setIsExportingFolder] = useState<boolean>(false);
   const [isExportingZip, setIsExportingZip] = useState<boolean>(false);
   const [exportProgress, setExportProgress] = useState<string>('');
+
+  // Modals for Export Confirmation & Chinese Super-App Post Generation Flow
+  const [showBulkExportModal, setShowBulkExportModal] = useState<boolean>(false);
+  const [showPostGenModal, setShowPostGenModal] = useState<boolean>(false);
 
   let saveMultipleLessonPlans: ((plans: any[]) => void) | null = null;
   try {
@@ -546,6 +557,7 @@ export const LessonPlanGenerator: React.FC = () => {
           text: `Successfully created ${plansWithIds.length} completely distinct lesson plans for Unit ${payload.unitNumber}: ${payload.unitTitle}!`,
           type: 'success'
         });
+        setShowPostGenModal(true);
       } else {
         throw new Error('AI API returned unexpected format. Activating high-speed REB Pedagogical Engine.');
       }
@@ -561,6 +573,7 @@ export const LessonPlanGenerator: React.FC = () => {
         text: `Generated ${fallbackPlans.length} distinct REB Competency-Based lesson plans using enriched Bloom's action verbs & differentiated teaching approaches!`,
         type: 'success'
       });
+      setShowPostGenModal(true);
     } finally {
       setIsGenerating(false);
     }
@@ -1042,49 +1055,38 @@ export const LessonPlanGenerator: React.FC = () => {
                   <span>Save This PDF</span>
                 </button>
 
-                {/* Primary Bulk Action: Save All to Real Computer Folder (No Unzipping Required!) */}
+                {/* Primary Export Action: Opens BulkExportModal with options for Single Combined File (All in 1 Document, each on its page), Computer Folder, or ZIP Archive */}
                 {generatedPlans.length > 1 && (
                   <button
                     type="button"
-                    onClick={handleExportBulkFolder}
-                    disabled={isExportingFolder}
-                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs flex items-center gap-2 transition cursor-pointer shadow-lg disabled:opacity-50"
-                    title="Creates a real folder on your computer named after the unit with all PDFs inside it"
+                    onClick={() => setShowBulkExportModal(true)}
+                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs flex items-center gap-2 transition cursor-pointer shadow-lg active:scale-95"
+                    title="Export all lesson plans as a single combined file (each on its own page) or in bulk folders"
                   >
-                    {isExportingFolder ? (
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <FolderDown className="w-4 h-4 fill-slate-950" />
-                    )}
-                    <span>Save All to Unit Folder</span>
-                  </button>
-                )}
-
-                {/* Secondary Option: Download as ZIP */}
-                {generatedPlans.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={handleExportBulkZip}
-                    disabled={isExportingZip}
-                    className="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center gap-1.5 transition border border-slate-700 cursor-pointer disabled:opacity-50"
-                    title="Download as a ZIP archive if you prefer compressed files"
-                  >
-                    {isExportingZip ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Archive className="w-3 h-3 text-amber-400" />}
-                    <span>ZIP</span>
+                    <Layers className="w-4 h-4 fill-slate-950" />
+                    <span>Export All ({generatedPlans.length}) Plans</span>
                   </button>
                 )}
               </div>
             )}
           </div>
 
-          {/* Unit Folder Help Tooltip for Non-Technical Users */}
+          {/* Export Guidance Tooltip */}
           {generatedPlans.length > 1 && (
-            <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-2xl flex items-start gap-2.5 text-xs text-emerald-200">
-              <Info className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-white block">Easy Folder Export:</strong>
-                Clicking <strong>"Save All to Unit Folder"</strong> places all {generatedPlans.length} lesson plan PDFs inside a folder named after your unit on your computer. You do not need any unzipping tools.
+            <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-300">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>
+                  <strong>Flexible Export Options:</strong> Export all {generatedPlans.length} plans as <strong>one combined file</strong> (where each lesson plan is located on its page) or save into a computer folder.
+                </span>
               </div>
+              <button
+                type="button"
+                onClick={() => setShowBulkExportModal(true)}
+                className="shrink-0 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold text-[11px] border border-amber-500/20 transition cursor-pointer"
+              >
+                Choose Format →
+              </button>
             </div>
           )}
 
@@ -1253,10 +1255,33 @@ export const LessonPlanGenerator: React.FC = () => {
 
       </div>
 
-      {/* Adsterra Native Banner Unit */}
+      {/* Adsterra Native Banner Unit - Separated slot 3 */}
       <AdsterraNativeBanner 
         badgeLabel="Educational Resources & Teaching Tools" 
+        slotIndex={3}
         className="mt-8"
+      />
+
+      {/* Bulk Export Confirmation Modal with Single Combined File Option & Tactical Ad */}
+      <BulkExportModal
+        isOpen={showBulkExportModal}
+        onClose={() => setShowBulkExportModal(false)}
+        plans={generatedPlans}
+        unitNumber={unitNumber || (generatedPlans[0]?.unitNumber) || '1'}
+        unitTitle={unitTitle || (generatedPlans[0]?.unitTitle) || 'Lesson_Plans'}
+        onSuccess={(msg) => setStatusMessage({ text: msg, type: 'success' })}
+      />
+
+      {/* Post Generation Next Steps Modal: Prompts user to convert docs, check saved plans, export 1 file, or chat on WhatsApp 250792612139 */}
+      <PostGenerationActionModal
+        isOpen={showPostGenModal}
+        onClose={() => setShowPostGenModal(false)}
+        planCount={generatedPlans.length}
+        unitNumber={unitNumber || (generatedPlans[0]?.unitNumber) || '1'}
+        unitTitle={unitTitle || (generatedPlans[0]?.unitTitle) || 'Lesson Topic'}
+        onNavigateToConverter={() => onNavigate && onNavigate('converter')}
+        onNavigateToLibrary={() => onNavigate && onNavigate('library')}
+        onOpenExportModal={() => setShowBulkExportModal(true)}
       />
 
     </div>

@@ -13,12 +13,14 @@ import {
   User, 
   Check, 
   Download,
-  Printer
+  Printer,
+  Layers
 } from 'lucide-react';
 import { useElimu } from '../../context/ElimuContext';
 import { LessonPlanData } from '../../types';
 import { LessonPlanViewModal } from '../generator/LessonPlanViewModal';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
+import { BulkExportModal } from '../generator/BulkExportModal';
 
 export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> = ({ onNavigateToGenerator }) => {
   const { savedLessonPlans, plansLoading, deleteLessonPlan } = useElimu();
@@ -27,6 +29,7 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
   const [selectedSubject, setSelectedSubject] = useState('ALL');
   const [selectedClass, setSelectedClass] = useState('ALL');
   const [viewingPlan, setViewingPlan] = useState<LessonPlanData | null>(null);
+  const [showExportModal, setShowExportModal] = useState<boolean>(false);
 
   // Extract unique subjects & classes
   const uniqueSubjects = Array.from(new Set(savedLessonPlans.map(p => p.subject).filter(Boolean)));
@@ -63,13 +66,26 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
           </p>
         </div>
 
-        <button
-          onClick={onNavigateToGenerator}
-          className="px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create New Lesson Plan</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {filteredPlans.length > 0 && (
+            <button
+              onClick={() => setShowExportModal(true)}
+              className="px-4 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 font-bold text-xs flex items-center gap-2 transition shadow-md cursor-pointer"
+              title="Export all filtered plans in 1 file or in folders"
+            >
+              <Layers className="w-4 h-4" />
+              <span>Export ({filteredPlans.length}) Plans</span>
+            </button>
+          )}
+
+          <button
+            onClick={onNavigateToGenerator}
+            className="px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create New Plan</span>
+          </button>
+        </div>
       </div>
 
       {/* Search & Filters */}
@@ -217,8 +233,20 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
         />
       )}
 
-      {/* Strategic Educational Promotion Banner */}
-      <AdsterraNativeBanner badgeLabel="Recommended Educator Resources & Pedagogical Journals" />
+      {/* Strategic Educational Promotion Banner (Separated Slot 4) */}
+      <AdsterraNativeBanner 
+        badgeLabel="Recommended Educator Resources & Pedagogical Journals" 
+        slotIndex={4}
+      />
+
+      {/* Bulk Export Modal for Saved Library */}
+      <BulkExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        plans={filteredPlans as any[]}
+        unitNumber="Archive"
+        unitTitle="Saved_Lesson_Plans"
+      />
 
     </div>
   );

@@ -10,7 +10,8 @@ import {
   X,
   RefreshCw,
   Heart,
-  Home
+  Home,
+  MessageCircle
 } from 'lucide-react';
 import { ElimuProvider, useElimu } from './context/ElimuContext';
 import { ElimuLogo } from './components/brand/ElimuLogo';
@@ -24,6 +25,8 @@ import { LegalAndPrivacyCenter } from './components/legal/LegalAndPrivacyCenter'
 import { PWAInstallModal } from './components/pwa/PWAInstallModal';
 import { PWAInstallHeaderButton } from './components/pwa/PWAInstallHeaderButton';
 import { ShareSystemModal } from './components/share/ShareSystemModal';
+import { WhatsAppHelpWidget } from './components/support/WhatsAppHelpWidget';
+import { LiveActivityTicker } from './components/common/LiveActivityTicker';
 
 type ActiveTab = 'home' | 'converter' | 'generator' | 'library' | 'guide' | 'faq' | 'privacy';
 
@@ -245,16 +248,22 @@ const MainAppContent: React.FC = () => {
         )}
       </header>
 
+      {/* Live Activity Ticker (Chinese Super-App Style Real-Time Educator Social Proof) */}
+      <LiveActivityTicker />
+
       {/* Main Workspace Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'home' && <ServicesOverviewHome onNavigate={tab => setActiveTab(tab)} />}
         {activeTab === 'converter' && <DocumentConverter />}
-        {activeTab === 'generator' && <LessonPlanGeneratorHub />}
+        {activeTab === 'generator' && <LessonPlanGeneratorHub onNavigate={tab => setActiveTab(tab)} />}
         {activeTab === 'library' && <SavedPlansLibrary onNavigateToGenerator={() => setActiveTab('generator')} />}
         {activeTab === 'guide' && <REBCBCGuide />}
         {activeTab === 'faq' && <FAQCenter />}
         {activeTab === 'privacy' && <LegalAndPrivacyCenter />}
       </main>
+
+      {/* Universal 24/7 Teacher WhatsApp Help Widget (Leads to 250792612139 everywhere) */}
+      <WhatsAppHelpWidget />
 
       {/* Share System Modal */}
       <ShareSystemModal
@@ -318,6 +327,20 @@ const MainAppContent: React.FC = () => {
         <p className="text-slate-400 max-w-2xl mx-auto text-[11px] leading-relaxed">
           Elimu360 Open System is an advanced educational technology platform providing sovereign AI Lesson Plan Generation, CBC curriculum alignment, and universal document conversion.
         </p>
+
+        {/* 24/7 Teacher WhatsApp Help Line */}
+        <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] text-emerald-400 font-bold pt-1">
+          <MessageCircle className="w-3.5 h-3.5" />
+          <span>24/7 Teacher WhatsApp Support:</span>
+          <a 
+            href="https://wa.me/250792612139?text=Hello%20Elimu360%20Tech%20House%2C%20I%20need%20assistance%20with%20teaching%20tools" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="underline hover:text-emerald-300 transition"
+          >
+            +250 792 612 139 (The Palace Tech House)
+          </a>
+        </div>
 
         <p className="text-[10px] text-slate-600 pt-1">
           The Palace, Inc — The Palace Tech House. All Rights Reserved. Sovereign Educational Technology Division.
