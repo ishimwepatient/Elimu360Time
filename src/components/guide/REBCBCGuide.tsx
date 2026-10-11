@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, CheckCircle2, ShieldCheck, Layers, Award, Sparkles, HelpCircle } from 'lucide-react';
+import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
 
 export const REBCBCGuide: React.FC = () => {
   return (
@@ -123,6 +124,9 @@ export const REBCBCGuide: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Strategic Educational Promotion Banner */}
+      <AdsterraNativeBanner badgeLabel="Accredited Pedagogical Certifications & Teaching Resources" />
 
     </div>
   );

@@ -19,9 +19,13 @@ import { DocumentConverter } from './components/converter/DocumentConverter';
 import { LessonPlanGeneratorHub } from './components/generator/LessonPlanGeneratorHub';
 import { SavedPlansLibrary } from './components/library/SavedPlansLibrary';
 import { REBCBCGuide } from './components/guide/REBCBCGuide';
+import { FAQCenter } from './components/faq/FAQCenter';
+import { LegalAndPrivacyCenter } from './components/legal/LegalAndPrivacyCenter';
+import { PWAInstallModal } from './components/pwa/PWAInstallModal';
+import { PWAInstallHeaderButton } from './components/pwa/PWAInstallHeaderButton';
 import { ShareSystemModal } from './components/share/ShareSystemModal';
 
-type ActiveTab = 'home' | 'converter' | 'generator' | 'library' | 'guide';
+type ActiveTab = 'home' | 'converter' | 'generator' | 'library' | 'guide' | 'faq' | 'privacy';
 
 const MainAppContent: React.FC = () => {
   const { 
@@ -115,6 +119,9 @@ const MainAppContent: React.FC = () => {
           {/* Right Header Actions */}
           <div className="hidden md:flex items-center gap-3">
             
+            {/* Install PWA Button */}
+            <PWAInstallHeaderButton />
+
             {/* Encourage Sharing Button */}
             <button
               onClick={openShareModal}
@@ -137,6 +144,7 @@ const MainAppContent: React.FC = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center md:hidden gap-2">
+            <PWAInstallHeaderButton />
             <button
               onClick={openShareModal}
               className="p-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold flex items-center gap-1"
@@ -209,6 +217,24 @@ const MainAppContent: React.FC = () => {
               </button>
 
               <button
+                onClick={() => { setActiveTab('faq'); setMobileMenuOpen(false); }}
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
+                  activeTab === 'faq' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                }`}
+              >
+                <Award className="w-4 h-4" /> FAQ & Answers
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('privacy'); setMobileMenuOpen(false); }}
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
+                  activeTab === 'privacy' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                }`}
+              >
+                <Award className="w-4 h-4" /> Privacy & Terms of Use
+              </button>
+
+              <button
                 onClick={() => { openShareModal(); setMobileMenuOpen(false); }}
                 className="p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 bg-emerald-500 text-slate-950"
               >
@@ -226,6 +252,8 @@ const MainAppContent: React.FC = () => {
         {activeTab === 'generator' && <LessonPlanGeneratorHub />}
         {activeTab === 'library' && <SavedPlansLibrary onNavigateToGenerator={() => setActiveTab('generator')} />}
         {activeTab === 'guide' && <REBCBCGuide />}
+        {activeTab === 'faq' && <FAQCenter />}
+        {activeTab === 'privacy' && <LegalAndPrivacyCenter />}
       </main>
 
       {/* Share System Modal */}
@@ -234,16 +262,57 @@ const MainAppContent: React.FC = () => {
         onClose={closeShareModal}
       />
 
-      {/* Global Footer with Official Developer & Owner Attribution */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-10 px-4 text-center text-xs text-slate-500 space-y-3">
+      {/* PWA Install Promotion Modal (Auto on First Load & Offline Support) */}
+      <PWAInstallModal />
+
+      {/* Global Footer with All Rights Copyright Attribution */}
+      <footer className="border-t border-slate-800/80 bg-slate-950 py-10 px-4 text-center text-xs text-slate-500 space-y-4">
         <div className="flex flex-wrap items-center justify-center gap-2 font-medium">
           <span className="font-bold text-slate-300">
             The Palace, Inc — The Palace Tech House
           </span>
           <span className="text-slate-600 hidden sm:inline">•</span>
           <span className="text-amber-400 font-semibold">
-            Developer and Owner of Everything in the System
+            All Rights Reserved Copyright © {new Date().getFullYear()}
           </span>
+        </div>
+
+        {/* Footer Navigation Links */}
+        <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-400">
+          <button 
+            onClick={() => setActiveTab('home')} 
+            className="hover:text-amber-400 transition cursor-pointer"
+          >
+            Overview
+          </button>
+          <span>•</span>
+          <button 
+            onClick={() => setActiveTab('generator')} 
+            className="hover:text-amber-400 transition cursor-pointer"
+          >
+            AI Lesson Plans
+          </button>
+          <span>•</span>
+          <button 
+            onClick={() => setActiveTab('converter')} 
+            className="hover:text-amber-400 transition cursor-pointer"
+          >
+            Document Converter
+          </button>
+          <span>•</span>
+          <button 
+            onClick={() => setActiveTab('faq')} 
+            className="hover:text-amber-400 transition cursor-pointer"
+          >
+            FAQ & Answers
+          </button>
+          <span>•</span>
+          <button 
+            onClick={() => setActiveTab('privacy')} 
+            className="hover:text-amber-400 transition cursor-pointer"
+          >
+            Privacy Policy & Terms of Use
+          </button>
         </div>
 
         <p className="text-slate-400 max-w-2xl mx-auto text-[11px] leading-relaxed">
@@ -251,7 +320,7 @@ const MainAppContent: React.FC = () => {
         </p>
 
         <p className="text-[10px] text-slate-600 pt-1">
-          © {new Date().getFullYear()} The Palace, Inc. All rights reserved. Sovereign Educational Systems Division.
+          The Palace, Inc — The Palace Tech House. All Rights Reserved. Sovereign Educational Technology Division.
         </p>
       </footer>
 

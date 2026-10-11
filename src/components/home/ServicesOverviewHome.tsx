@@ -22,7 +22,7 @@ import { useElimu } from '../../context/ElimuContext';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
 
 interface ServicesOverviewHomeProps {
-  onNavigate: (tab: 'generator' | 'converter' | 'library' | 'guide') => void;
+  onNavigate: (tab: 'generator' | 'converter' | 'library' | 'guide' | 'faq' | 'privacy') => void;
 }
 
 export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNavigate }) => {
@@ -318,6 +318,49 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
           </button>
         </div>
 
+      </div>
+
+      {/* Quick Help & PWA Install Promo Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-3 flex flex-col justify-between shadow-xl">
+          <div className="space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full inline-block">
+              Educator Help & FAQ
+            </span>
+            <h3 className="text-lg font-bold text-white font-display">
+              Have Questions About REB Formatting or Offline Usage?
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Check out our clear, step-by-step FAQ covering unit folder exports, Bloom's Taxonomy integration, and offline lesson drafting.
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate('faq')}
+            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition border border-slate-700 cursor-pointer self-start"
+          >
+            Read Educator FAQ & Answers →
+          </button>
+        </div>
+
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-3 flex flex-col justify-between shadow-xl">
+          <div className="space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full inline-block">
+              Privacy & Legal
+            </span>
+            <h3 className="text-lg font-bold text-white font-display">
+              Sovereign Local Privacy & Intellectual Rights
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Your lessons never leave your browser without permission. Learn more about our privacy architecture and terms of use.
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate('privacy')}
+            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition border border-slate-700 cursor-pointer self-start"
+          >
+            View Privacy Policy & Terms →
+          </button>
+        </div>
       </div>
 
     </div>

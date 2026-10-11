@@ -18,6 +18,7 @@ import {
 import { useElimu } from '../../context/ElimuContext';
 import { LessonPlanData } from '../../types';
 import { LessonPlanViewModal } from '../generator/LessonPlanViewModal';
+import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
 
 export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> = ({ onNavigateToGenerator }) => {
   const { savedLessonPlans, plansLoading, deleteLessonPlan } = useElimu();
@@ -215,6 +216,9 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
           onClose={() => setViewingPlan(null)}
         />
       )}
+
+      {/* Strategic Educational Promotion Banner */}
+      <AdsterraNativeBanner badgeLabel="Recommended Educator Resources & Pedagogical Journals" />
 
     </div>
   );
