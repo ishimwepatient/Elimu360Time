@@ -29,6 +29,8 @@ import { getRichDifferentiatedLesson, PEDAGOGICAL_APPROACHES, BLOOM_ACTION_VERBS
 import { AdsterraNativeBanner } from '../src/components/ads/AdsterraNativeBanner';
 import { BulkExportModal } from '../src/components/generator/BulkExportModal';
 import { PostGenerationActionModal } from '../src/components/generator/PostGenerationActionModal';
+import { LessonPlanTablePreview } from '../src/components/generator/LessonPlanTablePreview';
+import { exportPlansToCombinedDocx } from '../src/utils/combinedLessonPlanExport';
 import { Layers } from 'lucide-react';
 
 // Self-contained LessonPlanData interface
@@ -599,6 +601,25 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
     }
   };
 
+  const [isExportingDocx, setIsExportingDocx] = useState(false);
+  const handleExportSingleDocx = async () => {
+    const plan = generatedPlans[activePlanIndex];
+    if (!plan) return;
+
+    setIsExportingDocx(true);
+    try {
+      const safeUnit = (plan.unitNumber || '1').replace(/[^a-zA-Z0-9]/g, '');
+      const safeTitle = (plan.lessonTitle || `Lesson_${activePlanIndex + 1}`).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
+      const filename = await exportPlansToCombinedDocx([plan as any], `Unit_${safeUnit}_Lesson_${activePlanIndex + 1}_${safeTitle}`);
+      setStatusMessage({ text: `Downloaded editable Word file: ${filename}`, type: 'success' });
+    } catch (err: any) {
+      console.error('DOCX Export Error:', err);
+      setStatusMessage({ text: 'Failed to download Word document.', type: 'error' });
+    } finally {
+      setIsExportingDocx(false);
+    }
+  };
+
   /**
    * Primary Bulk Export: Exports all plans directly into a named FOLDER on the user's computer.
    * Eliminates the need for unzipping, solving confusion for non-tech users.
@@ -1055,6 +1076,18 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
                   <span>Save This PDF</span>
                 </button>
 
+                {/* Download Single Active Editable Word DOCX */}
+                <button
+                  type="button"
+                  onClick={handleExportSingleDocx}
+                  disabled={isExportingDocx}
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-200 hover:text-white font-bold text-xs flex items-center gap-2 transition border border-blue-900/60 cursor-pointer shadow-md disabled:opacity-50"
+                  title="Download the currently viewed lesson plan as editable Microsoft Word DOCX"
+                >
+                  {isExportingDocx ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 text-blue-400" />}
+                  <span>Save This Word (.docx)</span>
+                </button>
+
                 {/* Primary Export Action: Opens BulkExportModal with options for Single Combined File (All in 1 Document, each on its page), Computer Folder, or ZIP Archive */}
                 {generatedPlans.length > 1 && (
                   <button
@@ -1116,129 +1149,13 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
             </div>
           )}
 
-          {/* Plan Visual Preview */}
+          {/* Plan Visual Preview: Official REB Table Layout (identical to View in Saved Plans) */}
           {activePlan ? (
-            <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4">
-              
-              {/* Header Meta Pill Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 text-xs">
-                <div>
-                  <span className="text-[10px] text-slate-400 block font-semibold">Subject</span>
-                  <span className="text-white font-bold">{activePlan.subject}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 block font-semibold">Class</span>
-                  <span className="text-white font-bold">{activePlan.classLevel}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 block font-semibold">Date</span>
-                  <span className="text-amber-400 font-bold">{activePlan.date}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 block font-semibold">Lesson No.</span>
-                  <span className="text-emerald-400 font-bold">{activePlan.lessonNumber}</span>
-                </div>
-              </div>
-
-              {/* Lesson Title & Objectives */}
-              <div className="space-y-3">
-                <div className="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">
-                    Lesson Title
-                  </span>
-                  <h4 className="text-sm font-extrabold text-white">
-                    {activePlan.lessonTitle}
-                  </h4>
-                </div>
-
-                <div className="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">
-                    Instructional Objective (REB CBC Predefined Action Verbs)
-                  </span>
-                  <p className="text-xs text-slate-200 leading-relaxed font-medium">
-                    {activePlan.instructionalObjective}
-                  </p>
-                </div>
-
-                <div className="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">
-                    Key Unit Competence
-                  </span>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {activePlan.keyUnitCompetence}
-                  </p>
-                </div>
-              </div>
-
-              {/* Detailed 3-Step Process Breakdown */}
-              <div className="space-y-3 pt-2 border-t border-slate-800">
-                <span className="text-xs font-extrabold text-white uppercase tracking-wider flex items-center justify-between">
-                  <span>Pedagogical Process Steps (REB Structure)</span>
-                  <span className="text-[10px] text-amber-400 font-normal">Differentiated Content</span>
-                </span>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {/* Step 1: Introduction */}
-                  <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                      <span className="font-extrabold text-xs text-amber-400">1. Introduction</span>
-                      <span className="text-[10px] text-slate-400 font-bold">{activePlan.steps?.introduction?.duration || '7 min'}</span>
-                    </div>
-                    <div>
-                      <strong className="text-[10px] text-slate-300 block mb-1 font-bold">Teacher:</strong>
-                      <ul className="text-[11px] text-slate-400 space-y-1 list-disc pl-3">
-                        {activePlan.steps?.introduction?.teacherActivities?.slice(0, 3).map((act, i) => (
-                          <li key={i}>{act}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Step 2: Development */}
-                  <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                      <span className="font-extrabold text-xs text-emerald-400">2. Development</span>
-                      <span className="text-[10px] text-slate-400 font-bold">{activePlan.steps?.development?.duration || '25 min'}</span>
-                    </div>
-                    <div>
-                      <strong className="text-[10px] text-slate-300 block mb-1 font-bold">Teacher:</strong>
-                      <ul className="text-[11px] text-slate-400 space-y-1 list-disc pl-3">
-                        {activePlan.steps?.development?.teacherActivities?.slice(0, 3).map((act, i) => (
-                          <li key={i}>{act}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Step 3: Conclusion */}
-                  <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                      <span className="font-extrabold text-xs text-sky-400">3. Conclusion</span>
-                      <span className="text-[10px] text-slate-400 font-bold">{activePlan.steps?.conclusion?.duration || '8 min'}</span>
-                    </div>
-                    <div>
-                      <strong className="text-[10px] text-slate-300 block mb-1 font-bold">Teacher:</strong>
-                      <ul className="text-[11px] text-slate-400 space-y-1 list-disc pl-3">
-                        {activePlan.steps?.conclusion?.teacherActivities?.slice(0, 3).map((act, i) => (
-                          <li key={i}>{act}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Self Evaluation */}
-              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                  Teacher's Self-Evaluation:
-                </span>
-                <p className="text-slate-300 italic text-[11px]">
-                  {activePlan.selfEvaluation || 'Lesson delivered successfully according to REB Competency-Based Curriculum guidelines.'}
-                </p>
-              </div>
-
-            </div>
+            <LessonPlanTablePreview 
+              plan={activePlan as any} 
+              onOpenExportModal={() => setShowBulkExportModal(true)}
+              showExportButton={generatedPlans.length > 1}
+            />
           ) : (
             <div className="text-center py-16 bg-slate-950 border border-dashed border-slate-800 rounded-2xl p-8 space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mx-auto">

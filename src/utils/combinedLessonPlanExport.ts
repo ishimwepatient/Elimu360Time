@@ -287,27 +287,43 @@ export async function exportPlansToCombinedDocx(
       })
     );
 
-    // School & Teacher Banner Table
+    // Professional border styling
+    const thinBorder = { style: BorderStyle.SINGLE, size: 6, color: '2D3748' };
+    const tableBorders = {
+      top: thinBorder,
+      bottom: thinBorder,
+      left: thinBorder,
+      right: thinBorder,
+      insideHorizontal: thinBorder,
+      insideVertical: thinBorder
+    };
+
+    // School & Teacher Header Banner Table
     const schoolRow = new TableRow({
       children: [
         new TableCell({
           width: { size: 50, type: WidthType.PERCENTAGE },
+          shading: { fill: 'F7FAFC' },
+          margins: { top: 120, bottom: 120, left: 160, right: 160 },
           children: [
             new Paragraph({
               children: [
-                new TextRun({ text: 'School Name: ', bold: true }),
-                new TextRun(plan.schoolName || 'GS Amahoro')
+                new TextRun({ text: 'School Name: ', bold: true, color: '1A202C' }),
+                new TextRun({ text: plan.schoolName || 'GS Amahoro', bold: true, color: '2B6CB0' })
               ]
             })
           ]
         }),
         new TableCell({
           width: { size: 50, type: WidthType.PERCENTAGE },
+          shading: { fill: 'F7FAFC' },
+          margins: { top: 120, bottom: 120, left: 160, right: 160 },
           children: [
             new Paragraph({
+              alignment: AlignmentType.RIGHT,
               children: [
-                new TextRun({ text: "Teacher's Name: ", bold: true }),
-                new TextRun(plan.teacherName || 'Teacher')
+                new TextRun({ text: "Teacher's Name: ", bold: true, color: '1A202C' }),
+                new TextRun({ text: plan.teacherName || 'Teacher', bold: true, color: '2B6CB0' })
               ]
             })
           ]
@@ -315,35 +331,49 @@ export async function exportPlansToCombinedDocx(
       ]
     });
 
+    const metaHeaders = ['Term', 'Date', 'Subject', 'Class', 'Unit No', 'Lesson No', 'Duration', 'Class Size'];
+    const metaValues = [
+      plan.term || 'Term 1',
+      plan.date || '',
+      plan.subject || '',
+      plan.classLevel || '',
+      plan.unitNumber || '1',
+      plan.lessonNumber || `Lesson ${planIdx + 1}`,
+      plan.duration || '40 min',
+      String(plan.classSize || 45)
+    ];
+
     const metaHeadersRow = new TableRow({
-      children: [
-        new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Term', bold: true })] })] }),
-        new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Date', bold: true })] })] }),
-        new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Subject', bold: true })] })] }),
-        new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Class', bold: true })] })] }),
-        new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Unit No', bold: true })] })] }),
-        new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Lesson No', bold: true })] })] }),
-        new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Duration', bold: true })] })] }),
-        new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Class Size', bold: true })] })] })
-      ]
+      children: metaHeaders.map(h => new TableCell({
+        width: { size: 12.5, type: WidthType.PERCENTAGE },
+        shading: { fill: 'EDF2F7' },
+        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: h, bold: true, size: 18, color: '1A202C' })]
+          })
+        ]
+      }))
     });
 
     const metaValuesRow = new TableRow({
-      children: [
-        new TableCell({ children: [new Paragraph(plan.term || 'Term 1')] }),
-        new TableCell({ children: [new Paragraph(plan.date || '')] }),
-        new TableCell({ children: [new Paragraph(plan.subject || '')] }),
-        new TableCell({ children: [new Paragraph(plan.classLevel || '')] }),
-        new TableCell({ children: [new Paragraph(plan.unitNumber || '1')] }),
-        new TableCell({ children: [new Paragraph(plan.lessonNumber || `Lesson ${planIdx + 1}`)] }),
-        new TableCell({ children: [new Paragraph(plan.duration || '40 min')] }),
-        new TableCell({ children: [new Paragraph(String(plan.classSize || 45))] })
-      ]
+      children: metaValues.map((v, i) => new TableCell({
+        width: { size: 12.5, type: WidthType.PERCENTAGE },
+        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: v, size: 18, bold: i === 2 })]
+          })
+        ]
+      }))
     });
 
     docxSections.push(
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: tableBorders,
         rows: [schoolRow, metaHeadersRow, metaValuesRow]
       })
     );
@@ -352,23 +382,34 @@ export async function exportPlansToCombinedDocx(
 
     // Key Competences & Objectives Table
     const keyInfoRows = [
-      { label: 'Type of Special Needs', value: plan.specialNeeds || 'None reported' },
-      { label: 'Unit Title', value: (plan.unitTitle || '').toUpperCase() },
-      { label: 'Key Unit Competence', value: plan.keyUnitCompetence || '' },
-      { label: 'Title of the Lesson', value: plan.lessonTitle || '' },
-      { label: 'Instructional Objectives', value: plan.instructionalObjective || '' },
-      { label: 'Location of Class', value: plan.location || 'Classroom' },
-      { label: 'Learning Materials', value: plan.learningMaterials || '' },
+      { label: 'Type of special educational needs to be catered for in this lesson and number of learners in each category', value: plan.specialNeeds || 'Attention disorder (sit in the front row, visual cues)' },
+      { label: 'Unit title', value: (plan.unitTitle || '').toUpperCase(), boldVal: true },
+      { label: 'Key unit competence', value: plan.keyUnitCompetence || '' },
+      { label: 'Title of the lesson', value: plan.lessonTitle || '', boldVal: true },
+      { label: 'Instructional objectives', value: plan.instructionalObjective || '' },
+      { label: 'Plan of this class (Location)', value: plan.location || 'Classroom / Science Corner' },
+      { label: 'Learning materials', value: plan.learningMaterials || '' },
       { label: 'References', value: plan.references || '' }
     ].map(item => new TableRow({
       children: [
         new TableCell({
-          width: { size: 30, type: WidthType.PERCENTAGE },
-          children: [new Paragraph({ children: [new TextRun({ text: item.label, bold: true })] })]
+          width: { size: 32, type: WidthType.PERCENTAGE },
+          shading: { fill: 'EDF2F7' },
+          margins: { top: 100, bottom: 100, left: 120, right: 120 },
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: item.label, bold: true, size: 19, color: '1A202C' })]
+            })
+          ]
         }),
         new TableCell({
-          width: { size: 70, type: WidthType.PERCENTAGE },
-          children: [new Paragraph(item.value)]
+          width: { size: 68, type: WidthType.PERCENTAGE },
+          margins: { top: 100, bottom: 100, left: 120, right: 120 },
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: item.value, size: 19, bold: item.boldVal })]
+            })
+          ]
         })
       ]
     }));
@@ -376,6 +417,7 @@ export async function exportPlansToCombinedDocx(
     docxSections.push(
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: tableBorders,
         rows: keyInfoRows
       })
     );
@@ -383,16 +425,69 @@ export async function exportPlansToCombinedDocx(
     docxSections.push(new Paragraph({ spacing: { after: 140 } }));
 
     // Instructional Steps Table (Timing, Teacher, Learner, Competences)
-    const stepsHeaderRow = new TableRow({
+    const stepsHeaderRow1 = new TableRow({
       children: [
-        new TableCell({ width: { size: 20, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new TextRun({ text: 'Timing / Step', bold: true })] })] }),
-        new TableCell({ width: { size: 30, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new TextRun({ text: "Teacher's Activities", bold: true })] })] }),
-        new TableCell({ width: { size: 30, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new TextRun({ text: "Learner's Activities", bold: true })] })] }),
-        new TableCell({ width: { size: 20, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new TextRun({ text: 'Competences & Cross-Cutting', bold: true })] })] })
+        new TableCell({
+          width: { size: 20, type: WidthType.PERCENTAGE },
+          shading: { fill: 'EDF2F7' },
+          margins: { top: 120, bottom: 120, left: 100, right: 100 },
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Timing for each step', bold: true, size: 19 })] })]
+        }),
+        new TableCell({
+          width: { size: 55, type: WidthType.PERCENTAGE },
+          columnSpan: 2,
+          shading: { fill: 'EDF2F7' },
+          margins: { top: 120, bottom: 120, left: 100, right: 100 },
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Description of teaching and learning activities', bold: true, size: 19 })] })]
+        }),
+        new TableCell({
+          width: { size: 25, type: WidthType.PERCENTAGE },
+          shading: { fill: 'EDF2F7' },
+          margins: { top: 120, bottom: 120, left: 100, right: 100 },
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Generic competences & cross-cutting issues', bold: true, size: 19 })] })]
+        })
       ]
     });
 
-    const stepRows: TableRow[] = [stepsHeaderRow];
+    const summaryRow = new TableRow({
+      children: [
+        new TableCell({ width: { size: 20, type: WidthType.PERCENTAGE }, shading: { fill: 'FAFAFA' }, children: [new Paragraph('')] }),
+        new TableCell({
+          width: { size: 55, type: WidthType.PERCENTAGE },
+          columnSpan: 2,
+          shading: { fill: 'F7FAFC' },
+          margins: { top: 80, bottom: 80, left: 120, right: 120 },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [new TextRun({ text: plan.activitySummary || `Interactive learner-centered activities on ${(plan.lessonTitle || '').toLowerCase()}.`, italics: true, size: 18, color: '4A5568' })]
+            })
+          ]
+        }),
+        new TableCell({ width: { size: 25, type: WidthType.PERCENTAGE }, shading: { fill: 'FAFAFA' }, children: [new Paragraph('')] })
+      ]
+    });
+
+    const subHeaderRow = new TableRow({
+      children: [
+        new TableCell({ width: { size: 20, type: WidthType.PERCENTAGE }, shading: { fill: 'EDF2F7' }, children: [new Paragraph('')] }),
+        new TableCell({
+          width: { size: 27.5, type: WidthType.PERCENTAGE },
+          shading: { fill: 'EDF2F7' },
+          margins: { top: 80, bottom: 80, left: 100, right: 100 },
+          children: [new Paragraph({ children: [new TextRun({ text: "Teacher's activity", bold: true, size: 18 })] })]
+        }),
+        new TableCell({
+          width: { size: 27.5, type: WidthType.PERCENTAGE },
+          shading: { fill: 'EDF2F7' },
+          margins: { top: 80, bottom: 80, left: 100, right: 100 },
+          children: [new Paragraph({ children: [new TextRun({ text: "Learner's activity", bold: true, size: 18 })] })]
+        }),
+        new TableCell({ width: { size: 25, type: WidthType.PERCENTAGE }, shading: { fill: 'EDF2F7' }, children: [new Paragraph('')] })
+      ]
+    });
+
+    const stepRows: TableRow[] = [stepsHeaderRow1, summaryRow, subHeaderRow];
 
     const stepsList = [
       { name: 'Introduction', step: plan.steps?.introduction },
@@ -406,54 +501,76 @@ export async function exportPlansToCombinedDocx(
         new TableRow({
           children: [
             new TableCell({
+              width: { size: 20, type: WidthType.PERCENTAGE },
+              shading: { fill: 'F7FAFC' },
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
               children: [
-                new Paragraph({ children: [new TextRun({ text: s.name, bold: true })] }),
-                new Paragraph(`(${s.step.duration || ''})`)
+                new Paragraph({ children: [new TextRun({ text: s.name, bold: true, size: 19 })] }),
+                new Paragraph({ children: [new TextRun({ text: `(${s.step.duration || ''})`, italics: true, size: 17, color: '718096' })] })
               ]
             }),
             new TableCell({
-              children: (s.step.teacherActivities || []).map(act => new Paragraph(`• ${act}`))
+              width: { size: 27.5, type: WidthType.PERCENTAGE },
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
+              children: (s.step.teacherActivities || []).map(act => new Paragraph({
+                children: [new TextRun({ text: `• ${act}`, size: 18 })],
+                spacing: { after: 60 }
+              }))
             }),
             new TableCell({
-              children: (s.step.learnerActivities || []).map(act => new Paragraph(`• ${act}`))
+              width: { size: 27.5, type: WidthType.PERCENTAGE },
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
+              children: (s.step.learnerActivities || []).map(act => new Paragraph({
+                children: [new TextRun({ text: `• ${act}`, size: 18 })],
+                spacing: { after: 60 }
+              }))
             }),
             new TableCell({
-              children: (s.step.competencesAndCrossCutting || []).map(comp => new Paragraph(`• ${comp}`))
+              width: { size: 25, type: WidthType.PERCENTAGE },
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
+              children: (s.step.competencesAndCrossCutting || []).map(comp => new Paragraph({
+                children: [new TextRun({ text: `• ${comp}`, size: 18 })],
+                spacing: { after: 60 }
+              }))
             })
           ]
         })
       );
     });
 
-    docxSections.push(
-      new Table({
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        rows: stepRows
-      })
-    );
-
-    docxSections.push(new Paragraph({ spacing: { after: 120 } }));
-
-    // Self Evaluation
-    docxSections.push(
-      new Table({
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        rows: [
-          new TableRow({
+    // Self Evaluation Row inside the main execution table
+    stepRows.push(
+      new TableRow({
+        children: [
+          new TableCell({
+            width: { size: 20, type: WidthType.PERCENTAGE },
+            shading: { fill: 'EDF2F7' },
+            margins: { top: 100, bottom: 100, left: 100, right: 100 },
+            children: [new Paragraph({ children: [new TextRun({ text: "Teacher's self-evaluation", bold: true, size: 19 })] })]
+          }),
+          new TableCell({
+            width: { size: 80, type: WidthType.PERCENTAGE },
+            columnSpan: 3,
+            margins: { top: 100, bottom: 100, left: 120, right: 120 },
             children: [
-              new TableCell({
-                width: { size: 30, type: WidthType.PERCENTAGE },
-                children: [new Paragraph({ children: [new TextRun({ text: "Teacher's Self-Evaluation", bold: true })] })]
-              }),
-              new TableCell({
-                width: { size: 70, type: WidthType.PERCENTAGE },
-                children: [new Paragraph(plan.selfEvaluation || 'Lesson delivered successfully.')]
+              new Paragraph({
+                children: [new TextRun({ text: plan.selfEvaluation || 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners actively engaged.', italics: true, size: 18, color: '2D3748' })]
               })
             ]
           })
         ]
       })
     );
+
+    docxSections.push(
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: tableBorders,
+        rows: stepRows
+      })
+    );
+
+    docxSections.push(new Paragraph({ spacing: { after: 120 } }));
 
     if (onProgress) onProgress(planIdx + 1, plans.length);
   });

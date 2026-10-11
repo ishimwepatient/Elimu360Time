@@ -150,17 +150,17 @@ export const DocumentConverter: React.FC = () => {
             isItalic = true;
           }
 
-          // FIX: Calculate gap between items and insert space if needed
+          // Gap calculation for table column detection vs regular spaces
           if (i > 0) {
             const gap = x - lastXEnd;
-            if (gap > fontSize * 3.2) {
-              // Large gap -> cell boundary for table
+            // A gap of more than 2.0x font size or 25 points represents a distinct table column
+            if (gap > Math.max(fontSize * 2.0, 22)) {
               if (currentCellText.trim()) {
                 cells.push(currentCellText.trim());
                 currentCellText = '';
               }
               lineText += '   ';
-            } else if (gap > fontSize * 0.18 && !lineText.endsWith(' ') && !item.str.startsWith(' ')) {
+            } else if (gap > fontSize * 0.16 && !lineText.endsWith(' ') && !item.str.startsWith(' ')) {
               lineText += ' ';
               currentCellText += ' ';
             }
@@ -169,7 +169,7 @@ export const DocumentConverter: React.FC = () => {
           lineText += item.str;
           currentCellText += item.str;
 
-          const itemWidth = item.width || (item.str.length * fontSize * 0.48);
+          const itemWidth = item.width || (item.str.length * fontSize * 0.50);
           lastXEnd = x + itemWidth;
         }
 
@@ -180,7 +180,8 @@ export const DocumentConverter: React.FC = () => {
         const trimmedText = lineText.trim();
         if (!trimmedText) continue;
 
-        const isBullet = /^[•\-*]\s+|^\d+[\.\)]\s+|^[a-zA-Z][\.\)]\s+/.test(trimmedText);
+        const isBullet = /^[•\-*▪▫]\s+|^\d+[\.\)]\s+|^[a-zA-Z][\.\)]\s+/.test(trimmedText);
+        // Table line if 2 or more distinct columns were separated across the page
         const isTable = cells.length >= 2;
 
         pageLines.push({
@@ -190,7 +191,7 @@ export const DocumentConverter: React.FC = () => {
           isItalic,
           isBullet,
           isTable,
-          tableCells: cells,
+          tableCells: cells.length >= 2 ? cells : [trimmedText],
           y: yKey
         });
       }
@@ -280,14 +281,21 @@ export const DocumentConverter: React.FC = () => {
           while (i < page.lines.length) {
             const line = page.lines[i];
 
-            // Table rendering
+            // Table rendering with clean, professional Microsoft Word borders & cell styling
             if (line.isTable && line.tableCells.length >= 2) {
               const tableRows: TableRow[] = [];
+              const columnCount = Math.max(line.tableCells.length, 2);
+              const cellWidthPercent = Math.floor(100 / columnCount);
+
               while (i < page.lines.length && page.lines[i].isTable && page.lines[i].tableCells.length >= 2) {
                 const rowLine = page.lines[i];
+                const isHeaderRow = tableRows.length === 0;
+
                 const cells = rowLine.tableCells.map(cellText => 
                   new TableCell({
-                    width: { size: Math.floor(9000 / Math.max(rowLine.tableCells.length, 1)), type: WidthType.DXA },
+                    width: { size: cellWidthPercent, type: WidthType.PERCENTAGE },
+                    shading: isHeaderRow ? { fill: 'EDF2F7' } : undefined,
+                    margins: { top: 100, bottom: 100, left: 120, right: 120 },
                     children: [
                       new Paragraph({
                         children: [
@@ -295,18 +303,13 @@ export const DocumentConverter: React.FC = () => {
                             text: cellText,
                             size: 20, // 10pt
                             font: 'Calibri',
-                            bold: rowLine.isBold
+                            bold: rowLine.isBold || isHeaderRow,
+                            color: '1A202C'
                           })
                         ],
-                        spacing: { after: 80 }
+                        spacing: { after: 60 }
                       })
-                    ],
-                    borders: {
-                      top: { style: BorderStyle.SINGLE, size: 4, color: 'D3D3D3' },
-                      bottom: { style: BorderStyle.SINGLE, size: 4, color: 'D3D3D3' },
-                      left: { style: BorderStyle.SINGLE, size: 4, color: 'D3D3D3' },
-                      right: { style: BorderStyle.SINGLE, size: 4, color: 'D3D3D3' }
-                    }
+                    ]
                   })
                 );
 
@@ -314,10 +317,19 @@ export const DocumentConverter: React.FC = () => {
                 i++;
               }
 
+              const tableBorder = { style: BorderStyle.SINGLE, size: 6, color: 'CBD5E0' };
               docChildren.push(
                 new Table({
                   rows: tableRows,
-                  width: { size: 100, type: WidthType.PERCENTAGE }
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  borders: {
+                    top: tableBorder,
+                    bottom: tableBorder,
+                    left: tableBorder,
+                    right: tableBorder,
+                    insideHorizontal: tableBorder,
+                    insideVertical: tableBorder
+                  }
                 })
               );
               docChildren.push(new Paragraph({ text: '', spacing: { after: 180 } }));
