@@ -281,47 +281,66 @@ export const DocumentConverter: React.FC = () => {
           while (i < page.lines.length) {
             const line = page.lines[i];
 
-            // Table rendering with clean, professional Microsoft Word borders & cell styling
+            // Table rendering with crisp Microsoft Word borders, exact DXA widths filling the page
             if (line.isTable && line.tableCells.length >= 2) {
               const tableRows: TableRow[] = [];
-              const columnCount = Math.max(line.tableCells.length, 2);
-              const cellWidthPercent = Math.floor(100 / columnCount);
+              const rawRows: { cells: string[]; isBold: boolean }[] = [];
 
               while (i < page.lines.length && page.lines[i].isTable && page.lines[i].tableCells.length >= 2) {
-                const rowLine = page.lines[i];
-                const isHeaderRow = tableRows.length === 0;
+                rawRows.push({
+                  cells: page.lines[i].tableCells,
+                  isBold: page.lines[i].isBold
+                });
+                i++;
+              }
 
-                const cells = rowLine.tableCells.map(cellText => 
+              // Determine max columns in this table
+              const maxCols = Math.max(...rawRows.map(r => r.cells.length), 2);
+              const TOTAL_CONV_WIDTH = 10400; // twips (A4 printable width with 0.5 in margins)
+              const baseColWidth = Math.floor(TOTAL_CONV_WIDTH / maxCols);
+              const colWidths = Array(maxCols).fill(baseColWidth);
+              // Give remainder to last column
+              colWidths[maxCols - 1] += TOTAL_CONV_WIDTH - (baseColWidth * maxCols);
+
+              rawRows.forEach((r, rIdx) => {
+                const isHeaderRow = rIdx === 0;
+                const rowCells = [...r.cells];
+                // Pad if row has fewer cells than maxCols
+                while (rowCells.length < maxCols) {
+                  rowCells.push('');
+                }
+
+                const cells = rowCells.map((cellText, colIdx) => 
                   new TableCell({
-                    width: { size: cellWidthPercent, type: WidthType.PERCENTAGE },
-                    shading: isHeaderRow ? { fill: 'EDF2F7' } : undefined,
-                    margins: { top: 100, bottom: 100, left: 120, right: 120 },
+                    width: { size: colWidths[colIdx], type: WidthType.DXA },
+                    shading: isHeaderRow ? { fill: 'F1F5F9' } : undefined,
+                    margins: { top: 80, bottom: 80, left: 100, right: 100 },
                     children: [
                       new Paragraph({
                         children: [
                           new TextRun({
                             text: cellText,
-                            size: 20, // 10pt
+                            size: 19, // ~9.5pt
                             font: 'Calibri',
-                            bold: rowLine.isBold || isHeaderRow,
-                            color: '1A202C'
+                            bold: r.isBold || isHeaderRow,
+                            color: '0F172A'
                           })
                         ],
-                        spacing: { after: 60 }
+                        spacing: { after: 40 }
                       })
                     ]
                   })
                 );
 
                 tableRows.push(new TableRow({ children: cells }));
-                i++;
-              }
+              });
 
-              const tableBorder = { style: BorderStyle.SINGLE, size: 6, color: 'CBD5E0' };
+              const tableBorder = { style: BorderStyle.SINGLE, size: 6, color: '334155' };
               docChildren.push(
                 new Table({
                   rows: tableRows,
-                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  width: { size: TOTAL_CONV_WIDTH, type: WidthType.DXA },
+                  columnWidths: colWidths,
                   borders: {
                     top: tableBorder,
                     bottom: tableBorder,
@@ -332,7 +351,7 @@ export const DocumentConverter: React.FC = () => {
                   }
                 })
               );
-              docChildren.push(new Paragraph({ text: '', spacing: { after: 180 } }));
+              docChildren.push(new Paragraph({ text: '', spacing: { after: 140 } }));
               continue;
             }
 
@@ -401,7 +420,20 @@ export const DocumentConverter: React.FC = () => {
       const doc = new Document({
         sections: [
           {
-            properties: {},
+            properties: {
+              page: {
+                size: {
+                  width: 11906, // A4 Portrait in twips
+                  height: 16838
+                },
+                margin: {
+                  top: 720,
+                  bottom: 720,
+                  left: 720,
+                  right: 720
+                }
+              }
+            },
             children: docChildren
           }
         ]
