@@ -18,13 +18,14 @@ import {
   Users,
   Check,
   MessageCircle,
-  Phone
+  Phone,
+  HelpCircle
 } from 'lucide-react';
 import { useElimu } from '../../context/ElimuContext';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
 
 interface ServicesOverviewHomeProps {
-  onNavigate: (tab: 'generator' | 'converter' | 'library' | 'guide' | 'faq' | 'privacy') => void;
+  onNavigate: (tab: 'generator' | 'converter' | 'library' | 'question_bank' | 'guide' | 'faq' | 'privacy') => void;
 }
 
 export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNavigate }) => {
@@ -70,11 +71,20 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
             </button>
 
             <button
+              onClick={() => onNavigate('question_bank')}
+              className="px-6 py-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-black text-sm border border-amber-500/30 shadow-xl transition flex items-center gap-3 cursor-pointer group"
+            >
+              <HelpCircle className="w-5 h-5 text-amber-400" />
+              <span>🇷🇼 Question Bank (2,200+)</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+
+            <button
               onClick={() => onNavigate('converter')}
               className="px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-sm border border-slate-700 shadow-xl transition flex items-center gap-3 cursor-pointer group"
             >
               <RefreshCw className="w-5 h-5 text-amber-400 group-hover:rotate-180 transition-transform duration-500" />
-              <span>Open Document Converter</span>
+              <span>Document Converter</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
@@ -155,6 +165,52 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
                 className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
               >
                 <span>Launch Lesson Generator</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Service: Kinyarwanda Question Bank & Curricula */}
+          <div className="bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-xl">
+            <div className="space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold">
+                <HelpCircle className="w-6 h-6" />
+              </div>
+
+              <h3 className="text-lg font-bold text-white font-display group-hover:text-amber-300 transition">
+                🇷🇼 Ikigega cy'Ibibazo n'Amasomo (2,200+)
+              </h3>
+
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Database y'ibibazo birenga 2,000 biteguye mu Kinyarwanda ku masomo yose yigishwa mu Kinyarwanda (Ikinyarwanda, Imibare P1-P3, Ibidukikije, n'Ubugeni).
+              </p>
+
+              <ul className="space-y-2 text-xs text-slate-400">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Amashuri abanza n'ayisumbuye (P1 kugeza kuri S6)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Gusohora ibizamini muri <strong>Word (.docx)</strong> na <strong>PDF</strong></span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Ibisobanuro n'Akaraso k'ikosora (Marking Scheme)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Guhindura ikibazo mo Iteguriro ry'Isomo (1-Click)</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="pt-4 border-t border-slate-800">
+              <button
+                onClick={() => onNavigate('question_bank')}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
+              >
+                <span>Fungura Ikigega cy'Ibibazo</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

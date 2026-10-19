@@ -277,10 +277,19 @@ export async function exportPlansToCombinedDocx(
       );
     }
 
+    // Detect if plan is in Kinyarwanda
+    const isKinyarwanda = 
+      plan.subject?.toLowerCase().includes('kinyarwanda') ||
+      plan.subject?.toLowerCase().includes('imibare') ||
+      plan.subject?.toLowerCase().includes('ibidukikije') ||
+      plan.subject?.toLowerCase().includes('ubugeni') ||
+      plan.steps?.introduction?.teacherActivities?.[0]?.includes('abanyeshuri') ||
+      (plan as any).language === 'kinyarwanda';
+
     // Title Header
     docxSections.push(
       new Paragraph({
-        text: `REB COMPETENCY-BASED LESSON PLAN`,
+        text: isKinyarwanda ? `ITEGURIRO RY'ISOMO / REB CBC LESSON PLAN` : `REB COMPETENCY-BASED LESSON PLAN`,
         heading: HeadingLevel.HEADING_1,
         alignment: AlignmentType.CENTER,
         spacing: { before: 100, after: 140 }
@@ -313,7 +322,7 @@ export async function exportPlansToCombinedDocx(
           children: [
             new Paragraph({
               children: [
-                new TextRun({ text: 'School Name: ', bold: true, size: 19, font: 'Calibri', color: '0F172A' }),
+                new TextRun({ text: isKinyarwanda ? 'Ishuri / School: ' : 'School Name: ', bold: true, size: 19, font: 'Calibri', color: '0F172A' }),
                 new TextRun({ text: plan.schoolName || 'GS Amahoro', bold: true, size: 19, font: 'Calibri', color: '1E40AF' })
               ]
             })
@@ -327,7 +336,7 @@ export async function exportPlansToCombinedDocx(
             new Paragraph({
               alignment: AlignmentType.RIGHT,
               children: [
-                new TextRun({ text: "Teacher's Name: ", bold: true, size: 19, font: 'Calibri', color: '0F172A' }),
+                new TextRun({ text: isKinyarwanda ? "Umwarimu / Teacher: " : "Teacher's Name: ", bold: true, size: 19, font: 'Calibri', color: '0F172A' }),
                 new TextRun({ text: plan.teacherName || 'Teacher', bold: true, size: 19, font: 'Calibri', color: '1E40AF' })
               ]
             })
@@ -339,7 +348,9 @@ export async function exportPlansToCombinedDocx(
     // 8 Metadata columns totaling 10400 dxa:
     // [Term: 1100, Date: 1200, Subject: 1500, Class: 1200, Unit No: 1200, Lesson No: 1300, Duration: 1400, Class Size: 1500] = 10400
     const metaColWidths = [1100, 1200, 1500, 1200, 1200, 1300, 1400, 1500];
-    const metaHeaders = ['Term', 'Date', 'Subject', 'Class', 'Unit No', 'Lesson No', 'Duration', 'Class Size'];
+    const metaHeaders = isKinyarwanda 
+      ? ['Igihembwe', 'Itariki', 'Isomo', 'Umwaka', 'Umutwe', 'Isomo No', 'Igihe', 'Abanyeshuri']
+      : ['Term', 'Date', 'Subject', 'Class', 'Unit No', 'Lesson No', 'Duration', 'Class Size'];
     const metaValues = [
       plan.term || 'Term 1',
       plan.date || '',
@@ -391,14 +402,17 @@ export async function exportPlansToCombinedDocx(
 
     // Key Competences & Objectives Table (2 columns: 2800 dxa label, 7600 dxa value = 10400 dxa)
     const keyInfoRows = [
-      { label: 'Type of special educational needs to be catered for in this lesson and number of learners in each category', value: plan.specialNeeds || 'Attention disorder (sit in the front row, visual cues)' },
-      { label: 'Unit title', value: (plan.unitTitle || '').toUpperCase(), boldVal: true },
-      { label: 'Key unit competence', value: plan.keyUnitCompetence || '' },
-      { label: 'Title of the lesson', value: plan.lessonTitle || '', boldVal: true },
-      { label: 'Instructional objectives', value: plan.instructionalObjective || '' },
-      { label: 'Plan of this class (Location)', value: plan.location || 'Classroom / Science Corner' },
-      { label: 'Learning materials', value: plan.learningMaterials || '' },
-      { label: 'References', value: plan.references || '' }
+      { 
+        label: isKinyarwanda ? "Abafite ibibazo byihariye mu myigire n'umubare wabo muri buri cyiciro" : 'Type of special educational needs to be catered for in this lesson and number of learners in each category', 
+        value: plan.specialNeeds || (isKinyarwanda ? 'Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere.' : 'Attention disorder (sit in the front row, visual cues)') 
+      },
+      { label: isKinyarwanda ? "Umutwe w'isomo" : 'Unit title', value: (plan.unitTitle || '').toUpperCase(), boldVal: true },
+      { label: isKinyarwanda ? "Ubushobozi bw'ingenzi bwitezwe ku mutwe" : 'Key unit competence', value: plan.keyUnitCompetence || '' },
+      { label: isKinyarwanda ? "Umutwe w'isomo ry'uyu munsi" : 'Title of the lesson', value: plan.lessonTitle || '', boldVal: true },
+      { label: isKinyarwanda ? "Intego y'isomo" : 'Instructional objectives', value: plan.instructionalObjective || '' },
+      { label: isKinyarwanda ? "Aho isomo riberera" : 'Plan of this class (Location)', value: plan.location || (isKinyarwanda ? 'Mu ishuri' : 'Classroom / Science Corner') },
+      { label: isKinyarwanda ? "Imfashanyigisho" : 'Learning materials', value: plan.learningMaterials || '' },
+      { label: isKinyarwanda ? "Ibitabo byifashishijwe" : 'References', value: plan.references || '' }
     ].map(item => new TableRow({
       children: [
         new TableCell({
@@ -448,20 +462,20 @@ export async function exportPlansToCombinedDocx(
           width: { size: 1800, type: WidthType.DXA },
           shading: { fill: 'E2E8F0' },
           margins: { top: 80, bottom: 80, left: 80, right: 80 },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Timing for each step', bold: true, size: 17, font: 'Calibri' })] })]
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: isKinyarwanda ? "Intambwe n'igihe" : 'Timing for each step', bold: true, size: 17, font: 'Calibri' })] })]
         }),
         new TableCell({
           width: { size: 6200, type: WidthType.DXA },
           columnSpan: 2,
           shading: { fill: 'E2E8F0' },
           margins: { top: 80, bottom: 80, left: 80, right: 80 },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Description of teaching and learning activities', bold: true, size: 17, font: 'Calibri' })] })]
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: isKinyarwanda ? "Ibisobanuro by'ibikorwa byo kwigisha no kwiga" : 'Description of teaching and learning activities', bold: true, size: 17, font: 'Calibri' })] })]
         }),
         new TableCell({
           width: { size: 2400, type: WidthType.DXA },
           shading: { fill: 'E2E8F0' },
           margins: { top: 80, bottom: 80, left: 80, right: 80 },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Generic competences & cross-cutting issues', bold: true, size: 17, font: 'Calibri' })] })]
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: isKinyarwanda ? "Ubushobozi n'ingingo ngiro" : 'Generic competences & cross-cutting issues', bold: true, size: 17, font: 'Calibri' })] })]
         })
       ]
     });
@@ -477,7 +491,7 @@ export async function exportPlansToCombinedDocx(
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: plan.activitySummary || `Interactive learner-centered activities on ${(plan.lessonTitle || '').toLowerCase()}.`, italics: true, size: 16, font: 'Calibri', color: '475569' })]
+              children: [new TextRun({ text: plan.activitySummary || (isKinyarwanda ? `Abanyeshuri bafatanya mu matsinda kwiga kuri ${(plan.lessonTitle || '').toLowerCase()}.` : `Interactive learner-centered activities on ${(plan.lessonTitle || '').toLowerCase()}.`), italics: true, size: 16, font: 'Calibri', color: '475569' })]
             })
           ]
         }),
@@ -492,13 +506,13 @@ export async function exportPlansToCombinedDocx(
           width: { size: 3100, type: WidthType.DXA },
           shading: { fill: 'F1F5F9' },
           margins: { top: 60, bottom: 60, left: 80, right: 80 },
-          children: [new Paragraph({ children: [new TextRun({ text: "Teacher's activity", bold: true, size: 16, font: 'Calibri' })] })]
+          children: [new Paragraph({ children: [new TextRun({ text: isKinyarwanda ? "Imirimo y'umwarimu" : "Teacher's activity", bold: true, size: 16, font: 'Calibri' })] })]
         }),
         new TableCell({
           width: { size: 3100, type: WidthType.DXA },
           shading: { fill: 'F1F5F9' },
           margins: { top: 60, bottom: 60, left: 80, right: 80 },
-          children: [new Paragraph({ children: [new TextRun({ text: "Learner's activity", bold: true, size: 16, font: 'Calibri' })] })]
+          children: [new Paragraph({ children: [new TextRun({ text: isKinyarwanda ? "Imirimo y'umunyeshuri" : "Learner's activity", bold: true, size: 16, font: 'Calibri' })] })]
         }),
         new TableCell({ width: { size: 2400, type: WidthType.DXA }, shading: { fill: 'F1F5F9' }, children: [new Paragraph('')] })
       ]
@@ -507,9 +521,9 @@ export async function exportPlansToCombinedDocx(
     const stepRows: TableRow[] = [stepsHeaderRow1, summaryRow, subHeaderRow];
 
     const stepsList = [
-      { name: 'Introduction', step: plan.steps?.introduction },
-      { name: 'Lesson Development', step: plan.steps?.development },
-      { name: 'Conclusion', step: plan.steps?.conclusion }
+      { name: isKinyarwanda ? 'Intangiriro' : 'Introduction', step: plan.steps?.introduction },
+      { name: isKinyarwanda ? "Iterambere ry'isomo" : 'Lesson Development', step: plan.steps?.development },
+      { name: isKinyarwanda ? "Umwanzuro n'isuzumabumenyi" : 'Conclusion', step: plan.steps?.conclusion }
     ];
 
     stepsList.forEach(s => {
@@ -563,7 +577,7 @@ export async function exportPlansToCombinedDocx(
             width: { size: 1800, type: WidthType.DXA },
             shading: { fill: 'F1F5F9' },
             margins: { top: 70, bottom: 70, left: 80, right: 80 },
-            children: [new Paragraph({ children: [new TextRun({ text: "Teacher's self-evaluation", bold: true, size: 17, font: 'Calibri' })] })]
+            children: [new Paragraph({ children: [new TextRun({ text: isKinyarwanda ? "Isuzuma ry'umwarimu ku isomo rye" : "Teacher's self-evaluation", bold: true, size: 17, font: 'Calibri' })] })]
           }),
           new TableCell({
             width: { size: 8600, type: WidthType.DXA },
@@ -571,7 +585,7 @@ export async function exportPlansToCombinedDocx(
             margins: { top: 70, bottom: 70, left: 100, right: 100 },
             children: [
               new Paragraph({
-                children: [new TextRun({ text: plan.selfEvaluation || 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners actively engaged.', italics: true, size: 16, font: 'Calibri', color: '1E293B' })]
+                children: [new TextRun({ text: plan.selfEvaluation || (isKinyarwanda ? 'Intego y\'isomo yagezweho neza; abanyeshuri bagize uruhare mu bikorwa byo mu matsinda.' : 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners actively engaged.'), italics: true, size: 16, font: 'Calibri', color: '1E293B' })]
               })
             ]
           })

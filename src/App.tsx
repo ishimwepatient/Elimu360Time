@@ -11,13 +11,15 @@ import {
   RefreshCw,
   Heart,
   Home,
-  MessageCircle
+  MessageCircle,
+  HelpCircle
 } from 'lucide-react';
 import { ElimuProvider, useElimu } from './context/ElimuContext';
 import { ElimuLogo } from './components/brand/ElimuLogo';
 import { ServicesOverviewHome } from './components/home/ServicesOverviewHome';
 import { DocumentConverter } from './components/converter/DocumentConverter';
 import { LessonPlanGeneratorHub } from './components/generator/LessonPlanGeneratorHub';
+import { KinyarwandaQuestionBank } from './components/generator/KinyarwandaQuestionBank';
 import { SavedPlansLibrary } from './components/library/SavedPlansLibrary';
 import { REBCBCGuide } from './components/guide/REBCBCGuide';
 import { FAQCenter } from './components/faq/FAQCenter';
@@ -28,7 +30,7 @@ import { ShareSystemModal } from './components/share/ShareSystemModal';
 import { WhatsAppHelpWidget } from './components/support/WhatsAppHelpWidget';
 import { LiveActivityTicker } from './components/common/LiveActivityTicker';
 
-type ActiveTab = 'home' | 'converter' | 'generator' | 'library' | 'guide' | 'faq' | 'privacy';
+type ActiveTab = 'home' | 'converter' | 'generator' | 'question_bank' | 'library' | 'guide' | 'faq' | 'privacy';
 
 const MainAppContent: React.FC = () => {
   const { 
@@ -43,6 +45,7 @@ const MainAppContent: React.FC = () => {
   // App starts from Home / Services Overview as explicitly requested
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedQuestionForPlan, setSelectedQuestionForPlan] = useState<any>(null);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans transition-colors duration-300">
@@ -80,6 +83,18 @@ const MainAppContent: React.FC = () => {
             >
               <Sparkles className="w-4 h-4" />
               <span>Lesson Generator</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('question_bank')}
+              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+                activeTab === 'question_bank'
+                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>Question Bank (🇷🇼 Ikigega)</span>
             </button>
 
             <button
@@ -193,6 +208,15 @@ const MainAppContent: React.FC = () => {
               </button>
 
               <button
+                onClick={() => { setActiveTab('question_bank'); setMobileMenuOpen(false); }}
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
+                  activeTab === 'question_bank' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                }`}
+              >
+                <HelpCircle className="w-4 h-4" /> Ikigega cy'Ibibazo (2,200+ Questions)
+              </button>
+
+              <button
                 onClick={() => { setActiveTab('converter'); setMobileMenuOpen(false); }}
                 className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
                   activeTab === 'converter' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
@@ -255,7 +279,21 @@ const MainAppContent: React.FC = () => {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'home' && <ServicesOverviewHome onNavigate={tab => setActiveTab(tab)} />}
         {activeTab === 'converter' && <DocumentConverter />}
-        {activeTab === 'generator' && <LessonPlanGeneratorHub onNavigate={tab => setActiveTab(tab)} />}
+        {activeTab === 'generator' && (
+          <LessonPlanGeneratorHub 
+            onNavigate={tab => setActiveTab(tab)} 
+            initialQuestion={selectedQuestionForPlan}
+          />
+        )}
+        {activeTab === 'question_bank' && (
+          <KinyarwandaQuestionBank
+            onSelectForLessonPlan={(q) => {
+              setSelectedQuestionForPlan(q);
+              setActiveTab('generator');
+            }}
+            onNavigate={tab => setActiveTab(tab)}
+          />
+        )}
         {activeTab === 'library' && <SavedPlansLibrary onNavigateToGenerator={() => setActiveTab('generator')} />}
         {activeTab === 'guide' && <REBCBCGuide />}
         {activeTab === 'faq' && <FAQCenter />}

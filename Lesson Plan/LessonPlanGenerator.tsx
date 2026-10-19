@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   FileDown, 
@@ -26,6 +26,7 @@ import { saveAs } from 'file-saver';
 import { useElimu } from '../src/context/ElimuContext';
 import { exportFilesToNativeFolder, FileToSave } from '../src/utils/folderExportHelper';
 import { getRichDifferentiatedLesson, PEDAGOGICAL_APPROACHES, BLOOM_ACTION_VERBS } from '../src/utils/pedagogicalWordBank';
+import { KINYARWANDA_CURRICULUM_PRESETS, generateKinyarwandaLessonPlan } from '../src/utils/kinyarwandaPedagogicalBank';
 import { AdsterraNativeBanner } from '../src/components/ads/AdsterraNativeBanner';
 import { BulkExportModal } from '../src/components/generator/BulkExportModal';
 import { PostGenerationActionModal } from '../src/components/generator/PostGenerationActionModal';
@@ -127,7 +128,55 @@ function generateClientREBFallbackPlans(payload: any): LessonPlanData[] {
     : [payload.lessonTitle || 'Introduction to Subject Topic'];
   const total = titles.length;
 
+  const isKinyarwanda = 
+    payload.language === 'kinyarwanda' ||
+    payload.subject?.toLowerCase().includes('kinyarwanda') ||
+    payload.subject?.toLowerCase().includes('imibare') ||
+    payload.subject?.toLowerCase().includes('ibidukikije') ||
+    payload.subject?.toLowerCase().includes('ubugeni');
+
   return titles.map((title: string, idx: number) => {
+    if (isKinyarwanda) {
+      const rwLesson = generateKinyarwandaLessonPlan(title, idx, {
+        unitNumber: payload.unitNumber || '1',
+        unitTitle: payload.unitTitle || 'UMUTWE W\'ISOMO',
+        classLevel: payload.classLevel || 'Primary 1 (P1)',
+        subject: payload.subject || 'Ikinyarwanda',
+        duration: payload.duration || 'Iminota 40',
+        classSize: payload.classSize || 45,
+        specialNeeds: payload.specialNeeds
+      });
+
+      const lessonDate = getSequentialDate(payload.date, idx);
+      const lessonNumStr = `${idx + 1} kuri ${total}`;
+
+      return {
+        id: `lp_plan_${Date.now()}_${idx}`,
+        createdAt: new Date().toISOString(),
+        schoolName: payload.schoolName || 'Urwunge rw\'Amashuri Amahoro',
+        teacherName: payload.teacherName || 'Umwarimu',
+        term: payload.term || 'Igihembwe cya 1',
+        date: lessonDate,
+        subject: payload.subject || 'Ikinyarwanda',
+        classLevel: payload.classLevel || 'Primary 1 (P1)',
+        unitNumber: payload.unitNumber || '1',
+        lessonNumber: lessonNumStr,
+        duration: payload.duration || 'Iminota 40',
+        classSize: payload.classSize || 45,
+        specialNeeds: payload.specialNeeds || 'Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere hafi y\'ikibaho.',
+        unitTitle: (payload.unitTitle || 'UMUTWE W\'ISOMO').toUpperCase(),
+        keyUnitCompetence: payload.keyUnitCompetence || `Abanyeshuri bazashobora kugaragaza ubumenyi n'ubushobozi buhamye mu ${payload.unitTitle || 'isomo ry\'uyu mutwe'} bakoresheje imyitozo no gukorera hamwe.`,
+        lessonTitle: title,
+        instructionalObjective: rwLesson.instructionalObjective,
+        location: payload.location || 'Mu ishuri',
+        learningMaterials: rwLesson.learningMaterials,
+        references: rwLesson.references,
+        activitySummary: rwLesson.activitySummary,
+        steps: rwLesson.steps,
+        selfEvaluation: payload.selfEvaluation || rwLesson.selfEvaluation
+      };
+    }
+
     const richLesson = getRichDifferentiatedLesson(
       title,
       payload.subject || 'Subject',
@@ -233,9 +282,17 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
   let currentY = 10;
   const pageWidth = 190;
 
+  const isKinyarwanda = 
+    plan.subject?.toLowerCase().includes('kinyarwanda') ||
+    plan.subject?.toLowerCase().includes('imibare') ||
+    plan.subject?.toLowerCase().includes('ibidukikije') ||
+    plan.subject?.toLowerCase().includes('ubugeni') ||
+    plan.steps?.introduction?.teacherActivities?.[0]?.includes('abanyeshuri') ||
+    (plan as any).language === 'kinyarwanda';
+
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
-  doc.text('LESSON PLAN', 105, currentY, { align: 'center' });
+  doc.text(isKinyarwanda ? "ITEGURIRO RY'ISOMO" : "LESSON PLAN", 105, currentY, { align: 'center' });
   currentY += 5;
 
   doc.setFontSize(7.5);
@@ -275,12 +332,21 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
   doc.rect(marginX, currentY, pageWidth, 5.5);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
-  doc.text(`School Name: ${plan.schoolName || ''}`, marginX + 2, currentY + 3.8);
-  doc.text(`Teacher's Name: ${plan.teacherName || ''}`, marginX + 100, currentY + 3.8);
+  doc.text(`${isKinyarwanda ? 'Ishuri' : 'School Name'}: ${plan.schoolName || ''}`, marginX + 2, currentY + 3.8);
+  doc.text(`${isKinyarwanda ? 'Umwarimu' : "Teacher's Name"}: ${plan.teacherName || ''}`, marginX + 100, currentY + 3.8);
   currentY += 5.5;
 
   // Metadata Headers & Values
-  const cols = [
+  const cols = isKinyarwanda ? [
+    { name: 'Igihembwe', val: plan.term, w: 18 },
+    { name: 'Itariki', val: plan.date, w: 22 },
+    { name: 'Isomo', val: plan.subject, w: 25 },
+    { name: 'Umwaka', val: plan.classLevel, w: 26 },
+    { name: 'Umutwe', val: plan.unitNumber, w: 16 },
+    { name: 'Isomo No', val: plan.lessonNumber, w: 24 },
+    { name: 'Igihe', val: plan.duration, w: 22 },
+    { name: 'Abanyeshuri', val: `${plan.classSize || ''}`, w: 37 }
+  ] : [
     { name: 'Term', val: plan.term, w: 18 },
     { name: 'Date', val: plan.date, w: 22 },
     { name: 'Subject', val: plan.subject, w: 25 },
@@ -310,7 +376,7 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
   const snValW = 110;
   const snHeight = Math.max(7, calcHeight(plan.specialNeeds || 'None', snValW, 7, 7));
 
-  drawBox(marginX, currentY, snLabelW, snHeight, 'Type of special educational needs to be catered for in this lesson and number of learners in each category', { bold: true, bg: true, fontSize: 6.5 });
+  drawBox(marginX, currentY, snLabelW, snHeight, isKinyarwanda ? "Abafite ibibazo byihariye mu myigire n'umubare wabo muri buri cyiciro" : 'Type of special educational needs to be catered for in this lesson and number of learners in each category', { bold: true, bg: true, fontSize: 6.5 });
   drawBox(marginX + snLabelW, currentY, snValW, snHeight, plan.specialNeeds || 'None', { fontSize: 7 });
   currentY += snHeight;
 
@@ -326,13 +392,13 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
     currentY += valH;
   };
 
-  renderRow('Unit title', (plan.unitTitle || '').toUpperCase(), 5.5, true);
-  renderRow('Key unit competence', plan.keyUnitCompetence || '', 6);
-  renderRow('Title of the lesson', plan.lessonTitle || '', 5.5, true);
-  renderRow('Instructional objectives', plan.instructionalObjective || '', 7);
-  renderRow('Plan of this class (Location)', plan.location || '', 5);
-  renderRow('Learning materials', plan.learningMaterials || '', 5.5);
-  renderRow('References', plan.references || '', 6);
+  renderRow(isKinyarwanda ? "Umutwe w'isomo" : 'Unit title', (plan.unitTitle || '').toUpperCase(), 5.5, true);
+  renderRow(isKinyarwanda ? "Ubushobozi bw'ingenzi" : 'Key unit competence', plan.keyUnitCompetence || '', 6);
+  renderRow(isKinyarwanda ? "Umutwe w'isomo ry'uyu munsi" : 'Title of the lesson', plan.lessonTitle || '', 5.5, true);
+  renderRow(isKinyarwanda ? "Intego y'isomo" : 'Instructional objectives', plan.instructionalObjective || '', 7);
+  renderRow(isKinyarwanda ? "Aho isomo riberera" : 'Plan of this class (Location)', plan.location || '', 5);
+  renderRow(isKinyarwanda ? "Imfashanyigisho" : 'Learning materials', plan.learningMaterials || '', 5.5);
+  renderRow(isKinyarwanda ? "Ibitabo byifashishijwe" : 'References', plan.references || '', 6);
 
   currentY += 1.5;
 
@@ -346,9 +412,9 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
     currentY = 12;
   }
 
-  drawBox(marginX, currentY, col1W, 4.5, 'Timing for each step', { bold: true, bg: true, align: 'center', fontSize: 7 });
-  drawBox(marginX + col1W, currentY, col2W, 4.5, 'Description of teaching and learning activities', { bold: true, bg: true, align: 'center', fontSize: 7 });
-  drawBox(marginX + col1W + col2W, currentY, col3W, 4.5, 'Generic competences & cross-cutting issues', { bold: true, bg: true, align: 'center', fontSize: 7 });
+  drawBox(marginX, currentY, col1W, 4.5, isKinyarwanda ? "Intambwe n'igihe" : 'Timing for each step', { bold: true, bg: true, align: 'center', fontSize: 7 });
+  drawBox(marginX + col1W, currentY, col2W, 4.5, isKinyarwanda ? "Ibisobanuro by'ibikorwa byo kwigisha no kwiga" : 'Description of teaching and learning activities', { bold: true, bg: true, align: 'center', fontSize: 7 });
+  drawBox(marginX + col1W + col2W, currentY, col3W, 4.5, isKinyarwanda ? "Ubushobozi n'ingingo ngiro" : 'Generic competences & cross-cutting issues', { bold: true, bg: true, align: 'center', fontSize: 7 });
   currentY += 4.5;
 
   // Activity Summary row
@@ -368,16 +434,16 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
     currentY = 12;
   }
   drawBox(marginX, currentY, col1W, 3.8, '', { bg: true });
-  drawBox(marginX + col1W, currentY, col2W / 2, 3.8, "Teacher's activity", { bold: true, align: 'center', fontSize: 7 });
-  drawBox(marginX + col1W + (col2W / 2), currentY, col2W / 2, 3.8, "Learner's activity", { bold: true, align: 'center', fontSize: 7 });
+  drawBox(marginX + col1W, currentY, col2W / 2, 3.8, isKinyarwanda ? "Imirimo y'umwarimu" : "Teacher's activity", { bold: true, align: 'center', fontSize: 7 });
+  drawBox(marginX + col1W + (col2W / 2), currentY, col2W / 2, 3.8, isKinyarwanda ? "Imirimo y'umunyeshuri" : "Learner's activity", { bold: true, align: 'center', fontSize: 7 });
   drawBox(marginX + col1W + col2W, currentY, col3W, 3.8, '', { bg: true });
   currentY += 3.8;
 
   // Steps
   const stepItems = [
-    { name: 'Introduction', step: plan.steps?.introduction },
-    { name: 'Lesson Development', step: plan.steps?.development },
-    { name: 'Conclusion', step: plan.steps?.conclusion }
+    { name: isKinyarwanda ? 'Intangiriro' : 'Introduction', step: plan.steps?.introduction },
+    { name: isKinyarwanda ? "Iterambere ry'isomo" : 'Lesson Development', step: plan.steps?.development },
+    { name: isKinyarwanda ? "Umwanzuro n'isuzumabumenyi" : 'Conclusion', step: plan.steps?.conclusion }
   ];
 
   stepItems.forEach(item => {
@@ -409,7 +475,7 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
   });
 
   // Self Evaluation Section
-  const selfEvalText = plan.selfEvaluation || 'Lesson delivered effectively.';
+  const selfEvalText = plan.selfEvaluation || (isKinyarwanda ? 'Intego y\'isomo yagezweho neza.' : 'Lesson delivered effectively.');
   const selfEvalHeight = Math.max(12, calcHeight(selfEvalText, 140, 12, 7));
 
   if (currentY + selfEvalHeight + 2 > 282) {
@@ -417,18 +483,21 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
     currentY = 12;
   }
 
-  drawBox(marginX, currentY, 50, selfEvalHeight, "Teacher's Self-Evaluation", { bold: true, bg: true, fontSize: 7 });
+  drawBox(marginX, currentY, 50, selfEvalHeight, isKinyarwanda ? "Isuzuma ry'umwarimu" : "Teacher's Self-Evaluation", { bold: true, bg: true, fontSize: 7 });
   drawBox(marginX + 50, currentY, 140, selfEvalHeight, selfEvalText, { fontSize: 7 });
 
   return doc;
 }
 
 interface LessonPlanGeneratorProps {
-  onNavigate?: (tab: 'home' | 'converter' | 'generator' | 'library' | 'guide' | 'faq' | 'privacy') => void;
+  onNavigate?: (tab: 'home' | 'converter' | 'generator' | 'library' | 'question_bank' | 'guide' | 'faq' | 'privacy') => void;
+  initialQuestion?: any;
 }
 
-export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavigate }) => {
+export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavigate, initialQuestion }) => {
   // Form input states
+  const [language, setLanguage] = useState<'english' | 'kinyarwanda'>('english');
+  const [selectedCurriculumPreset, setSelectedCurriculumPreset] = useState<string>('');
   const [schoolName, setSchoolName] = useState<string>('');
   const [teacherName, setTeacherName] = useState<string>('');
   const [educationLevel, setEducationLevel] = useState<string>('PRIMARY');
@@ -447,6 +516,54 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
   const [lessonTitles, setLessonTitles] = useState<string[]>([]);
   const [newLessonInput, setNewLessonInput] = useState<string>('');
   const [selfEvaluation, setSelfEvaluation] = useState<string>('');
+
+  // Handle Initial Question incoming from Question Bank
+  useEffect(() => {
+    if (initialQuestion) {
+      setLanguage('kinyarwanda');
+      if (initialQuestion.subject) setSubject(initialQuestion.subject);
+      if (initialQuestion.classLevel) {
+        const cl = initialQuestion.classLevel;
+        setClassLevel(
+          cl === 'P1' ? 'Primary 1 (P1)' :
+          cl === 'P2' ? 'Primary 2 (P2)' :
+          cl === 'P3' ? 'Primary 3 (P3)' :
+          cl === 'P4' ? 'Primary 4 (P4)' :
+          cl === 'P5' ? 'Primary 5 (P5)' :
+          cl === 'P6' ? 'Primary 6 (P6)' :
+          cl
+        );
+      }
+      if (initialQuestion.unitNumber) setUnitNumber(initialQuestion.unitNumber);
+      if (initialQuestion.unitTitle) setUnitTitle(initialQuestion.unitTitle);
+      if (initialQuestion.questionText) {
+        setLessonTitles([`Isomo: ${initialQuestion.questionText.slice(0, 50)}`]);
+      }
+      setStatusMessage({
+        text: `Ikibazo cya ${initialQuestion.subject || 'Kinyarwanda'} cyatoranyijwe mu kigega cy'ibibazo cyinjijwe neza mu iteguriro ry'isomo!`,
+        type: 'success'
+      });
+    }
+  }, [initialQuestion]);
+
+  const handleSelectCurriculumPreset = (presetIndexStr: string) => {
+    setSelectedCurriculumPreset(presetIndexStr);
+    if (!presetIndexStr) return;
+    const idx = Number(presetIndexStr);
+    const p = KINYARWANDA_CURRICULUM_PRESETS[idx];
+    if (!p) return;
+    setLanguage('kinyarwanda');
+    setSubject(p.subject);
+    setClassLevel(p.classLevel);
+    setUnitNumber(p.unitNumber);
+    setUnitTitle(p.unitTitle);
+    setLessonTitles(p.sampleLessons);
+    setSpecialNeeds('Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere hafi y\'ikibaho.');
+    setStatusMessage({
+      text: `Integanyanyigisho ya REB: ${p.subject} - Umutwe ${p.unitNumber} (${p.sampleLessons.length} amasomo) yashyizwe mu iteguriro!`,
+      type: 'success'
+    });
+  };
 
   // UI state for Advanced/Optional Settings drawer
   const [showAdvancedSettings, setShowAdvancedSettings] = useState<boolean>(false);
@@ -513,24 +630,30 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
     }
 
     setIsGenerating(true);
-    setStatusMessage({ text: 'Drafting distinct REB Competency-Based Lesson Plans with varied pedagogical action verbs...', type: 'info' });
+    setStatusMessage({ 
+      text: language === 'kinyarwanda' 
+        ? 'Turimo gutegura amateguriro y\'amasomo y\'Ikinyarwanda akurikije amabwiriza ya REB CBC...' 
+        : 'Drafting distinct REB Competency-Based Lesson Plans with varied pedagogical action verbs...', 
+      type: 'info' 
+    });
 
     const payload = {
-      schoolName: schoolName.trim() || 'GS Amahoro Kigali',
-      teacherName: teacherName.trim() || 'Teacher',
+      schoolName: schoolName.trim() || (language === 'kinyarwanda' ? 'Urwunge rw\'Amashuri Amahoro' : 'GS Amahoro Kigali'),
+      teacherName: teacherName.trim() || (language === 'kinyarwanda' ? 'Umwarimu' : 'Teacher'),
       educationLevel,
-      classLevel: classLevel.trim() || 'Primary 6 (P6)',
-      subject: subject.trim() || 'Subject',
+      classLevel: classLevel.trim() || (language === 'kinyarwanda' ? 'Primary 1 (P1)' : 'Primary 6 (P6)'),
+      subject: subject.trim() || (language === 'kinyarwanda' ? 'Ikinyarwanda' : 'Subject'),
       term,
       date,
-      duration,
+      duration: duration || (language === 'kinyarwanda' ? 'Iminota 40' : '40 min'),
       classSize,
-      location,
-      specialNeeds: specialNeeds.trim() || 'No special educational needs reported for this group.',
+      location: location || (language === 'kinyarwanda' ? 'Mu ishuri' : 'Classroom & Outdoor Learning Area'),
+      specialNeeds: specialNeeds.trim() || (language === 'kinyarwanda' ? 'Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere.' : 'No special educational needs reported for this group.'),
       unitNumber: unitNumber.trim() || '1',
-      unitTitle: unitTitle.trim() || 'UNIT TOPIC',
+      unitTitle: unitTitle.trim() || (language === 'kinyarwanda' ? 'UMUTWE W\'ISOMO' : 'UNIT TOPIC'),
       lessonTitles: targetTitles,
-      selfEvaluation
+      selfEvaluation,
+      language
     };
 
     try {
@@ -763,29 +886,99 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
         {/* Left Form Panel: Simple, Straightforward, Non-Intimidating */}
         <div className="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
           
-          <div className="border-b border-slate-800 pb-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2 font-display">
-              <Sparkles className="w-5 h-5 text-amber-400" />
-              <span>Step 1: Enter Lesson Details</span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Fill in the basic info below. Default settings are pre-filled for Rwandan schools.
+          <div className="border-b border-slate-800 pb-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2 font-display">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+                <span>{language === 'kinyarwanda' ? 'Intambwe ya 1: Ibisobanuro by\'Isomo' : 'Step 1: Enter Lesson Details'}</span>
+              </h2>
+            </div>
+            
+            {/* Language Selector Switcher */}
+            <div className="flex items-center p-1 bg-slate-950 rounded-2xl border border-slate-800 text-xs">
+              <button
+                type="button"
+                onClick={() => setLanguage('english')}
+                className={`flex-1 py-2 rounded-xl font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                  language === 'english'
+                    ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>English (REB CBC)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLanguage('kinyarwanda');
+                  if (subject === 'English Language') setSubject('Ikinyarwanda');
+                  if (classLevel === 'Primary 6 (P6)') setClassLevel('Primary 1 (P1)');
+                }}
+                className={`flex-1 py-2 rounded-xl font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                  language === 'kinyarwanda'
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 shadow-md font-black'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>🇷🇼 Ikinyarwanda</span>
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-400">
+              {language === 'kinyarwanda' 
+                ? 'Hitamo umutwe mu nteganyanyigisho y\'Ikinyarwanda, Imibare P1-P3, cyangwa Ibidukikije kugira ngo byuzure mu buryo bwikora.' 
+                : 'Fill in the basic info below. Default settings are pre-filled for Rwandan schools.'}
             </p>
           </div>
 
           <form onSubmit={handleGenerateLessonPlans} className="space-y-5">
             
+            {/* Kinyarwanda Curriculum Presets Selector (when Kinyarwanda is active) */}
+            {language === 'kinyarwanda' && (
+              <div className="p-3.5 bg-amber-950/20 border border-amber-500/30 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-bold text-amber-300">
+                    📚 Hitamo Umutwe n'Amasomo bya REB CBC:
+                  </label>
+                  {onNavigate && (
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('question_bank')}
+                      className="text-[10px] text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer"
+                    >
+                      Fungura Ikigega cy'Ibibazo (2,200+) →
+                    </button>
+                  )}
+                </div>
+                <select
+                  value={selectedCurriculumPreset}
+                  onChange={(e) => handleSelectCurriculumPreset(e.target.value)}
+                  className="w-full text-xs px-3 py-2.5 bg-slate-950 border border-amber-500/40 rounded-xl text-white focus:outline-none focus:border-amber-400 cursor-pointer"
+                >
+                  <option value="">-- Hitamo Umutwe mu nteganyanyigisho (Kanda hano) --</option>
+                  {KINYARWANDA_CURRICULUM_PRESETS.map((p, pIdx) => (
+                    <option key={pIdx} value={pIdx}>
+                      {p.subject} ({p.classLevel}) - Umutwe {p.unitNumber}: {p.unitTitle}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-[10px] text-slate-400 block">
+                  Iyo uhisemo umutwe, amasomo yose n'ubushobozi bwitezwe bihita byuzura ako kanya!
+                </span>
+              </div>
+            )}
+
             {/* Subject and Class Level - Primary Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-200 mb-1.5">
-                  Subject <span className="text-amber-400">*</span>
+                  {language === 'kinyarwanda' ? 'Isomo (Subject)' : 'Subject'} <span className="text-amber-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="e.g. English, Mathematics, Science"
+                  placeholder={language === 'kinyarwanda' ? "urugero: Ikinyarwanda, Imibare, Ibidukikije" : "e.g. English, Mathematics, Science"}
                   className="w-full text-xs px-3.5 py-3 bg-slate-950 border border-slate-800 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                   required
                 />
@@ -793,13 +986,13 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
 
               <div>
                 <label className="block text-xs font-bold text-slate-200 mb-1.5">
-                  Class / Grade <span className="text-amber-400">*</span>
+                  {language === 'kinyarwanda' ? 'Umwaka / Icyiciro' : 'Class / Grade'} <span className="text-amber-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={classLevel}
                   onChange={(e) => setClassLevel(e.target.value)}
-                  placeholder="e.g. Primary 6 (P6), S1, S3"
+                  placeholder={language === 'kinyarwanda' ? "urugero: Primary 1 (P1), P2, P3, S1" : "e.g. Primary 6 (P6), S1, S3"}
                   className="w-full text-xs px-3.5 py-3 bg-slate-950 border border-slate-800 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                   required
                 />
@@ -810,7 +1003,7 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="sm:col-span-1">
                 <label className="block text-xs font-bold text-slate-200 mb-1.5">
-                  Unit No.
+                  {language === 'kinyarwanda' ? 'Umutwe No' : 'Unit No.'}
                 </label>
                 <input
                   type="text"
@@ -822,13 +1015,13 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
               </div>
               <div className="sm:col-span-3">
                 <label className="block text-xs font-bold text-slate-200 mb-1.5">
-                  Unit Title <span className="text-amber-400">*</span>
+                  {language === 'kinyarwanda' ? 'Umutwe w\'Isomo (Unit Title)' : 'Unit Title'} <span className="text-amber-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={unitTitle}
                   onChange={(e) => setUnitTitle(e.target.value)}
-                  placeholder="e.g. LEISURE AND SPORTS ACTIVITIES"
+                  placeholder={language === 'kinyarwanda' ? "urugero: UMURYANGO N'INSHUTI" : "e.g. LEISURE AND SPORTS ACTIVITIES"}
                   className="w-full text-xs px-3.5 py-3 bg-slate-950 border border-slate-800 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                   required
                 />
@@ -1030,13 +1223,15 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
               {isGenerating ? (
                 <>
                   <RefreshCw className="w-5 h-5 animate-spin" />
-                  <span>Drafting REB CBC Plans...</span>
+                  <span>{language === 'kinyarwanda' ? 'Turimo Gutegura Amateguriro ya REB CBC...' : 'Drafting REB CBC Plans...'}</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-5 h-5" />
                   <span>
-                    Generate {lessonTitles.length > 0 ? `${lessonTitles.length} Lesson Plan(s)` : 'Lesson Plan'}
+                    {language === 'kinyarwanda'
+                      ? `Tegura Amateguriro y'Amasomo ${lessonTitles.length > 0 ? `(${lessonTitles.length})` : ''} mu Kinyarwanda`
+                      : `Generate ${lessonTitles.length > 0 ? `${lessonTitles.length} Lesson Plan(s)` : 'Lesson Plan'}`}
                   </span>
                 </>
               )}

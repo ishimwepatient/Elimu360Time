@@ -15,6 +15,14 @@ export const LessonPlanTablePreview: React.FC<LessonPlanTablePreviewProps> = ({
 }) => {
   const [copied, setCopied] = React.useState(false);
 
+  const isKinyarwanda = 
+    plan.subject?.toLowerCase().includes('kinyarwanda') ||
+    plan.subject?.toLowerCase().includes('imibare') ||
+    plan.subject?.toLowerCase().includes('ibidukikije') ||
+    plan.subject?.toLowerCase().includes('ubugeni') ||
+    plan.steps?.introduction?.teacherActivities?.[0]?.includes('abanyeshuri') ||
+    (plan as any).language === 'kinyarwanda';
+
   const handleCopyText = () => {
     const text = `
 REB / CBC LESSON PLAN — ELIMU360 OPEN SYSTEM
@@ -110,20 +118,20 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
         {/* Document Title Header */}
         <div className="text-center space-y-1 pb-2 border-b-2 border-slate-900">
           <h1 className="text-xl sm:text-2xl font-black tracking-wider text-slate-950 uppercase font-display">
-            LESSON PLAN
+            {isKinyarwanda ? "ITEGURIRO RY'ISOMO / LESSON PLAN" : "LESSON PLAN"}
           </h1>
         </div>
 
         {/* School Name & Teacher's Name Header Line */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs font-bold text-slate-950 px-1 py-1 gap-2">
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-600 uppercase text-[11px]">School Name:</span>
+            <span className="text-slate-600 uppercase text-[11px]">{isKinyarwanda ? "Ishuri / School:" : "School Name:"}</span>
             <span className="font-extrabold text-slate-900 border-b border-dotted border-slate-400 pb-0.5">
               {plan.schoolName || 'GS Amahoro'}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-600 uppercase text-[11px]">Teacher's Name:</span>
+            <span className="text-slate-600 uppercase text-[11px]">{isKinyarwanda ? "Umwarimu / Teacher:" : "Teacher's Name:"}</span>
             <span className="font-extrabold text-slate-900 border-b border-dotted border-slate-400 pb-0.5">
               {plan.teacherName || 'NISHIMWE Joel Patient'}
             </span>
@@ -136,14 +144,14 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
             <tbody>
               {/* Row 1: Term, Date, Subject, Class, Unit No, Lesson No, Duration, Class size */}
               <tr className="border-b border-slate-900 bg-slate-100 font-bold text-center">
-                <td className="p-2 border-r border-slate-900">Term</td>
-                <td className="p-2 border-r border-slate-900">Date</td>
-                <td className="p-2 border-r border-slate-900">Subject</td>
-                <td className="p-2 border-r border-slate-900">Class</td>
-                <td className="p-2 border-r border-slate-900">Unit No</td>
-                <td className="p-2 border-r border-slate-900">Lesson No</td>
-                <td className="p-2 border-r border-slate-900">Duration</td>
-                <td className="p-2">Class size</td>
+                <td className="p-2 border-r border-slate-900">{isKinyarwanda ? "Igihembwe" : "Term"}</td>
+                <td className="p-2 border-r border-slate-900">{isKinyarwanda ? "Itariki" : "Date"}</td>
+                <td className="p-2 border-r border-slate-900">{isKinyarwanda ? "Isomo" : "Subject"}</td>
+                <td className="p-2 border-r border-slate-900">{isKinyarwanda ? "Umwaka" : "Class"}</td>
+                <td className="p-2 border-r border-slate-900">{isKinyarwanda ? "Umutwe" : "Unit No"}</td>
+                <td className="p-2 border-r border-slate-900">{isKinyarwanda ? "Isomo No" : "Lesson No"}</td>
+                <td className="p-2 border-r border-slate-900">{isKinyarwanda ? "Igihe" : "Duration"}</td>
+                <td className="p-2">{isKinyarwanda ? "Abanyeshuri" : "Class size"}</td>
               </tr>
               <tr className="border-b border-slate-900 font-medium text-center">
                 <td className="p-2 border-r border-slate-900">{plan.term || 'Term 1'}</td>
@@ -159,17 +167,19 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Row 2: Special Needs */}
               <tr className="border-b border-slate-900">
                 <td colSpan={3} className="p-2.5 font-bold bg-slate-50 border-r border-slate-900">
-                  Type of special educational needs to be catered for in this lesson and number of learners in each category
+                  {isKinyarwanda 
+                    ? "Abafite ibibazo byihariye mu myigire n'umubare wabo muri buri cyiciro" 
+                    : "Type of special educational needs to be catered for in this lesson and number of learners in each category"}
                 </td>
                 <td colSpan={5} className="p-2.5 font-medium leading-relaxed">
-                  {plan.specialNeeds || 'Attention disorder (2 learners: sit in the front row, use visual cues)'}
+                  {plan.specialNeeds || 'Abanyeshuri bakeneye ubufasha bwihariye bicajwe imbere hafi y\'ikibaho.'}
                 </td>
               </tr>
 
               {/* Row 3: Unit Title */}
               <tr className="border-b border-slate-900">
                 <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                  Unit title
+                  {isKinyarwanda ? "Umutwe w'isomo" : "Unit title"}
                 </td>
                 <td colSpan={6} className="p-2 font-extrabold text-slate-950 uppercase tracking-wide">
                   {plan.unitTitle}
@@ -179,7 +189,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Row 4: Key Unit Competence */}
               <tr className="border-b border-slate-900">
                 <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                  Key unit competence
+                  {isKinyarwanda ? "Ubushobozi bw'ingenzi bwitezwe ku mutwe" : "Key unit competence"}
                 </td>
                 <td colSpan={6} className="p-2 font-medium leading-relaxed">
                   {plan.keyUnitCompetence}
@@ -189,7 +199,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Row 5: Title of the lesson */}
               <tr className="border-b border-slate-900">
                 <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                  Title of the lesson
+                  {isKinyarwanda ? "Umutwe w'isomo ry'uyu munsi" : "Title of the lesson"}
                 </td>
                 <td colSpan={6} className="p-2 font-extrabold text-slate-950 text-sm">
                   {plan.lessonTitle}
@@ -199,7 +209,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Row 6: Instructional Objectives */}
               <tr className="border-b border-slate-900">
                 <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                  Instructional objectives
+                  {isKinyarwanda ? "Intego y'isomo" : "Instructional objectives"}
                 </td>
                 <td colSpan={6} className="p-2 font-medium leading-relaxed text-slate-900">
                   {plan.instructionalObjective}
@@ -209,17 +219,17 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Row 7: Location */}
               <tr className="border-b border-slate-900">
                 <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                  Plan of this class (Location)
+                  {isKinyarwanda ? "Aho isomo riberera" : "Plan of this class (Location)"}
                 </td>
                 <td colSpan={6} className="p-2 font-medium">
-                  {plan.location || 'Classroom / Science Corner'}
+                  {plan.location || (isKinyarwanda ? 'Mu ishuri / Ahasanzwe higirwa' : 'Classroom / Science Corner')}
                 </td>
               </tr>
 
               {/* Row 8: Learning materials */}
               <tr className="border-b border-slate-900">
                 <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                  Learning materials
+                  {isKinyarwanda ? "Imfashanyigisho" : "Learning materials"}
                 </td>
                 <td colSpan={6} className="p-2 font-medium leading-relaxed">
                   {plan.learningMaterials}
@@ -229,7 +239,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Row 9: References */}
               <tr>
                 <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                  References
+                  {isKinyarwanda ? "Ibitabo byifashishijwe" : "References"}
                 </td>
                 <td colSpan={6} className="p-2 font-medium leading-relaxed whitespace-pre-line">
                   {plan.references}
@@ -245,27 +255,29 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
             <thead>
               <tr className="border-b border-slate-900 bg-slate-100 font-bold">
                 <th className="p-2 border-r border-slate-900 w-1/5 text-left align-middle">
-                  Timing for each step
+                  {isKinyarwanda ? "Intambwe n'igihe cyayo" : "Timing for each step"}
                 </th>
                 <th colSpan={2} className="p-2 border-r border-slate-900 w-3/5 text-center align-middle">
-                  Description of teaching and learning activities
+                  {isKinyarwanda ? "Ibisobanuro by'ibikorwa byo kwigisha no kwiga" : "Description of teaching and learning activities"}
                 </th>
                 <th className="p-2 w-1/5 text-left align-middle">
-                  Generic competences and cross-cutting issues + some explanations
+                  {isKinyarwanda ? "Ubushobozi n'ingingo ngiro zambukiranya amasomo" : "Generic competences and cross-cutting issues + some explanations"}
                 </th>
               </tr>
               {/* Summary row across description column */}
               <tr className="border-b border-slate-900 italic text-slate-800 bg-slate-50/80">
                 <td className="border-r border-slate-900"></td>
                 <td colSpan={2} className="p-2 border-r border-slate-900 text-center font-medium">
-                  {plan.activitySummary || `Students will engage in discussions and structured group activities on ${(plan.lessonTitle || '').toLowerCase()}.`}
+                  {plan.activitySummary || (isKinyarwanda 
+                    ? `Abanyeshuri baritegereza, baganire mu matsinda kuri ${(plan.lessonTitle || '').toLowerCase()}.` 
+                    : `Students will engage in discussions and structured group activities on ${(plan.lessonTitle || '').toLowerCase()}.`)}
                 </td>
                 <td></td>
               </tr>
               <tr className="border-b border-slate-900 bg-slate-100 font-bold text-center">
                 <td className="border-r border-slate-900"></td>
-                <td className="p-1.5 border-r border-slate-900 text-left w-1/2">Teacher's activity</td>
-                <td className="p-1.5 border-r border-slate-900 text-left w-1/2">Learner's activity</td>
+                <td className="p-1.5 border-r border-slate-900 text-left w-1/2">{isKinyarwanda ? "Imirimo y'umwarimu" : "Teacher's activity"}</td>
+                <td className="p-1.5 border-r border-slate-900 text-left w-1/2">{isKinyarwanda ? "Imirimo y'umunyeshuri" : "Learner's activity"}</td>
                 <td></td>
               </tr>
             </thead>
@@ -273,7 +285,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Step 1: Introduction */}
               <tr className="border-b border-slate-900">
                 <td className="p-2.5 font-bold bg-slate-50 border-r border-slate-900 align-top">
-                  Introduction ({plan.steps?.introduction?.duration || '7 min'})
+                  {isKinyarwanda ? "Intangiriro" : "Introduction"} ({plan.steps?.introduction?.duration || '5-7 min'})
                 </td>
                 <td className="p-2.5 border-r border-slate-900 align-top leading-relaxed">
                   <ul className="space-y-1.5">
@@ -310,7 +322,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Step 2: Lesson Development */}
               <tr className="border-b border-slate-900">
                 <td className="p-2.5 font-bold bg-slate-50 border-r border-slate-900 align-top">
-                  Lesson Development ({plan.steps?.development?.duration || '25 min'})
+                  {isKinyarwanda ? "Iterambere ry'isomo" : "Lesson Development"} ({plan.steps?.development?.duration || '20-25 min'})
                 </td>
                 <td className="p-2.5 border-r border-slate-900 align-top leading-relaxed">
                   <ul className="space-y-1.5">
@@ -347,7 +359,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Step 3: Conclusion */}
               <tr className="border-b border-slate-900">
                 <td className="p-2.5 font-bold bg-slate-50 border-r border-slate-900 align-top">
-                  Conclusion ({plan.steps?.conclusion?.duration || '8 min'})
+                  {isKinyarwanda ? "Umwanzuro n'isuzumabumenyi" : "Conclusion"} ({plan.steps?.conclusion?.duration || '8-10 min'})
                 </td>
                 <td className="p-2.5 border-r border-slate-900 align-top leading-relaxed">
                   <ul className="space-y-1.5">
@@ -384,10 +396,12 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
               {/* Bottom Row: Teacher's self-evaluation */}
               <tr>
                 <td className="p-2.5 font-bold bg-slate-50 border-r border-slate-900 align-top">
-                  Teacher's self-evaluation
+                  {isKinyarwanda ? "Isuzuma ry'umwarimu ku isomo rye" : "Teacher's self-evaluation"}
                 </td>
                 <td colSpan={3} className="p-2.5 font-medium italic text-slate-900 leading-relaxed">
-                  {plan.selfEvaluation || 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners engaged in cooperative group work and formative assessment.'}
+                  {plan.selfEvaluation || (isKinyarwanda 
+                    ? 'Intego y\'isomo yagezweho ku kigero gishimishije; abanyeshuri bitabiriye imirimo yo mu matsinda n\'isuzuma.' 
+                    : 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners engaged in cooperative group work and formative assessment.')}
                 </td>
               </tr>
             </tbody>
