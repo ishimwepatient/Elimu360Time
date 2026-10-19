@@ -16,6 +16,15 @@ export const LessonPlanViewModal: React.FC<Props> = ({ plan, onClose, onSave }) 
   const [isEditing, setIsEditing] = useState(false);
   const [editedPlan, setEditedPlan] = useState<LessonPlanData>({ ...plan });
 
+  const isKinyarwanda = 
+    plan.subject?.toLowerCase().includes('kinyarwanda') ||
+    plan.subject?.toLowerCase().includes('imibare') ||
+    plan.subject?.toLowerCase().includes('ibidukikije') ||
+    plan.subject?.toLowerCase().includes('ubugeni') ||
+    plan.steps?.introduction?.teacherActivities?.[0]?.includes('abanyeshuri') ||
+    plan.lessonNumber?.includes('kuri') ||
+    (plan as any).language === 'kinyarwanda';
+
   const handlePrint = () => {
     window.print();
   };
@@ -186,14 +195,14 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
             {/* Document Title Header */}
             <div className="text-center space-y-1 pb-2 border-b border-slate-900">
               <h1 className="text-xl font-black tracking-wider text-slate-950 uppercase font-display">
-                LESSON PLAN
+                {isKinyarwanda ? "ITEGURIRO RY'ISOMO" : "LESSON PLAN"}
               </h1>
             </div>
 
             {/* School Name & Teacher's Name Header Line */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs font-bold text-slate-950 px-1 py-1">
               <div>
-                <span>School Name: </span>
+                <span>{isKinyarwanda ? "Ishuri: " : "School Name: "}</span>
                 {isEditing ? (
                   <input
                     type="text"
@@ -202,11 +211,11 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                     className="p-1 bg-amber-50 border border-amber-300 rounded font-semibold"
                   />
                 ) : (
-                  <span className="font-semibold text-slate-800">{plan.schoolName || 'GS Amahoro'}</span>
+                  <span className="font-semibold text-slate-800">{plan.schoolName || (isKinyarwanda ? 'Urwunge rw\'Amashuri Amahoro' : 'GS Amahoro')}</span>
                 )}
               </div>
               <div>
-                <span>Teacher's Name: </span>
+                <span>{isKinyarwanda ? "Umwarimu: " : "Teacher's Name: "}</span>
                 {isEditing ? (
                   <input
                     type="text"
@@ -215,7 +224,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                     className="p-1 bg-amber-50 border border-amber-300 rounded font-semibold"
                   />
                 ) : (
-                  <span className="font-semibold text-slate-800">{plan.teacherName || 'NISHIMWE Joel Patient'}</span>
+                  <span className="font-semibold text-slate-800">{plan.teacherName || (isKinyarwanda ? 'Umwarimu' : 'Teacher')}</span>
                 )}
               </div>
             </div>
@@ -226,14 +235,14 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                 <tbody>
                   {/* Row 1: Term, Date, Subject, Class, Unit No, Lesson No, Duration, Class size */}
                   <tr className="border-b border-slate-900 bg-slate-100/80 font-bold">
-                    <td className="p-1.5 border-r border-slate-900">Term</td>
-                    <td className="p-1.5 border-r border-slate-900">Date</td>
-                    <td className="p-1.5 border-r border-slate-900">Subject</td>
-                    <td className="p-1.5 border-r border-slate-900">Class</td>
-                    <td className="p-1.5 border-r border-slate-900">Unit No</td>
-                    <td className="p-1.5 border-r border-slate-900">Lesson No</td>
-                    <td className="p-1.5 border-r border-slate-900">Duration</td>
-                    <td className="p-1.5">Class size</td>
+                    <td className="p-1.5 border-r border-slate-900">{isKinyarwanda ? "Igihembwe" : "Term"}</td>
+                    <td className="p-1.5 border-r border-slate-900">{isKinyarwanda ? "Itariki" : "Date"}</td>
+                    <td className="p-1.5 border-r border-slate-900">{isKinyarwanda ? "Isomo" : "Subject"}</td>
+                    <td className="p-1.5 border-r border-slate-900">{isKinyarwanda ? "Umwaka" : "Class"}</td>
+                    <td className="p-1.5 border-r border-slate-900">{isKinyarwanda ? "Umutwe" : "Unit No"}</td>
+                    <td className="p-1.5 border-r border-slate-900">{isKinyarwanda ? "Isomo No" : "Lesson No"}</td>
+                    <td className="p-1.5 border-r border-slate-900">{isKinyarwanda ? "Igihe" : "Duration"}</td>
+                    <td className="p-1.5">{isKinyarwanda ? "Abanyeshuri" : "Class size"}</td>
                   </tr>
                   <tr className="border-b border-slate-900 font-medium">
                     <td className="p-1.5 border-r border-slate-900">{plan.term}</td>
@@ -249,17 +258,19 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Row 2: Special Needs */}
                   <tr className="border-b border-slate-900">
                     <td colSpan={4} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                      Type of special educational needs to be catered for in this lesson and number of learners in each category
+                      {isKinyarwanda
+                        ? "Abafite ibibazo byihariye mu myigire n'umubare wabo muri buri cyiciro"
+                        : "Type of special educational needs to be catered for in this lesson and number of learners in each category"}
                     </td>
                     <td colSpan={4} className="p-2 font-medium">
-                      {plan.specialNeeds || 'Attention disorder'}
+                      {plan.specialNeeds || (isKinyarwanda ? 'Abanyeshuri bakeneye ubufasha bicajwe imbere.' : 'Attention disorder')}
                     </td>
                   </tr>
 
                   {/* Row 3: Unit Title */}
                   <tr className="border-b border-slate-900">
                     <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                      Unit title
+                      {isKinyarwanda ? "Umutwe w'isomo" : "Unit title"}
                     </td>
                     <td colSpan={6} className="p-2 font-bold text-slate-950 uppercase tracking-wide">
                       {plan.unitTitle}
@@ -269,7 +280,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Row 4: Key Unit Competence */}
                   <tr className="border-b border-slate-900">
                     <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                      Key unit competence
+                      {isKinyarwanda ? "Ubushobozi bw'ingenzi bwitezwe ku mutwe" : "Key unit competence"}
                     </td>
                     <td colSpan={6} className="p-2 font-medium leading-relaxed">
                       {plan.keyUnitCompetence}
@@ -279,7 +290,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Row 5: Title of the lesson */}
                   <tr className="border-b border-slate-900">
                     <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                      Title of the lesson
+                      {isKinyarwanda ? "Umutwe w'isomo ry'uyu munsi" : "Title of the lesson"}
                     </td>
                     <td colSpan={6} className="p-2 font-bold text-slate-950">
                       {plan.lessonTitle}
@@ -289,7 +300,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Row 6: Instructional Objectives */}
                   <tr className="border-b border-slate-900">
                     <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                      Instructional objectives
+                      {isKinyarwanda ? "Intego y'isomo" : "Instructional objectives"}
                     </td>
                     <td colSpan={6} className="p-2 font-medium leading-relaxed">
                       {plan.instructionalObjective}
@@ -299,17 +310,17 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Row 7: Plan of this class (Location) */}
                   <tr className="border-b border-slate-900">
                     <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                      Plan of this class (Location)
+                      {isKinyarwanda ? "Aho isomo riberera" : "Plan of this class (Location)"}
                     </td>
                     <td colSpan={6} className="p-2 font-medium">
-                      {plan.location || 'Classroom'}
+                      {plan.location || (isKinyarwanda ? 'Mu ishuri' : 'Classroom')}
                     </td>
                   </tr>
 
                   {/* Row 8: Learning materials */}
                   <tr className="border-b border-slate-900">
                     <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                      Learning materials
+                      {isKinyarwanda ? "Imfashanyigisho" : "Learning materials"}
                     </td>
                     <td colSpan={6} className="p-2 font-medium leading-relaxed">
                       {plan.learningMaterials}
@@ -319,7 +330,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Row 9: References */}
                   <tr>
                     <td colSpan={2} className="p-2 font-bold bg-slate-50 border-r border-slate-900">
-                      References
+                      {isKinyarwanda ? "Ibitabo byifashishijwe" : "References"}
                     </td>
                     <td colSpan={6} className="p-2 font-medium leading-relaxed whitespace-pre-line">
                       {plan.references}
@@ -335,27 +346,27 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                 <thead>
                   <tr className="border-b border-slate-900 bg-slate-100 font-bold">
                     <th className="p-2 border-r border-slate-900 w-1/5 text-left align-middle">
-                      Timing for each step
+                      {isKinyarwanda ? "Intambwe n'igihe cyayo" : "Timing for each step"}
                     </th>
                     <th colSpan={2} className="p-2 border-r border-slate-900 w-3/5 text-center align-middle">
-                      Description of teaching and learning activities
+                      {isKinyarwanda ? "Ibisobanuro by'ibikorwa byo kwigisha no kwiga" : "Description of teaching and learning activities"}
                     </th>
                     <th className="p-2 w-1/5 text-left align-middle">
-                      Generic competences and cross-cutting issues + some explanations
+                      {isKinyarwanda ? "Ubushobozi n'ingingo ngiro zambukiranya amasomo" : "Generic competences and cross-cutting issues + some explanations"}
                     </th>
                   </tr>
                   {/* Summary row across description column */}
                   <tr className="border-b border-slate-900 italic text-slate-800 bg-slate-50/80">
                     <td className="border-r border-slate-900"></td>
                     <td colSpan={2} className="p-1.5 border-r border-slate-900 text-center font-medium">
-                      {plan.activitySummary || `Students will engage in discussions and structured group activities on ${plan.lessonTitle.toLowerCase()}.`}
+                      {plan.activitySummary || (isKinyarwanda ? `Abanyeshuri bafatanya mu matsinda kwiga kuri ${(plan.lessonTitle || '').toLowerCase()}.` : `Students will engage in discussions and structured group activities on ${plan.lessonTitle.toLowerCase()}.`)}
                     </td>
                     <td></td>
                   </tr>
                   <tr className="border-b border-slate-900 bg-slate-100 font-bold">
                     <td className="border-r border-slate-900"></td>
-                    <td className="p-1.5 border-r border-slate-900 text-left w-1/2">Teacher's activity</td>
-                    <td className="p-1.5 border-r border-slate-900 text-left w-1/2">Learner's activity</td>
+                    <td className="p-1.5 border-r border-slate-900 text-left w-1/2">{isKinyarwanda ? "Imirimo y'umwarimu" : "Teacher's activity"}</td>
+                    <td className="p-1.5 border-r border-slate-900 text-left w-1/2">{isKinyarwanda ? "Imirimo y'umunyeshuri" : "Learner's activity"}</td>
                     <td></td>
                   </tr>
                 </thead>
@@ -363,13 +374,13 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Step 1: Introduction */}
                   <tr className="border-b border-slate-900">
                     <td className="p-2 font-bold bg-slate-50 border-r border-slate-900 align-top">
-                      Introduction ({plan.steps.introduction.duration})
+                      {isKinyarwanda ? "Intangiriro" : "Introduction"} ({plan.steps.introduction.duration})
                     </td>
                     <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
                       <ul className="space-y-1">
                         {plan.steps.introduction.teacherActivities.map((act, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{act}</span>
                           </li>
                         ))}
@@ -379,7 +390,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                       <ul className="space-y-1">
                         {plan.steps.introduction.learnerActivities.map((act, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{act}</span>
                           </li>
                         ))}
@@ -389,7 +400,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                       <ul className="space-y-1">
                         {plan.steps.introduction.competencesAndCrossCutting.map((comp, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{comp}</span>
                           </li>
                         ))}
@@ -400,13 +411,13 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Step 2: Lesson Development */}
                   <tr className="border-b border-slate-900">
                     <td className="p-2 font-bold bg-slate-50 border-r border-slate-900 align-top">
-                      Lesson Development ({plan.steps.development.duration})
+                      {isKinyarwanda ? "Iterambere ry'isomo" : "Lesson Development"} ({plan.steps.development.duration})
                     </td>
                     <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
                       <ul className="space-y-1.5">
                         {plan.steps.development.teacherActivities.map((act, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{act}</span>
                           </li>
                         ))}
@@ -416,7 +427,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                       <ul className="space-y-1.5">
                         {plan.steps.development.learnerActivities.map((act, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{act}</span>
                           </li>
                         ))}
@@ -426,7 +437,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                       <ul className="space-y-1.5">
                         {plan.steps.development.competencesAndCrossCutting.map((comp, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{comp}</span>
                           </li>
                         ))}
@@ -437,13 +448,13 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Step 3: Conclusion */}
                   <tr className="border-b border-slate-900">
                     <td className="p-2 font-bold bg-slate-50 border-r border-slate-900 align-top">
-                      Conclusion ({plan.steps.conclusion.duration})
+                      {isKinyarwanda ? "Umwanzuro n'isuzumabumenyi" : "Conclusion"} ({plan.steps.conclusion.duration})
                     </td>
                     <td className="p-2 border-r border-slate-900 align-top leading-relaxed">
                       <ul className="space-y-1">
                         {plan.steps.conclusion.teacherActivities.map((act, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{act}</span>
                           </li>
                         ))}
@@ -453,7 +464,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                       <ul className="space-y-1">
                         {plan.steps.conclusion.learnerActivities.map((act, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{act}</span>
                           </li>
                         ))}
@@ -463,7 +474,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                       <ul className="space-y-1">
                         {plan.steps.conclusion.competencesAndCrossCutting.map((comp, i) => (
                           <li key={i} className="flex gap-1.5">
-                            <span className="shrink-0">-</span>
+                            <span className="shrink-0">•</span>
                             <span>{comp}</span>
                           </li>
                         ))}
@@ -474,10 +485,12 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                   {/* Bottom Row: Teacher's self-evaluation */}
                   <tr>
                     <td className="p-2 font-bold bg-slate-50 border-r border-slate-900 align-top">
-                      Teacher's self-evaluation
+                      {isKinyarwanda ? "Isuzuma ry'umwarimu ku isomo rye" : "Teacher's self-evaluation"}
                     </td>
                     <td colSpan={3} className="p-2 font-medium italic text-slate-900 leading-relaxed">
-                      {plan.selfEvaluation || 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners engaged in cooperative group work and formative assessment.'}
+                      {plan.selfEvaluation || (isKinyarwanda 
+                        ? 'Intego y\'isomo yagezweho ku buryo bushimishije; abanyeshuri bitabiriye neza imirimo y\'amatsinda n\'imyitozo ifatika.' 
+                        : 'Lesson delivered effectively following official REB Competency-Based Curriculum guidelines. Instructional objectives met; learners engaged in cooperative group work and formative assessment.')}
                     </td>
                   </tr>
                 </tbody>

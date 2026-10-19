@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig, Plugin} from 'vite';
+import { generateKinyarwandaLessonPlan } from './src/utils/kinyarwandaPedagogicalBank';
 
 // Global in-memory storage for uploaded assets if ImageKit API is offline/not configured
 const assetStorage = new Map<string, { buffer: Buffer; contentType: string; name: string }>();
@@ -173,6 +174,54 @@ function generateFallbackREBLessonPlans(payload: any) {
     ? payload.lessonTitles
     : [payload.lessonTitle || 'Introduction to Subject Topic'];
   const total = titles.length;
+
+  const isKinyarwanda = 
+    payload.language === 'kinyarwanda' ||
+    payload.subject?.toLowerCase().includes('kinyarwanda') ||
+    payload.subject?.toLowerCase().includes('imibare') ||
+    payload.subject?.toLowerCase().includes('ibidukikije') ||
+    payload.subject?.toLowerCase().includes('ubugeni');
+
+  if (isKinyarwanda) {
+    return titles.map((title: string, idx: number) => {
+      const rwLesson = generateKinyarwandaLessonPlan(title, idx, {
+        unitNumber: payload.unitNumber || '1',
+        unitTitle: payload.unitTitle || 'UMUTWE W\'ISOMO',
+        classLevel: payload.classLevel || 'Primary 1 (P1)',
+        subject: payload.subject || 'Ikinyarwanda',
+        duration: payload.duration || 'Iminota 40',
+        classSize: payload.classSize || 45,
+        specialNeeds: payload.specialNeeds
+      });
+
+      const lessonDate = getSequentialDate(payload.date, idx);
+      const lessonNumStr = `Isomo rya ${idx + 1} kuri ${total}`;
+
+      return {
+        schoolName: payload.schoolName || 'Urwunge rw\'Amashuri Amahoro',
+        teacherName: payload.teacherName || 'Umwarimu',
+        term: payload.term || 'Igihembwe cya 1',
+        date: lessonDate,
+        subject: payload.subject || 'Ikinyarwanda',
+        classLevel: payload.classLevel || 'Primary 1 (P1)',
+        unitNumber: payload.unitNumber || '1',
+        lessonNumber: lessonNumStr,
+        duration: payload.duration || 'Iminota 40',
+        classSize: payload.classSize || 45,
+        specialNeeds: payload.specialNeeds || 'Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere hafi y\'ikibaho.',
+        unitTitle: (payload.unitTitle || 'UMUTWE W\'ISOMO').toUpperCase(),
+        keyUnitCompetence: payload.keyUnitCompetence || `Abanyeshuri bazashobora kugaragaza ubumenyi n'ubushobozi buhamye mu ${payload.unitTitle || 'isomo ry\'uyu mutwe'} bakoresheje imyitozo no gukorera hamwe.`,
+        lessonTitle: title,
+        instructionalObjective: rwLesson.instructionalObjective,
+        location: payload.location || 'Mu ishuri',
+        learningMaterials: rwLesson.learningMaterials,
+        references: rwLesson.references,
+        activitySummary: rwLesson.activitySummary,
+        steps: rwLesson.steps,
+        selfEvaluation: payload.selfEvaluation || rwLesson.selfEvaluation
+      };
+    });
+  }
 
   // Rich pedagogical pools to make each lesson plan differ significantly
   const introTeacherProfiles = [
@@ -628,7 +677,48 @@ Return structured JSON.`
                   });
 
                   const totalLessons = (payload.lessonTitles && payload.lessonTitles.length > 0) ? payload.lessonTitles.length : 1;
-                  const promptText = `Generate official REB Competency-Based Curriculum (CBC) Lesson Plans for Unit ${payload.unitNumber}: "${payload.unitTitle}".
+                  const isKinyarwanda = 
+                    payload.language === 'kinyarwanda' ||
+                    payload.subject?.toLowerCase().includes('kinyarwanda') ||
+                    payload.subject?.toLowerCase().includes('imibare') ||
+                    payload.subject?.toLowerCase().includes('ibidukikije') ||
+                    payload.subject?.toLowerCase().includes('ubugeni');
+
+                  const systemInstruction = isKinyarwanda
+                    ? "You are an official master curriculum inspector and expert pedagogical writer for the Rwanda Basic Education Board (REB) Competence-Based Curriculum (CBC). MANDATORY REQUIREMENT: EVERY SINGLE LESSON PLAN MUST BE 100% IN AUTHENTIC, PURE KINYARWANDA. Absolutely NO English words or descriptions are allowed in any field (no English in instructionalObjective, activitySummary, teacherActivities, learnerActivities, competencesAndCrossCutting, location, references, or selfEvaluation). Use hundreds of diverse, authentic Kinyarwanda action verbs and Bloom's Taxonomy verbs (kugaragaza, gusobanura, gusesengura, gushyira mu bikorwa, kwitegereza, gucukumbura, gukora imyitozo, gufatanya, kubaza, gushishikariza). Ensure every lesson plan in the batch has distinct classroom activities and varied teaching methodologies. Return a valid JSON array matching the schema."
+                    : "You are an official master curriculum inspector for the Rwanda Education Board (REB) Competency-Based Curriculum (CBC). Every lesson plan in a batch MUST have distinct vocabulary, different pedagogical strategies, unique teacher-learner dialogues, and rich variety in Bloom's action verbs. Never generate repetitive cookie-cutter content. Return a JSON array of lesson plan objects matching the required schema.";
+
+                  const promptText = isKinyarwanda ? `Tegura Amateguriro y'Amasomo y'Umwimerere mu Kinyarwanda 100% akurikije Integanyanyigisho ya REB CBC ku Mutwe wa ${payload.unitNumber}: "${payload.unitTitle}".
+Ishuri: ${payload.schoolName}
+Umwarimu: ${payload.teacherName}
+Isomo: ${payload.subject}
+Umwaka: ${payload.classLevel}
+Igihembwe: ${payload.term}
+Itariki: ${payload.date}
+Igihe: ${payload.duration || 'Iminota 40'}
+Abanyeshuri: ${payload.classSize}
+Aho riberera: ${payload.location || 'Mu cyumba cy\'ishuri'}
+Abafite ibibazo byihariye mu myigire: ${payload.specialNeeds || 'Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere hafi y\'ikibaho.'}
+Umutwe w'isomo: ${payload.unitTitle}
+Amasomo agize uyu mutwe:
+${(payload.lessonTitles || ['Isomo rya 1']).map((title: string, idx: number) => `Isomo rya ${idx + 1} kuri ${totalLessons}: "${title}"`).join('\n')}
+
+AMABWIRIZA Y'INGENZI CYANE (100% KINYARWANDA - NTA JAMO RY'ICYONGEREZA NA RIMWE):
+1. IBISOBANURO BYOSE, INSHINGA, N'IBIKORWA BYO KWIGISHA NO KWIGA BIGOMBA KUBA MU KINYARWANDA CY'UMWIMERERE. Ntugakoreshe na rimwe amagambo y'Icyongereza mu ntego y'isomo, mu bikorwa bya mwarimu, mu bikorwa by'abanyeshuri, mu bushobozi, cyangwa mu ncamake!
+2. Koresha inshinga nyinshi zitandukanye z'Ikinyarwanda z'ibikorwa bya mwarimu n'iby'abanyeshuri na Bloom (kugaragaza, gusobanura, gusesengura, gushyira mu bikorwa, kwitegereza, guhanga, gukemura ibibazo).
+3. Buri somo rigomba kugira imikoranire itandukanye n'iryariherutse (imirimo y'amatsinda, ibintu bifatika, ikinamico n'imikino, ibibazo n'ibisubizo byo gucukumbura, isangizabitekerezo ry'abanyeshuri babiri babiri).
+4. "lessonNumber": "Isomo rya [x] kuri ${totalLessons}" (urugero: "Isomo rya 1 kuri ${totalLessons}")
+5. "instructionalObjective": Mu Kinyarwanda cyuzuye (urugero: "Binyuze mu [mfashanyigisho], umunyeshuri azashobora [inshinga ya Bloom] ku buryo buhamye no gusobanura [umutwe w'isomo] ku kigero kirenze 80% mu minota 40 nta kosa akoze.")
+6. "location": "Mu cyumba cy'ishuri" cyangwa "Mu ishuri"
+7. "learningMaterials": Imfashanyigisho zose mu Kinyarwanda (ibitabo, ikibaho, amashusho, uduti two kubara, ingwa, amakarita)
+8. "references": "Ikigo cy'Igihugu gishinzwe Uburezi mu Rwanda (REB). Integanyanyigisho y'${payload.subject}. Igitabo cy'umunyeshuri n'icy'umwarimu."
+9. "activitySummary": Incamake y'ibikorwa by'isomo mu Kinyarwanda gusa.
+10. "steps":
+    - "introduction": duration ("Iminota 5"), teacherActivities (3-4 mu Kinyarwanda), learnerActivities (3-4 mu Kinyarwanda), competencesAndCrossCutting (2-3 mu Kinyarwanda)
+    - "development": duration ("Iminota 25"), teacherActivities (4-5 mu Kinyarwanda), learnerActivities (4-5 mu Kinyarwanda), competencesAndCrossCutting (3-4 mu Kinyarwanda)
+    - "conclusion": duration ("Iminota 10"), teacherActivities (3 mu Kinyarwanda), learnerActivities (3 mu Kinyarwanda), competencesAndCrossCutting (2 mu Kinyarwanda)
+11. "selfEvaluation": Isuzuma rya mwarimu mu Kinyarwanda cyonyine.`
+                    : `Generate official REB Competency-Based Curriculum (CBC) Lesson Plans for Unit ${payload.unitNumber}: "${payload.unitTitle}".
 School Name: ${payload.schoolName}
 Teacher's Name: ${payload.teacherName}
 Subject: ${payload.subject}
@@ -682,7 +772,7 @@ Required Fields for each lesson:
                     model: 'gemini-2.5-flash',
                     contents: promptText,
                     config: {
-                      systemInstruction: "You are an official master curriculum inspector for the Rwanda Education Board (REB) Competency-Based Curriculum (CBC). Every lesson plan in a batch MUST have distinct vocabulary, different pedagogical strategies, unique teacher-learner dialogues, and rich variety in Bloom's action verbs. Never generate repetitive cookie-cutter content. Return a JSON array of lesson plan objects matching the required schema.",
+                      systemInstruction,
                       responseMimeType: "application/json",
                       responseSchema: {
                         type: Type.ARRAY,
@@ -764,7 +854,7 @@ Required Fields for each lesson:
                     const processedPlans = parsedPlans.map((plan: any, idx: number) => ({
                       ...plan,
                       date: getSequentialDate(payload.date, idx),
-                      lessonNumber: `${idx + 1} Out of ${totalCount}`,
+                      lessonNumber: isKinyarwanda ? `Isomo rya ${idx + 1} kuri ${totalCount}` : `${idx + 1} Out of ${totalCount}`,
                     }));
 
                     res.setHeader('Content-Type', 'application/json');

@@ -31,9 +31,18 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
   let currentY = 10;
   const pageWidth = 190;
 
+  const isKinyarwanda = 
+    plan.subject?.toLowerCase().includes('kinyarwanda') ||
+    plan.subject?.toLowerCase().includes('imibare') ||
+    plan.subject?.toLowerCase().includes('ibidukikije') ||
+    plan.subject?.toLowerCase().includes('ubugeni') ||
+    plan.steps?.introduction?.teacherActivities?.[0]?.includes('abanyeshuri') ||
+    plan.lessonNumber?.includes('kuri') ||
+    (plan as any).language === 'kinyarwanda';
+
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
-  doc.text('LESSON PLAN', 105, currentY, { align: 'center' });
+  doc.text(isKinyarwanda ? "ITEGURIRO RY'ISOMO" : "LESSON PLAN", 105, currentY, { align: 'center' });
   currentY += 5;
 
   doc.setFontSize(7.5);
@@ -73,12 +82,21 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
   doc.rect(marginX, currentY, pageWidth, 5.5);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
-  doc.text(`School Name: ${plan.schoolName || ''}`, marginX + 2, currentY + 3.8);
-  doc.text(`Teacher's Name: ${plan.teacherName || ''}`, marginX + 100, currentY + 3.8);
+  doc.text(`${isKinyarwanda ? 'Ishuri' : 'School Name'}: ${plan.schoolName || ''}`, marginX + 2, currentY + 3.8);
+  doc.text(`${isKinyarwanda ? 'Umwarimu' : "Teacher's Name"}: ${plan.teacherName || ''}`, marginX + 100, currentY + 3.8);
   currentY += 5.5;
 
   // Metadata Headers & Values
-  const cols = [
+  const cols = isKinyarwanda ? [
+    { name: 'Igihembwe', val: plan.term, w: 18 },
+    { name: 'Itariki', val: plan.date, w: 22 },
+    { name: 'Isomo', val: plan.subject, w: 25 },
+    { name: 'Umwaka', val: plan.classLevel, w: 26 },
+    { name: 'Umutwe', val: plan.unitNumber, w: 16 },
+    { name: 'Isomo No', val: plan.lessonNumber, w: 24 },
+    { name: 'Igihe', val: plan.duration, w: 22 },
+    { name: 'Abanyeshuri', val: `${plan.classSize || ''}`, w: 37 }
+  ] : [
     { name: 'Term', val: plan.term, w: 18 },
     { name: 'Date', val: plan.date, w: 22 },
     { name: 'Subject', val: plan.subject, w: 25 },
@@ -106,10 +124,10 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
   // Special Needs
   const snLabelW = 80;
   const snValW = 110;
-  const snHeight = Math.max(7, calcHeight(plan.specialNeeds || 'None', snValW, 7, 7));
+  const snHeight = Math.max(7, calcHeight(plan.specialNeeds || (isKinyarwanda ? 'Nta bibazo byihariye byagaragaye' : 'None'), snValW, 7, 7));
 
-  drawBox(marginX, currentY, snLabelW, snHeight, 'Type of special educational needs to be catered for in this lesson and number of learners in each category', { bold: true, bg: true, fontSize: 6.5 });
-  drawBox(marginX + snLabelW, currentY, snValW, snHeight, plan.specialNeeds || 'None', { fontSize: 7 });
+  drawBox(marginX, currentY, snLabelW, snHeight, isKinyarwanda ? "Abafite ibibazo byihariye mu myigire n'umubare wabo muri buri cyiciro" : 'Type of special educational needs to be catered for in this lesson and number of learners in each category', { bold: true, bg: true, fontSize: 6.5 });
+  drawBox(marginX + snLabelW, currentY, snValW, snHeight, plan.specialNeeds || (isKinyarwanda ? 'Abanyeshuri bakeneye ubufasha bicajwe imbere.' : 'None'), { fontSize: 7 });
   currentY += snHeight;
 
   // Key Fields Table
@@ -124,13 +142,13 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
     currentY += valH;
   };
 
-  renderRow('Unit title', (plan.unitTitle || '').toUpperCase(), 5.5, true);
-  renderRow('Key unit competence', plan.keyUnitCompetence || '', 6);
-  renderRow('Title of the lesson', plan.lessonTitle || '', 5.5, true);
-  renderRow('Instructional objectives', plan.instructionalObjective || '', 7);
-  renderRow('Plan of this class (Location)', plan.location || '', 5);
-  renderRow('Learning materials', plan.learningMaterials || '', 5.5);
-  renderRow('References', plan.references || '', 6);
+  renderRow(isKinyarwanda ? "Umutwe w'isomo" : 'Unit title', (plan.unitTitle || '').toUpperCase(), 5.5, true);
+  renderRow(isKinyarwanda ? "Ubushobozi bw'ingenzi bwitezwe ku mutwe" : 'Key unit competence', plan.keyUnitCompetence || '', 6);
+  renderRow(isKinyarwanda ? "Umutwe w'isomo ry'uyu munsi" : 'Title of the lesson', plan.lessonTitle || '', 5.5, true);
+  renderRow(isKinyarwanda ? "Intego y'isomo" : 'Instructional objectives', plan.instructionalObjective || '', 7);
+  renderRow(isKinyarwanda ? "Aho isomo riberera" : 'Plan of this class (Location)', plan.location || (isKinyarwanda ? 'Mu ishuri' : 'Classroom'), 5);
+  renderRow(isKinyarwanda ? "Imfashanyigisho" : 'Learning materials', plan.learningMaterials || '', 5.5);
+  renderRow(isKinyarwanda ? "Ibitabo byifashishijwe" : 'References', plan.references || '', 6);
 
   currentY += 1.5;
 
@@ -144,9 +162,9 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
     currentY = 12;
   }
 
-  drawBox(marginX, currentY, col1W, 4.5, 'Timing for each step', { bold: true, bg: true, align: 'center', fontSize: 7 });
-  drawBox(marginX + col1W, currentY, col2W, 4.5, 'Description of teaching and learning activities', { bold: true, bg: true, align: 'center', fontSize: 7 });
-  drawBox(marginX + col1W + col2W, currentY, col3W, 4.5, 'Generic competences & cross-cutting issues', { bold: true, bg: true, align: 'center', fontSize: 7 });
+  drawBox(marginX, currentY, col1W, 4.5, isKinyarwanda ? "Intambwe n'igihe" : 'Timing for each step', { bold: true, bg: true, align: 'center', fontSize: 7 });
+  drawBox(marginX + col1W, currentY, col2W, 4.5, isKinyarwanda ? "Ibisobanuro by'ibikorwa byo kwigisha no kwiga" : 'Description of teaching and learning activities', { bold: true, bg: true, align: 'center', fontSize: 7 });
+  drawBox(marginX + col1W + col2W, currentY, col3W, 4.5, isKinyarwanda ? "Ubushobozi n'ingingo ngiro" : 'Generic competences & cross-cutting issues', { bold: true, bg: true, align: 'center', fontSize: 7 });
   currentY += 4.5;
 
   // Activity Summary row
@@ -156,7 +174,7 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
     currentY = 12;
   }
   drawBox(marginX, currentY, col1W, summaryH, '', { bg: true });
-  drawBox(marginX + col1W, currentY, col2W, summaryH, plan.activitySummary || '', { align: 'center', fontSize: 6.5 });
+  drawBox(marginX + col1W, currentY, col2W, summaryH, plan.activitySummary || (isKinyarwanda ? 'Abanyeshuri bafatanya mu matsinda kwiga ku ngingo z\'isomo.' : ''), { align: 'center', fontSize: 6.5 });
   drawBox(marginX + col1W + col2W, currentY, col3W, summaryH, '', { bg: true });
   currentY += summaryH;
 
@@ -166,16 +184,16 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
     currentY = 12;
   }
   drawBox(marginX, currentY, col1W, 3.8, '', { bg: true });
-  drawBox(marginX + col1W, currentY, col2W / 2, 3.8, "Teacher's activity", { bold: true, align: 'center', fontSize: 7 });
-  drawBox(marginX + col1W + (col2W / 2), currentY, col2W / 2, 3.8, "Learner's activity", { bold: true, align: 'center', fontSize: 7 });
+  drawBox(marginX + col1W, currentY, col2W / 2, 3.8, isKinyarwanda ? "Imirimo y'umwarimu" : "Teacher's activity", { bold: true, align: 'center', fontSize: 7 });
+  drawBox(marginX + col1W + (col2W / 2), currentY, col2W / 2, 3.8, isKinyarwanda ? "Imirimo y'umunyeshuri" : "Learner's activity", { bold: true, align: 'center', fontSize: 7 });
   drawBox(marginX + col1W + col2W, currentY, col3W, 3.8, '', { bg: true });
   currentY += 3.8;
 
   // Steps
   const stepItems = [
-    { name: 'Introduction', step: plan.steps?.introduction },
-    { name: 'Lesson Development', step: plan.steps?.development },
-    { name: 'Conclusion', step: plan.steps?.conclusion }
+    { name: isKinyarwanda ? 'Intangiriro' : 'Introduction', step: plan.steps?.introduction },
+    { name: isKinyarwanda ? "Iterambere ry'isomo" : 'Lesson Development', step: plan.steps?.development },
+    { name: isKinyarwanda ? "Umwanzuro n'isuzumabumenyi" : 'Conclusion', step: plan.steps?.conclusion }
   ];
 
   stepItems.forEach(item => {
@@ -207,7 +225,7 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
   });
 
   // Self Evaluation Section
-  const selfEvalText = plan.selfEvaluation || 'Lesson delivered effectively.';
+  const selfEvalText = plan.selfEvaluation || (isKinyarwanda ? 'Intego y\'isomo yagezweho ku buryo bushimishije; abanyeshuri bitabiriye neza.' : 'Lesson delivered effectively.');
   const selfEvalHeight = Math.max(12, calcHeight(selfEvalText, 140, 12, 7));
 
   if (currentY + selfEvalHeight + 2 > 282) {
@@ -215,7 +233,7 @@ export function renderLessonPlanToPdfDoc(doc: jsPDF, plan: LessonPlanData, isFir
     currentY = 12;
   }
 
-  drawBox(marginX, currentY, 50, selfEvalHeight, "Teacher's Self-Evaluation", { bold: true, bg: true, fontSize: 7 });
+  drawBox(marginX, currentY, 50, selfEvalHeight, isKinyarwanda ? "Isuzuma ry'umwarimu ku isomo rye" : "Teacher's Self-Evaluation", { bold: true, bg: true, fontSize: 7 });
   drawBox(marginX + 50, currentY, 140, selfEvalHeight, selfEvalText, { fontSize: 7 });
 }
 
@@ -289,7 +307,7 @@ export async function exportPlansToCombinedDocx(
     // Title Header
     docxSections.push(
       new Paragraph({
-        text: isKinyarwanda ? `ITEGURIRO RY'ISOMO / REB CBC LESSON PLAN` : `REB COMPETENCY-BASED LESSON PLAN`,
+        text: isKinyarwanda ? `ITEGURIRO RY'ISOMO` : `REB COMPETENCY-BASED LESSON PLAN`,
         heading: HeadingLevel.HEADING_1,
         alignment: AlignmentType.CENTER,
         spacing: { before: 100, after: 140 }
@@ -322,8 +340,8 @@ export async function exportPlansToCombinedDocx(
           children: [
             new Paragraph({
               children: [
-                new TextRun({ text: isKinyarwanda ? 'Ishuri / School: ' : 'School Name: ', bold: true, size: 19, font: 'Calibri', color: '0F172A' }),
-                new TextRun({ text: plan.schoolName || 'GS Amahoro', bold: true, size: 19, font: 'Calibri', color: '1E40AF' })
+                new TextRun({ text: isKinyarwanda ? 'Ishuri: ' : 'School Name: ', bold: true, size: 19, font: 'Calibri', color: '0F172A' }),
+                new TextRun({ text: plan.schoolName || (isKinyarwanda ? 'Urwunge rw\'Amashuri Amahoro' : 'GS Amahoro'), bold: true, size: 19, font: 'Calibri', color: '1E40AF' })
               ]
             })
           ]
@@ -336,8 +354,8 @@ export async function exportPlansToCombinedDocx(
             new Paragraph({
               alignment: AlignmentType.RIGHT,
               children: [
-                new TextRun({ text: isKinyarwanda ? "Umwarimu / Teacher: " : "Teacher's Name: ", bold: true, size: 19, font: 'Calibri', color: '0F172A' }),
-                new TextRun({ text: plan.teacherName || 'Teacher', bold: true, size: 19, font: 'Calibri', color: '1E40AF' })
+                new TextRun({ text: isKinyarwanda ? "Umwarimu: " : "Teacher's Name: ", bold: true, size: 19, font: 'Calibri', color: '0F172A' }),
+                new TextRun({ text: plan.teacherName || (isKinyarwanda ? 'Umwarimu' : 'Teacher'), bold: true, size: 19, font: 'Calibri', color: '1E40AF' })
               ]
             })
           ]

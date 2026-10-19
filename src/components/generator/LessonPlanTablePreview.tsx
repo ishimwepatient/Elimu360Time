@@ -118,22 +118,22 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
         {/* Document Title Header */}
         <div className="text-center space-y-1 pb-2 border-b-2 border-slate-900">
           <h1 className="text-xl sm:text-2xl font-black tracking-wider text-slate-950 uppercase font-display">
-            {isKinyarwanda ? "ITEGURIRO RY'ISOMO / LESSON PLAN" : "LESSON PLAN"}
+            {isKinyarwanda ? "ITEGURIRO RY'ISOMO" : "LESSON PLAN"}
           </h1>
         </div>
 
         {/* School Name & Teacher's Name Header Line */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs font-bold text-slate-950 px-1 py-1 gap-2">
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-600 uppercase text-[11px]">{isKinyarwanda ? "Ishuri / School:" : "School Name:"}</span>
+            <span className="text-slate-600 uppercase text-[11px]">{isKinyarwanda ? "Ishuri:" : "School Name:"}</span>
             <span className="font-extrabold text-slate-900 border-b border-dotted border-slate-400 pb-0.5">
-              {plan.schoolName || 'GS Amahoro'}
+              {plan.schoolName || (isKinyarwanda ? 'Urwunge rw\'Amashuri Amahoro' : 'GS Amahoro')}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-600 uppercase text-[11px]">{isKinyarwanda ? "Umwarimu / Teacher:" : "Teacher's Name:"}</span>
+            <span className="text-slate-600 uppercase text-[11px]">{isKinyarwanda ? "Umwarimu:" : "Teacher's Name:"}</span>
             <span className="font-extrabold text-slate-900 border-b border-dotted border-slate-400 pb-0.5">
-              {plan.teacherName || 'NISHIMWE Joel Patient'}
+              {plan.teacherName || (isKinyarwanda ? 'Umwarimu' : 'Teacher')}
             </span>
           </div>
         </div>
@@ -172,7 +172,7 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
                     : "Type of special educational needs to be catered for in this lesson and number of learners in each category"}
                 </td>
                 <td colSpan={5} className="p-2.5 font-medium leading-relaxed">
-                  {plan.specialNeeds || 'Abanyeshuri bakeneye ubufasha bwihariye bicajwe imbere hafi y\'ikibaho.'}
+                  {plan.specialNeeds || (isKinyarwanda ? "Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere." : "Learners with special needs are supported with visual aids and peer assistance.")}
                 </td>
               </tr>
 

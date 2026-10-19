@@ -31,6 +31,7 @@ import { AdsterraNativeBanner } from '../src/components/ads/AdsterraNativeBanner
 import { BulkExportModal } from '../src/components/generator/BulkExportModal';
 import { PostGenerationActionModal } from '../src/components/generator/PostGenerationActionModal';
 import { LessonPlanTablePreview } from '../src/components/generator/LessonPlanTablePreview';
+import { KinyarwandaWordBankModal } from '../src/components/generator/KinyarwandaWordBankModal';
 import { exportPlansToCombinedDocx } from '../src/utils/combinedLessonPlanExport';
 import { Layers } from 'lucide-react';
 
@@ -393,7 +394,7 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
   };
 
   renderRow(isKinyarwanda ? "Umutwe w'isomo" : 'Unit title', (plan.unitTitle || '').toUpperCase(), 5.5, true);
-  renderRow(isKinyarwanda ? "Ubushobozi bw'ingenzi" : 'Key unit competence', plan.keyUnitCompetence || '', 6);
+  renderRow(isKinyarwanda ? "Ubushobozi bw'ingenzi bwitezwe ku mutwe" : 'Key unit competence', plan.keyUnitCompetence || '', 6);
   renderRow(isKinyarwanda ? "Umutwe w'isomo ry'uyu munsi" : 'Title of the lesson', plan.lessonTitle || '', 5.5, true);
   renderRow(isKinyarwanda ? "Intego y'isomo" : 'Instructional objectives', plan.instructionalObjective || '', 7);
   renderRow(isKinyarwanda ? "Aho isomo riberera" : 'Plan of this class (Location)', plan.location || '', 5);
@@ -483,7 +484,7 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
     currentY = 12;
   }
 
-  drawBox(marginX, currentY, 50, selfEvalHeight, isKinyarwanda ? "Isuzuma ry'umwarimu" : "Teacher's Self-Evaluation", { bold: true, bg: true, fontSize: 7 });
+  drawBox(marginX, currentY, 50, selfEvalHeight, isKinyarwanda ? "Isuzuma ry'umwarimu ku isomo rye" : "Teacher's Self-Evaluation", { bold: true, bg: true, fontSize: 7 });
   drawBox(marginX + 50, currentY, 140, selfEvalHeight, selfEvalText, { fontSize: 7 });
 
   return doc;
@@ -577,9 +578,25 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
   const [isExportingZip, setIsExportingZip] = useState<boolean>(false);
   const [exportProgress, setExportProgress] = useState<string>('');
 
-  // Modals for Export Confirmation & Chinese Super-App Post Generation Flow
+  // Modals for Export Confirmation, Post Generation Flow, & Kinyarwanda Pedagogical Word Bank
   const [showBulkExportModal, setShowBulkExportModal] = useState<boolean>(false);
   const [showPostGenModal, setShowPostGenModal] = useState<boolean>(false);
+  const [showWordBankModal, setShowWordBankModal] = useState<boolean>(false);
+
+  const handleSelectWordFromBank = (word: string, category: string) => {
+    if (category === 'inshingaMwarimu' || category === 'inshingaAbana' || category === 'bloom') {
+      setNewLessonInput(prev => prev ? `${prev} (${word})` : `Gusobanura no ${word}`);
+      setStatusMessage({
+        text: `Inshinga "${word}" yashyizwe mu mutwe w'isomo!`,
+        type: 'success'
+      });
+    } else {
+      setStatusMessage({
+        text: `Ijambo "${word}" ryatoranyijwe neza mu kigega cy'amagambo!`,
+        type: 'success'
+      });
+    }
+  };
 
   let saveMultipleLessonPlans: ((plans: any[]) => void) | null = null;
   try {
@@ -663,12 +680,18 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
         body: JSON.stringify(payload)
       });
 
+      const isKinyarwandaPlan = payload.language === 'kinyarwanda' || 
+        payload.subject?.toLowerCase().includes('kinyarwanda') ||
+        payload.subject?.toLowerCase().includes('imibare') ||
+        payload.subject?.toLowerCase().includes('ibidukikije') ||
+        payload.subject?.toLowerCase().includes('ubugeni');
+
       if (data.success && Array.isArray(data.lessonPlans) && data.lessonPlans.length > 0) {
         const totalCount = data.lessonPlans.length;
         const plansWithIds: LessonPlanData[] = data.lessonPlans.map((p: any, idx: number) => ({
           ...p,
           date: getSequentialDate(payload.date || p.date, idx),
-          lessonNumber: `${idx + 1} Out of ${totalCount}`,
+          lessonNumber: isKinyarwandaPlan ? `Isomo rya ${idx + 1} kuri ${totalCount}` : `${idx + 1} Out of ${totalCount}`,
           id: `lp_${Date.now()}_${idx}`,
           createdAt: new Date().toISOString()
         }));
@@ -679,7 +702,9 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
           saveMultipleLessonPlans(plansWithIds as any[]);
         }
         setStatusMessage({
-          text: `Successfully created ${plansWithIds.length} completely distinct lesson plans for Unit ${payload.unitNumber}: ${payload.unitTitle}!`,
+          text: isKinyarwandaPlan
+            ? `Hateguwe neza amateguriro y'amasomo ${plansWithIds.length} mu Kinyarwanda ku mutwe wa ${payload.unitNumber}: ${payload.unitTitle}!`
+            : `Successfully created ${plansWithIds.length} completely distinct lesson plans for Unit ${payload.unitNumber}: ${payload.unitTitle}!`,
           type: 'success'
         });
         setShowPostGenModal(true);
@@ -688,6 +713,12 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
       }
     } catch (err: any) {
       console.warn('AI API call warning, using rich offline pedagogical engine:', err);
+      const isKinyarwandaPlan = payload.language === 'kinyarwanda' || 
+        payload.subject?.toLowerCase().includes('kinyarwanda') ||
+        payload.subject?.toLowerCase().includes('imibare') ||
+        payload.subject?.toLowerCase().includes('ibidukikije') ||
+        payload.subject?.toLowerCase().includes('ubugeni');
+
       const fallbackPlans = generateClientREBFallbackPlans(payload);
       setGeneratedPlans(fallbackPlans);
       setActivePlanIndex(0);
@@ -695,7 +726,9 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
         saveMultipleLessonPlans(fallbackPlans as any[]);
       }
       setStatusMessage({
-        text: `Generated ${fallbackPlans.length} distinct REB Competency-Based lesson plans using enriched Bloom's action verbs & differentiated teaching approaches!`,
+        text: isKinyarwandaPlan
+          ? `Hateguwe amateguriro ${fallbackPlans.length} y'amasomo y'Ikinyarwanda akurikije integanyanyigisho ya REB CBC hakoreshejwe inshinga n'uburyo bunoze!`
+          : `Generated ${fallbackPlans.length} distinct REB Competency-Based lesson plans using enriched Bloom's action verbs & differentiated teaching approaches!`,
         type: 'success'
       });
       setShowPostGenModal(true);
@@ -936,19 +969,29 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
             {/* Kinyarwanda Curriculum Presets Selector (when Kinyarwanda is active) */}
             {language === 'kinyarwanda' && (
               <div className="p-3.5 bg-amber-950/20 border border-amber-500/30 rounded-2xl space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <label className="block text-[11px] font-bold text-amber-300">
                     📚 Hitamo Umutwe n'Amasomo bya REB CBC:
                   </label>
-                  {onNavigate && (
+                  <div className="flex items-center gap-2.5">
                     <button
                       type="button"
-                      onClick={() => onNavigate('question_bank')}
-                      className="text-[10px] text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer"
+                      onClick={() => setShowWordBankModal(true)}
+                      className="px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 font-bold text-[10px] border border-amber-400/30 transition flex items-center gap-1 cursor-pointer shadow-sm"
                     >
-                      Fungura Ikigega cy'Ibibazo (2,200+) →
+                      <BookOpen className="w-3 h-3" />
+                      <span>Ikigega cy'Amagambo (600+)</span>
                     </button>
-                  )}
+                    {onNavigate && (
+                      <button
+                        type="button"
+                        onClick={() => onNavigate('question_bank')}
+                        className="text-[10px] text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer"
+                      >
+                        Ikigega cy'Ibibazo →
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <select
                   value={selectedCurriculumPreset}
@@ -1064,15 +1107,28 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
             <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-white flex items-center gap-2">
-                  <span>Lesson Titles in This Unit</span>
+                  <span>{language === 'kinyarwanda' ? 'Amasomo agize uyu mutwe' : 'Lesson Titles in This Unit'}</span>
                   <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[11px] font-extrabold">
-                    {lessonTitles.length} added
+                    {lessonTitles.length} {language === 'kinyarwanda' ? 'yashyizwemo' : 'added'}
                   </span>
                 </label>
+
+                {language === 'kinyarwanda' && (
+                  <button
+                    type="button"
+                    onClick={() => setShowWordBankModal(true)}
+                    className="text-[11px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>Ikigega cy'Amagambo (600+)</span>
+                  </button>
+                )}
               </div>
 
               <p className="text-[11px] text-slate-400">
-                Type a lesson topic and click <strong>Add</strong>. Add as many as needed; each will receive different action verbs and teaching methodologies.
+                {language === 'kinyarwanda'
+                  ? 'Andika umutwe w\'isomo maze ukande "Ongeramo". Amasomo yose azahabwa inshinga n\'uburyo bwo kwigisha bitandukanye.'
+                  : 'Type a lesson topic and click Add. Add as many as needed; each will receive different action verbs and teaching methodologies.'}
               </p>
 
               <div className="flex gap-2">
@@ -1394,6 +1450,13 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
         onNavigateToConverter={() => onNavigate && onNavigate('converter')}
         onNavigateToLibrary={() => onNavigate && onNavigate('library')}
         onOpenExportModal={() => setShowBulkExportModal(true)}
+      />
+
+      {/* Kinyarwanda Pedagogical Word Bank Modal (Hundreds of verbs, competences, materials) */}
+      <KinyarwandaWordBankModal
+        isOpen={showWordBankModal}
+        onClose={() => setShowWordBankModal(false)}
+        onSelectWord={handleSelectWordFromBank}
       />
 
     </div>

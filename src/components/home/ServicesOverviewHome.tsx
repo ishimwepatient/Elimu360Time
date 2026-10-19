@@ -178,29 +178,29 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
               </div>
 
               <h3 className="text-lg font-bold text-white font-display group-hover:text-amber-300 transition">
-                🇷🇼 Ikigega cy'Ibibazo n'Amasomo (2,200+)
+                🇷🇼 Ikigega cy'Ibibazo n'Amagambo (2,800+)
               </h3>
 
               <p className="text-xs text-slate-300 leading-relaxed">
-                Database y'ibibazo birenga 2,000 biteguye mu Kinyarwanda ku masomo yose yigishwa mu Kinyarwanda (Ikinyarwanda, Imibare P1-P3, Ibidukikije, n'Ubugeni).
+                Ikigega kirimo ibibazo birenga 2,200 n'amagambo arenga 600 yo gutegura amasomo 100% mu Kinyarwanda ku masomo yose (Ikinyarwanda, Imibare P1-P3, Ibidukikije, n'Ubugeni).
               </p>
 
               <ul className="space-y-2 text-xs text-slate-400">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Amashuri abanza n'ayisumbuye (P1 kugeza kuri S6)</span>
+                  <span>Amateguriro y'amasomo <strong>100% mu Kinyarwanda</strong></span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Gusohora ibizamini muri <strong>Word (.docx)</strong> na <strong>PDF</strong></span>
+                  <span>Inshinga za Bloom n'amagambo ya REB CBC arenga 600</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Ibisobanuro n'Akaraso k'ikosora (Marking Scheme)</span>
+                  <span>Gusohora ibizamini n'amateguriro muri <strong>Word (.docx)</strong> na <strong>PDF</strong></span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Guhindura ikibazo mo Iteguriro ry'Isomo (1-Click)</span>
+                  <span>Ibibazo by'amashuri abanza n'ayisumbuye (P1 - S6)</span>
                 </li>
               </ul>
             </div>
