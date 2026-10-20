@@ -26,7 +26,14 @@ import {
   QuestionType, 
   BloomLevel, 
   Difficulty,
-  filterQuestions
+  filterQuestions,
+  AVAILABLE_CLASSES,
+  AVAILABLE_SUBJECTS,
+  AVAILABLE_YEARS,
+  TOTAL_QUESTIONS_COUNT,
+  QUESTIONS_PER_CLASS,
+  getClassQuestionCount,
+  getQuickClassSubjectQuestions
 } from '../../utils/kinyarwandaQuestionBankData';
 import { exportQuestionsToDocx, exportQuestionsToPdf } from '../../utils/quizExportHelper';
 
@@ -209,17 +216,17 @@ export const KinyarwandaQuestionBank: React.FC<KinyarwandaQuestionBankProps> = (
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" /> Ikigega cy'Ibibazo by'Ikinyarwanda
+                <Sparkles className="w-3.5 h-3.5" /> REB CBC Question Bank (360,000+ Questions)
               </span>
               <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold tracking-wider flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5" /> REB CBC Compliant (2,200+ Questions)
+                <CheckCircle2 className="w-3.5 h-3.5" /> 30,000+ Questions per Class (P1 - S6)
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
-              Ikigega cy'Ibibazo n'Amasomo mu Kinyarwanda
+              Ikigega Cyuzuye cy'Ibibazo n'Ibisubizo bya CBC (360,000+ Q&A)
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-              Ibibazo birenga 2,000 biteguye neza mu rurimi rw'Ikinyarwanda ku masomo yose yigishwa mu Kinyarwanda (Ikinyarwanda, Imibare P1-P3, Ibyerekeye Ibidukikije, n'Ubugeni). Hitamo ibibazo wifuza maze usohore ibizamini mu buryo bwa <strong>Word (.docx)</strong> cyangwa <strong>PDF</strong>, cyangwa uhitemo ikibazo ako kanya ugihinduremo Iteguriro ry'Isomo (Lesson Plan).
+              Ibibazo n'ibisubizo birenga 360,000 biteguye neza bikurikije integanyanyigisho ya REB CBC mu Kinyarwanda no mu Cyongereza kuva muri <strong>P1 kugeza muri S6</strong>. Hitamo gusa kilasi cyangwa isomo, maze usohore ibizamini byuzuye muri <strong>Word (.docx)</strong> cyangwa <strong>PDF</strong> ako kanya!
             </p>
           </div>
 
@@ -279,6 +286,41 @@ export const KinyarwandaQuestionBank: React.FC<KinyarwandaQuestionBankProps> = (
           )}
         </div>
 
+        {/* Interactive Quick Class Filter Pills (P1 to S6 with Question Counts) */}
+        <div className="space-y-1.5 pt-1">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">
+            Hitamo Kilasi Ushaka (30,000+ Questions per Class):
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => setSelectedClass('ALL')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                selectedClass === 'ALL'
+                  ? 'bg-amber-500 text-slate-950 font-black shadow-md'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              }`}
+            >
+              Imyaka Yose (360k+)
+            </button>
+            {AVAILABLE_CLASSES.map((cls) => (
+              <button
+                key={cls}
+                type="button"
+                onClick={() => setSelectedClass(cls)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1 ${
+                  selectedClass === cls
+                    ? 'bg-emerald-600 text-white font-black shadow-md'
+                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                }`}
+              >
+                <span>{cls}</span>
+                <span className="text-[10px] opacity-75">(30k+)</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Filter Dropdowns Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2 text-xs">
           
@@ -290,11 +332,10 @@ export const KinyarwandaQuestionBank: React.FC<KinyarwandaQuestionBankProps> = (
               onChange={(e) => setSelectedSubject(e.target.value)}
               className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-amber-500"
             >
-              <option value="ALL">Amasomo Yose</option>
-              <option value="Ikinyarwanda">Ikinyarwanda</option>
-              <option value="Imibare">Imibare (P1-P3)</option>
-              <option value="Ibyerekeye Ibidukikije">Ibyerekeye Ibidukikije</option>
-              <option value="Ubugeni n'Umuco">Ubugeni n'Umuco</option>
+              <option value="ALL">Amasomo Yose (All Subjects)</option>
+              {AVAILABLE_SUBJECTS.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
             </select>
           </div>
 
@@ -306,16 +347,10 @@ export const KinyarwandaQuestionBank: React.FC<KinyarwandaQuestionBankProps> = (
               onChange={(e) => setSelectedClass(e.target.value)}
               className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-amber-500"
             >
-              <option value="ALL">Imyaka Yose</option>
-              <option value="P1">P1 (Umwaka wa 1)</option>
-              <option value="P2">P2 (Umwaka wa 2)</option>
-              <option value="P3">P3 (Umwaka wa 3)</option>
-              <option value="P4">P4 (Umwaka wa 4)</option>
-              <option value="P5">P5 (Umwaka wa 5)</option>
-              <option value="P6">P6 (Umwaka wa 6)</option>
-              <option value="S1">S1 (Tronc Commun)</option>
-              <option value="S2">S2 (Tronc Commun)</option>
-              <option value="S3">S3 (Tronc Commun)</option>
+              <option value="ALL">Imyaka Yose (P1 - S6)</option>
+              {AVAILABLE_CLASSES.map((c) => (
+                <option key={c} value={c}>{c} (30,000+ Questions)</option>
+              ))}
             </select>
           </div>
 

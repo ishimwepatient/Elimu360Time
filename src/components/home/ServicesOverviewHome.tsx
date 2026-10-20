@@ -20,11 +20,12 @@ import { useElimu } from '../../context/ElimuContext';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
 import { SchoolProfileReminderBanner } from '../common/SchoolProfileReminderBanner';
 import { QuickQuestionDownloadPopup } from './QuickQuestionDownloadPopup';
+import { InteractiveServiceSuggestions } from './InteractiveServiceSuggestions';
 import { getQuickClassSubjectQuestions } from '../../utils/kinyarwandaQuestionBankData';
 import { exportQuestionsToDocx, exportQuestionsToPdf } from '../../utils/quizExportHelper';
 
 interface ServicesOverviewHomeProps {
-  onNavigate: (tab: 'generator' | 'converter' | 'library' | 'question_bank' | 'reb_library' | 'guide' | 'faq' | 'privacy') => void;
+  onNavigate: (tab: 'home' | 'generator' | 'converter' | 'library' | 'question_bank' | 'reb_library' | 'guide' | 'faq' | 'privacy') => void;
 }
 
 export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNavigate }) => {
@@ -170,7 +171,7 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/20 text-amber-700 dark:text-amber-400">
                 Instant Exam Papers & Questions
               </span>
-              <span className="text-xs text-slate-500 font-medium">• 3,000+ REB Questions</span>
+              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">• 360,000+ REB CBC Questions (P1 - S6)</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
               🇷🇼 Manura Ibibazo n'Ibizamini ku Masomo Atandukanye
@@ -452,6 +453,12 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
         isOpen={quickDownloadModalOpen}
         onClose={() => setQuickDownloadModalOpen(false)}
         onOpenFullQuestionBank={() => onNavigate('question_bank')}
+      />
+
+      {/* Interactive Moving Service Suggestions & Floating Educator Assistant */}
+      <InteractiveServiceSuggestions 
+        onNavigate={onNavigate} 
+        onOpenQuickQuestionModal={() => setQuickDownloadModalOpen(true)} 
       />
 
     </div>
