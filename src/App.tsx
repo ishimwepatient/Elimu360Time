@@ -29,8 +29,11 @@ import { PWAInstallHeaderButton } from './components/pwa/PWAInstallHeaderButton'
 import { ShareSystemModal } from './components/share/ShareSystemModal';
 import { WhatsAppHelpWidget } from './components/support/WhatsAppHelpWidget';
 import { LiveActivityTicker } from './components/common/LiveActivityTicker';
+import { REBCourse1806Library } from './components/reb/REBCourse1806Library';
+import { SchoolProfileModal } from './components/common/SchoolProfileModal';
+import { SchoolProfileReminderBanner } from './components/common/SchoolProfileReminderBanner';
 
-type ActiveTab = 'home' | 'converter' | 'generator' | 'question_bank' | 'library' | 'guide' | 'faq' | 'privacy';
+type ActiveTab = 'home' | 'converter' | 'generator' | 'question_bank' | 'reb_library' | 'library' | 'guide' | 'faq' | 'privacy';
 
 const MainAppContent: React.FC = () => {
   const { 
@@ -48,10 +51,10 @@ const MainAppContent: React.FC = () => {
   const [selectedQuestionForPlan, setSelectedQuestionForPlan] = useState<any>(null);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
       
       {/* Top Header Navbar */}
-      <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
           {/* Logo */}
@@ -60,13 +63,13 @@ const MainAppContent: React.FC = () => {
           </div>
 
           {/* Desktop Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800 text-xs">
+          <nav className="hidden xl:flex items-center gap-1 bg-slate-100 dark:bg-slate-900/80 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs">
             <button
               onClick={() => setActiveTab('home')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'home'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
               <Home className="w-4 h-4" />
@@ -75,10 +78,10 @@ const MainAppContent: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('generator')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'generator'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
               <Sparkles className="w-4 h-4" />
@@ -87,34 +90,46 @@ const MainAppContent: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('question_bank')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'question_bank'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
               <HelpCircle className="w-4 h-4" />
-              <span>Question Bank (🇷🇼 Ikigega)</span>
+              <span>Question Bank</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('reb_library')}
+              className={`px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'reb_library'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              <BookOpen className="w-4 h-4 text-blue-600 dark:text-sky-300" />
+              <span>REB Books (1806)</span>
             </button>
 
             <button
               onClick={() => setActiveTab('converter')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'converter'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
               <RefreshCw className="w-4 h-4" />
-              <span>Document Converter</span>
+              <span>Converter</span>
             </button>
 
             <button
               onClick={() => setActiveTab('library')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'library'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
               <BookOpen className="w-4 h-4" />
@@ -123,39 +138,42 @@ const MainAppContent: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('guide')}
-              className={`px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'guide'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
               <Award className="w-4 h-4" />
-              <span>CBC Standards</span>
+              <span>CBC Guide</span>
             </button>
           </nav>
 
           {/* Right Header Actions */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2.5">
             
+            {/* School Profile Persistent Quick Reminder Button */}
+            <SchoolProfileReminderBanner compact />
+
             {/* Install PWA Button */}
             <PWAInstallHeaderButton />
 
             {/* Encourage Sharing Button */}
             <button
               onClick={openShareModal}
-              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold text-xs flex items-center gap-2 transition shadow-lg cursor-pointer"
+              className="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 transition shadow-sm cursor-pointer shrink-0"
             >
-              <Heart className="w-4 h-4 fill-slate-950" />
-              <span>Share System for Teachers</span>
+              <Heart className="w-3.5 h-3.5 fill-slate-950" />
+              <span>Share System</span>
             </button>
 
-            {/* Theme Toggle Button */}
+            {/* Theme Toggle Button (Light mode default, Dark mode opt-in) */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition cursor-pointer"
-              title="Toggle theme"
+              className="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition cursor-pointer shadow-xs"
+              title={theme === 'dark' ? 'Hindura ujye muri Light Mode' : 'Hindura ujye muri Dark Mode'}
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-400" />}
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
             </button>
 
           </div>
@@ -187,12 +205,12 @@ const MainAppContent: React.FC = () => {
 
         {/* Mobile Navigation Menu Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-800 bg-slate-950 p-4 space-y-3 animate-fade-in">
+          <div className="xl:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-3 animate-fade-in shadow-xl">
             <nav className="flex flex-col space-y-2">
               <button
                 onClick={() => { setActiveTab('home'); setMobileMenuOpen(false); }}
-                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'home' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'home' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
                 }`}
               >
                 <Home className="w-4 h-4" /> Services Overview
@@ -200,8 +218,8 @@ const MainAppContent: React.FC = () => {
 
               <button
                 onClick={() => { setActiveTab('generator'); setMobileMenuOpen(false); }}
-                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'generator' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'generator' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
                 }`}
               >
                 <Sparkles className="w-4 h-4" /> AI Lesson Plan Generator
@@ -209,17 +227,26 @@ const MainAppContent: React.FC = () => {
 
               <button
                 onClick={() => { setActiveTab('question_bank'); setMobileMenuOpen(false); }}
-                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'question_bank' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'question_bank' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
                 }`}
               >
-                <HelpCircle className="w-4 h-4" /> Ikigega cy'Ibibazo (2,200+ Questions)
+                <HelpCircle className="w-4 h-4" /> Question Bank (3,200+ Questions)
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('reb_library'); setMobileMenuOpen(false); }}
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'reb_library' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
+                }`}
+              >
+                <BookOpen className="w-4 h-4 text-blue-500" /> REB Books & Schemes (1806)
               </button>
 
               <button
                 onClick={() => { setActiveTab('converter'); setMobileMenuOpen(false); }}
-                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'converter' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'converter' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
                 }`}
               >
                 <RefreshCw className="w-4 h-4" /> Documents Converter
@@ -227,8 +254,8 @@ const MainAppContent: React.FC = () => {
 
               <button
                 onClick={() => { setActiveTab('library'); setMobileMenuOpen(false); }}
-                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'library' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'library' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
                 }`}
               >
                 <BookOpen className="w-4 h-4" /> Saved Plans ({savedLessonPlans.length})
@@ -236,8 +263,8 @@ const MainAppContent: React.FC = () => {
 
               <button
                 onClick={() => { setActiveTab('guide'); setMobileMenuOpen(false); }}
-                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'guide' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'guide' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
                 }`}
               >
                 <Award className="w-4 h-4" /> CBC Standards Guide
@@ -245,8 +272,8 @@ const MainAppContent: React.FC = () => {
 
               <button
                 onClick={() => { setActiveTab('faq'); setMobileMenuOpen(false); }}
-                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'faq' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'faq' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
                 }`}
               >
                 <Award className="w-4 h-4" /> FAQ & Answers
@@ -254,8 +281,8 @@ const MainAppContent: React.FC = () => {
 
               <button
                 onClick={() => { setActiveTab('privacy'); setMobileMenuOpen(false); }}
-                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 ${
-                  activeTab === 'privacy' ? 'bg-amber-500 text-slate-950' : 'text-slate-300 bg-slate-900'
+                className={`p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 cursor-pointer ${
+                  activeTab === 'privacy' ? 'bg-amber-500 text-slate-950' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900'
                 }`}
               >
                 <Award className="w-4 h-4" /> Privacy & Terms of Use
@@ -263,7 +290,7 @@ const MainAppContent: React.FC = () => {
 
               <button
                 onClick={() => { openShareModal(); setMobileMenuOpen(false); }}
-                className="p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 bg-emerald-500 text-slate-950"
+                className="p-3 rounded-xl text-xs font-bold text-left flex items-center gap-2.5 bg-emerald-500 text-slate-950 cursor-pointer"
               >
                 <Heart className="w-4 h-4 fill-slate-950" /> Share Elimu360 with Fellow Teachers
               </button>
@@ -272,7 +299,7 @@ const MainAppContent: React.FC = () => {
         )}
       </header>
 
-      {/* Live Activity Ticker (Chinese Super-App Style Real-Time Educator Social Proof) */}
+      {/* Live Activity Ticker (Real-Time Educator Social Proof) */}
       <LiveActivityTicker />
 
       {/* Main Workspace Body */}
@@ -294,6 +321,7 @@ const MainAppContent: React.FC = () => {
             onNavigate={tab => setActiveTab(tab)}
           />
         )}
+        {activeTab === 'reb_library' && <REBCourse1806Library />}
         {activeTab === 'library' && <SavedPlansLibrary onNavigateToGenerator={() => setActiveTab('generator')} />}
         {activeTab === 'guide' && <REBCBCGuide />}
         {activeTab === 'faq' && <FAQCenter />}
@@ -302,6 +330,9 @@ const MainAppContent: React.FC = () => {
 
       {/* Universal 24/7 Teacher WhatsApp Help Widget (Leads to 250792612139 everywhere) */}
       <WhatsAppHelpWidget />
+
+      {/* School Structure Information Reminder Modal */}
+      <SchoolProfileModal />
 
       {/* Share System Modal */}
       <ShareSystemModal
@@ -313,13 +344,13 @@ const MainAppContent: React.FC = () => {
       <PWAInstallModal />
 
       {/* Global Footer with All Rights Copyright Attribution */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-10 px-4 text-center text-xs text-slate-500 space-y-4">
+      <footer className="border-t border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-950 py-10 px-4 text-center text-xs text-slate-600 dark:text-slate-400 space-y-4">
         <div className="flex flex-wrap items-center justify-center gap-2 font-medium">
-          <span className="font-bold text-slate-300">
+          <span className="font-bold text-slate-800 dark:text-slate-200">
             The Palace, Inc — The Palace Tech House
           </span>
-          <span className="text-slate-600 hidden sm:inline">•</span>
-          <span className="text-amber-400 font-semibold">
+          <span className="text-slate-400 dark:text-slate-600 hidden sm:inline">•</span>
+          <span className="text-amber-600 dark:text-amber-400 font-semibold">
             All Rights Reserved Copyright © {new Date().getFullYear()}
           </span>
         </div>

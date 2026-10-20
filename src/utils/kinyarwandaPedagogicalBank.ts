@@ -782,8 +782,169 @@ export const KINYARWANDA_CURRICULUM_PRESETS: KinyarwandaCurriculumUnit[] = [
     ],
     materials: 'Ingoma ntoya, amayugi, ifishi y\'amagambo y\'indirimbo, amajwi afashwe',
     references: 'Integanyanyigisho y\'Ubugeni n\'Umuco P2 ya REB'
+  },
+
+  // --- IKINYARWANDA ICYICIRO RUSANGE (S1 - S3) ---
+  {
+    unitNumber: '1',
+    unitTitle: 'UBUVANGANZO NYEMVUGO NYARWANDA N\'AMATEKA YABWO',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 1 (S1)',
+    keyCompetence: 'Gusesengura ibihangano by\'ubuvanganzo nyemvugo nyarwanda birimo ibisigo by\'amateka, ibyivugo, imigani miremire n\'imigenurano, no kugaragaza inyigisho n\'indangagaciro zibigize.',
+    sampleLessons: [
+      'Umusogongero ku buvanganzo nyemvugo n\'ubwoko bwabwo mu mateka y\'u Rwanda',
+      'Ibisigo by\'amateka: Gusoma no gusesengura igisigo cy\'ubutwari n\'ubuhangange',
+      'Ibyivugo gakondo: Kumenya imiterere y\'icyivugo n\'uburyo bwo kwivuga mu birori',
+      'Imigani miremire: Gusesengura umugani w\'imigenurano n\'inyigisho y\'ubupfura',
+      'Gusesengura inyigisho z\'ubumuntu ziboneka mu buvanganzo nyemvugo nyarwanda'
+    ],
+    materials: 'Ibitabo by\'ubuvanganzo bwa REB S1, amajwi n\'amashusho y\'abivuga, ikibaho',
+    references: 'Integanyanyigisho y\'Ikinyarwanda ya REB S1, Amabwiriza ya RALC'
+  },
+  {
+    unitNumber: '2',
+    unitTitle: 'IKIBONEZAMVUGO CYIMBITSE: INSHINGA N\'INGELI Z\'AMAZINA',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 1 (S1)',
+    keyCompetence: 'Gusesengura ingeli z\'amazina mu Kinyarwanda, kumenya uturemajambo tw\'inshinga n\'insimburangingo, no kubaka interuro zikomatanyije zinoze.',
+    sampleLessons: [
+      'Ingeli z\'amazina mu Kinyarwanda kuva ku ngeli ya 1 kugeza ku ngeli ya 16',
+      'Uturemajambo tw\'inshinga: Umubyimba, indangantego n\'indangagihe',
+      'Insimburangingo n\'inyongera z\'inshinga mu nteruro zikomatanyije',
+      'Amategeko y\'imyandikire yemewe n\'amasaku mu Kinyarwanda',
+      'Imyitozo ngiro yo gukosora amakosa akunze gukorwa mu myandikire'
+    ],
+    materials: 'Imbonerahamwe y\'ingeli z\'amazina, ifishi y\'ikibonezamvugo, ikibaho',
+    references: 'Integanyanyigisho y\'Ikinyarwanda S1 ya REB'
+  },
+  {
+    unitNumber: '1',
+    unitTitle: 'UBUSHAKASHATSI KU NYANDIKO N\'UBUHANGA MU GUSOMA',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 2 (S2)',
+    keyCompetence: 'Gusoma no gusesengura inyandiko ndende z\'ubuvanganzo n\'iz\'ubumenyi, gushungura ibitekerezo by\'ingenzi no kwandika inyandiko ifite intangiriro, igihimba n\'umusozo.',
+    sampleLessons: [
+      'Gusoma no gusesengura inyandiko ndende z\'ubuvanganzo nyarwanda',
+      'Gushungura no gutandukanya igitekerezo nyamukuru n\'ibitekerezo byungirije',
+      'Gukora incamake y\'umwandiko mu magambo make kandi asobanutse',
+      'Kwandika inyandiko ifite intangiriro, igihimba n\'umusozo usobanutse',
+      'Gusoma no gusesengura imivugo y\'abahanzi b\'iki gihe mu Rwanda'
+    ],
+    materials: 'Ibitabo by\'abanditsi nyarwanda, ifishi y\'incamake, ikibaho',
+    references: 'Integanyanyigisho y\'Ikinyarwanda S2 ya REB'
+  },
+  {
+    unitNumber: '2',
+    unitTitle: 'IKINAMICO NYARWANDA N\'IBIGANIRO MPAKA',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 2 (S2)',
+    keyCompetence: 'Gusesengura imiterere y\'umwandiko w\'ikinamico, abakinnyi n\'ubutumwa, no gutegura no kuyobora ibiganiro mpaka byubaka.',
+    sampleLessons: [
+      'Imiterere y\'umwandiko w\'ikinamico: Intangiriro, ihurizo n\'umwanzuro',
+      'Imico n\'imyifatire y\'abakinnyi mu ikinamico nyarwanda',
+      'Gukina ikinamico mu matsinda y\'abanyeshuri mu ishuri',
+      'Gutegura ibiganiro mpaka ku ndangagaciro z\'umuco n\'iterambere',
+      'Isuzuma n\'umwanzuro w\'ikiganiro mpaka gikurikije amategeko'
+    ],
+    materials: 'Ibitabo by\'ikinamico, ikibaho, amashusho y\'abakinnyi b\'ikinamico',
+    references: 'Integanyanyigisho y\'Ikinyarwanda S2 ya REB'
+  },
+  {
+    unitNumber: '1',
+    unitTitle: 'AMATEKA Y\'URURIMI RW\'IKINYARWANDA N\'IMIHINDAGURIKIRE YARWO',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 3 (S3)',
+    keyCompetence: 'Kugaragaza amateka y\'ururimi rw\'Ikinyarwanda mu muryango w\'indimi za Bantu, kumenya amagambo mashya yinjizwa mu rurimi, no kubungabunga umwimerere warwo.',
+    sampleLessons: [
+      'Inkomoko y\'ururimi rw\'Ikinyarwanda mu muryango mugari w\'indimi za Bantu',
+      'Ihindagurika ry\'ururimi binyuze mu itumanaho n\'ikoranabuhanga',
+      'Amagambo mashya yinjizwa mu Kinyarwanda n\'amategeko yo kuyahuza n\'ikibonezamvugo',
+      'Kubungabunga no gukunda ururimi rwacu mu rubyiruko rw\'u Rwanda',
+      'Ubushakashatsi buto ku mvugo zikoreshwa mu mashuri no mu muryango'
+    ],
+    materials: 'Ikarita y\'indimi za Bantu, inkoranyamagambo y\'Ikinyarwanda, ikibaho',
+    references: 'Integanyanyigisho y\'Ikinyarwanda S3 ya REB, Igitabo cy\'umunyeshuri S3'
+  },
+  {
+    unitNumber: '2',
+    unitTitle: 'KWANDIKA RAPORO, UMWIRONDORO N\'INYANDIKO Z\'AKAZI',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 3 (S3)',
+    keyCompetence: 'Kwandika inyandiko z\'ubuyobozi n\'iz\'umurimo zirimo ibaruwa isaba akazi, umwirondoro (CV), inyandikomvugo n\'itangazo rihamagara inama mu rurimi runoze.',
+    sampleLessons: [
+      'Imiterere n\'amagambo akoreshwa mu kwandika ibaruwa isaba akazi',
+      'Kwandika umwirondoro w\'umuntu ushaka akazi (CV) mu Kinyarwanda cyubahitse',
+      'Kwandika inyandikomvugo y\'inama y\'abanyeshuri cyangwa iy\'umudugudu',
+      'Kwandika itangazo rihamagarira abaturage umuganda cyangwa inama',
+      'Isuzuma no gukosora inyandiko z\'akazi mu matsinda y\'abanyeshuri'
+    ],
+    materials: 'Ingero z\'amabaruwa n\'inyandikomvugo zemewe, ifishi y\'umunyeshuri, ikibaho',
+    references: 'Integanyanyigisho y\'Ikinyarwanda S3 ya REB'
+  },
+
+  // --- IKINYARWANDA ICYICIRO GIKURU (S4 - S6) ---
+  {
+    unitNumber: '1',
+    unitTitle: 'UBUVANGANZO BWANDITSE: INKURU NDE N\'ISESENGURANYANDIKO',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 4 (S4)',
+    keyCompetence: 'Gusesengura ibitabo by\'abanditsi b\'abanyarwanda, kumenya imiterere y\'inkuru ndende, ibitekerezo by\'umwanditsi n\'uburyo akoresha ururimi rwo hejuru.',
+    sampleLessons: [
+      'Amateka n\'intangiriro y\'ubuvanganzo bwanditse mu Rwanda',
+      'Gusoma no gusesengura igitabo cy\'inkuru ndende yatoranyijwe na REB',
+      'Insanganyamatsiko z\'ingenzi: Urudandazwa rw\'abantu, ubutwari n\'ubupfura',
+      'Isesengura ry\'imyifatire y\'abakinnyi b\'imena n\'abunganizi',
+      'Ubuhanga mu mikoreshereze y\'ururimi: Ibisakuzo, imigani n\'amashusho y\'imvugo'
+    ],
+    materials: 'Ibitabo by\'inkuru ndende byemewe na REB, ifishi y\'isesengura, ikibaho',
+    references: 'Integanyanyigisho y\'Ikinyarwanda S4 ya REB'
+  },
+  {
+    unitNumber: '1',
+    unitTitle: 'UBUSIZI BWO GUTEKEREZA N\'UBUHANGA BWO KWANDIKA',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 5 (S5)',
+    keyCompetence: 'Kumenya amoko y\'ubusizi gakondo n\'ubusizi bwite bw\'iki gihe, gusesengura injyana n\'amasaku, no guhanga imivugo n\'ibisigo ku bumwe n\'iterambere.',
+    sampleLessons: [
+      'Itandukaniro riri hagati y\'ubusizi gakondo n\'ubusizi bwite bw\'iki gihe',
+      'Imiterere y\'igisigo: Imirongo, ibika, injyana n\'amasaku y\'amagambo',
+      'Gusesengura ibisigo by\'abahanzi bakomeye b\'abanyarwanda',
+      'Guhanga igisigo gishingiye ku bumwe, ubwiyunge n\'iterambere ry\'u Rwanda',
+      'Gusoma igisigo mu ijwi riremye imbere y\'ishuri no kugisobanura'
+    ],
+    materials: 'Ibitabo by\'ibisigo by\'u Rwanda, ifishi y\'imyandikire y\'ibisigo, ikibaho',
+    references: 'Integanyanyigisho y\'Ikinyarwanda S5 ya REB'
+  },
+  {
+    unitNumber: '1',
+    unitTitle: 'ISESENGURAMVUMBIKO N\'UBUVANGANZO MPUZAMAHANGA BUVUNNYE MU KINYARWANDA',
+    subject: 'Ikinyarwanda',
+    classLevel: 'Senior 6 (S6)',
+    keyCompetence: 'Gusesengura inyandiko zikomeye z\'ubuvanganzo, guhuza indangagaciro z\'umuco nyarwanda n\'iterambere ry\'isi yose, no kwitegura ibizamini bya Leta bya NESA mu Kinyarwanda.',
+    sampleLessons: [
+      'Gusesengura ibihangano by\'ubuvanganzo bwo mu rwego rwo hejuru',
+      'Guhuza indangagaciro z\'umuco nyarwanda n\'iterambere ry\'isi yose y\'ikoranabuhanga',
+      'Gusesengura imvugo zivunnye n\'ubusesenguzi bw\'ikibonezamvugo mu bizamini bya Leta',
+      'Kwandika inyandiko ifata ibyemezo n\'isesengura ry\'ibibazo byo mu muryango',
+      'Imyitozo ngiro y\'ibizamini bya Leta bya NESA byo mu myaka yashize'
+    ],
+    materials: 'Ibizamini bya NESA by\'imyaka yashize, ibitabo by\'ubuvanganzo, ifishi y\'imyitozo',
+    references: 'Integanyanyigisho y\'Ikinyarwanda S6 ya REB, Ibizamini bya Leta bya NESA'
   }
 ];
+
+export function getKinyarwandaAvailableClasses(): string[] {
+  const classesSet = new Set<string>();
+  KINYARWANDA_CURRICULUM_PRESETS.forEach(p => classesSet.add(p.classLevel));
+  return Array.from(classesSet);
+}
+
+export function getKinyarwandaUnitsByClass(classLevel: string): KinyarwandaCurriculumUnit[] {
+  return KINYARWANDA_CURRICULUM_PRESETS.filter(p => 
+    p.classLevel.toLowerCase() === classLevel.toLowerCase() ||
+    p.classLevel.includes(classLevel)
+  );
+}
 
 // ============================================================================
 // GENERATE 100% PURE KINYARWANDA LESSON PLAN (NO ENGLISH WORDS ANYWHERE)

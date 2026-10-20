@@ -26,24 +26,24 @@
     transition: background-color 0.25s ease, color 0.25s ease;
   }
 
-  /* Dark Mode Default Styling */
-  html.dark, html:not(.light) {
-    color-scheme: dark;
-  }
-
-  html.dark body, html:not(.light) body {
-    background-color: #030712;
-    color: #f8fafc;
-  }
-
-  /* Light Mode Surface Transformations */
-  html.light {
+  /* Light Mode Default Styling */
+  html.light, html:not(.dark) {
     color-scheme: light;
   }
 
-  html.light body {
+  html.light body, html:not(.dark) body {
     background-color: #f8fafc;
     color: #0f172a;
+  }
+
+  /* Dark Mode Styling (optional user choice) */
+  html.dark {
+    color-scheme: dark;
+  }
+
+  html.dark body {
+    background-color: #030712;
+    color: #f8fafc;
   }
 
   /* Universal Light Mode Contrast Overrides */

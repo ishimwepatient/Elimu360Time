@@ -18,7 +18,8 @@ import {
   Check,
   ChevronDown,
   Sliders,
-  HelpCircle
+  HelpCircle,
+  School
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import JSZip from 'jszip';
@@ -26,12 +27,18 @@ import { saveAs } from 'file-saver';
 import { useElimu } from '../src/context/ElimuContext';
 import { exportFilesToNativeFolder, FileToSave } from '../src/utils/folderExportHelper';
 import { getRichDifferentiatedLesson, PEDAGOGICAL_APPROACHES, BLOOM_ACTION_VERBS } from '../src/utils/pedagogicalWordBank';
-import { KINYARWANDA_CURRICULUM_PRESETS, generateKinyarwandaLessonPlan } from '../src/utils/kinyarwandaPedagogicalBank';
+import { 
+  KINYARWANDA_CURRICULUM_PRESETS, 
+  generateKinyarwandaLessonPlan, 
+  getKinyarwandaUnitsByClass, 
+  KinyarwandaCurriculumUnit 
+} from '../src/utils/kinyarwandaPedagogicalBank';
 import { AdsterraNativeBanner } from '../src/components/ads/AdsterraNativeBanner';
 import { BulkExportModal } from '../src/components/generator/BulkExportModal';
 import { PostGenerationActionModal } from '../src/components/generator/PostGenerationActionModal';
 import { LessonPlanTablePreview } from '../src/components/generator/LessonPlanTablePreview';
 import { KinyarwandaWordBankModal } from '../src/components/generator/KinyarwandaWordBankModal';
+import { SchoolProfileReminderBanner } from '../src/components/common/SchoolProfileReminderBanner';
 import { exportPlansToCombinedDocx } from '../src/utils/combinedLessonPlanExport';
 import { Layers } from 'lucide-react';
 
@@ -491,16 +498,19 @@ function createDirectRebPdf(plan: LessonPlanData): jsPDF {
 }
 
 interface LessonPlanGeneratorProps {
-  onNavigate?: (tab: 'home' | 'converter' | 'generator' | 'library' | 'question_bank' | 'guide' | 'faq' | 'privacy') => void;
+  onNavigate?: (tab: 'home' | 'converter' | 'generator' | 'library' | 'question_bank' | 'reb_library' | 'guide' | 'faq' | 'privacy') => void;
   initialQuestion?: any;
 }
 
 export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavigate, initialQuestion }) => {
-  // Form input states
+  const { schoolProfile, updateSchoolProfile, openSchoolProfileModal } = useElimu();
+
+  // Form input states with persistent school profile retention
   const [language, setLanguage] = useState<'english' | 'kinyarwanda'>('english');
   const [selectedCurriculumPreset, setSelectedCurriculumPreset] = useState<string>('');
-  const [schoolName, setSchoolName] = useState<string>('');
-  const [teacherName, setTeacherName] = useState<string>('');
+  const [selectedKinyarwandaYear, setSelectedKinyarwandaYear] = useState<string>('P1');
+  const [schoolName, setSchoolName] = useState<string>(schoolProfile?.schoolName || '');
+  const [teacherName, setTeacherName] = useState<string>(schoolProfile?.teacherName || '');
   const [educationLevel, setEducationLevel] = useState<string>('PRIMARY');
   const [classLevel, setClassLevel] = useState<string>('Primary 6 (P6)');
   const [subject, setSubject] = useState<string>('English Language');
@@ -512,6 +522,30 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
   const [specialNeeds, setSpecialNeeds] = useState<string>('Learners with special educational needs seated near the chalkboard with visual aids and peer support.');
   const [unitNumber, setUnitNumber] = useState<string>('1');
   const [unitTitle, setUnitTitle] = useState<string>('');
+
+  // Auto-sync persistent school profile when updated
+  useEffect(() => {
+    if (schoolProfile?.schoolName && !schoolName) {
+      setSchoolName(schoolProfile.schoolName);
+    }
+    if (schoolProfile?.teacherName && !teacherName) {
+      setTeacherName(schoolProfile.teacherName);
+    }
+  }, [schoolProfile]);
+
+  const handleSchoolNameChange = (val: string) => {
+    setSchoolName(val);
+    if (updateSchoolProfile && val.trim().length > 2) {
+      updateSchoolProfile({ schoolName: val.trim() });
+    }
+  };
+
+  const handleTeacherNameChange = (val: string) => {
+    setTeacherName(val);
+    if (updateSchoolProfile && val.trim().length > 2) {
+      updateSchoolProfile({ teacherName: val.trim() });
+    }
+  };
   
   // Multiple Lesson Titles for Bulk Generation
   const [lessonTitles, setLessonTitles] = useState<string[]>([]);
@@ -562,6 +596,20 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
     setSpecialNeeds('Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere hafi y\'ikibaho.');
     setStatusMessage({
       text: `Integanyanyigisho ya REB: ${p.subject} - Umutwe ${p.unitNumber} (${p.sampleLessons.length} amasomo) yashyizwe mu iteguriro!`,
+      type: 'success'
+    });
+  };
+
+  const handleSelectUnitDirectly = (unit: KinyarwandaCurriculumUnit) => {
+    setLanguage('kinyarwanda');
+    setSubject(unit.subject);
+    setClassLevel(unit.classLevel);
+    setUnitNumber(unit.unitNumber);
+    setUnitTitle(unit.unitTitle);
+    setLessonTitles(unit.sampleLessons);
+    setSpecialNeeds('Abanyeshuri bafite intege nke bafashishwa imfashanyigisho zifatika bicaye imbere hafi y\'ikibaho.');
+    setStatusMessage({
+      text: `Integanyanyigisho ya REB: ${unit.subject} (${unit.classLevel}) - Umutwe ${unit.unitNumber}: ${unit.unitTitle} (${unit.sampleLessons.length} amasomo) yashyizwe mu iteguriro ako kanya!`,
       type: 'success'
     });
   };
@@ -966,18 +1014,24 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
 
           <form onSubmit={handleGenerateLessonPlans} className="space-y-5">
             
+            {/* School Profile Persistent Reminder Banner */}
+            <div className="pb-1">
+              <SchoolProfileReminderBanner />
+            </div>
+
             {/* Kinyarwanda Curriculum Presets Selector (when Kinyarwanda is active) */}
             {language === 'kinyarwanda' && (
-              <div className="p-3.5 bg-amber-950/20 border border-amber-500/30 rounded-2xl space-y-2">
+              <div className="p-4 bg-amber-950/20 dark:bg-amber-950/30 border border-amber-500/40 rounded-3xl space-y-3.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <label className="block text-[11px] font-bold text-amber-300">
-                    📚 Hitamo Umutwe n'Amasomo bya REB CBC:
+                  <label className="text-xs font-black text-amber-600 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <BookOpen className="w-4 h-4 text-amber-500" />
+                    <span>📚 Hitamo Umwaka n'Umutwe w'Isomo (Choose Year & Unit):</span>
                   </label>
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setShowWordBankModal(true)}
-                      className="px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 font-bold text-[10px] border border-amber-400/30 transition flex items-center gap-1 cursor-pointer shadow-sm"
+                      className="px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-800 dark:text-amber-300 hover:text-slate-950 font-bold text-[10px] border border-amber-400/30 transition flex items-center gap-1 cursor-pointer shadow-sm"
                     >
                       <BookOpen className="w-3 h-3" />
                       <span>Ikigega cy'Amagambo (600+)</span>
@@ -986,28 +1040,89 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
                       <button
                         type="button"
                         onClick={() => onNavigate('question_bank')}
-                        className="text-[10px] text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer"
+                        className="text-[10px] text-amber-600 dark:text-amber-400 hover:underline font-bold cursor-pointer"
                       >
                         Ikigega cy'Ibibazo →
                       </button>
                     )}
                   </div>
                 </div>
-                <select
-                  value={selectedCurriculumPreset}
-                  onChange={(e) => handleSelectCurriculumPreset(e.target.value)}
-                  className="w-full text-xs px-3 py-2.5 bg-slate-950 border border-amber-500/40 rounded-xl text-white focus:outline-none focus:border-amber-400 cursor-pointer"
-                >
-                  <option value="">-- Hitamo Umutwe mu nteganyanyigisho (Kanda hano) --</option>
-                  {KINYARWANDA_CURRICULUM_PRESETS.map((p, pIdx) => (
-                    <option key={pIdx} value={pIdx}>
-                      {p.subject} ({p.classLevel}) - Umutwe {p.unitNumber}: {p.unitTitle}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-[10px] text-slate-400 block">
-                  Iyo uhisemo umutwe, amasomo yose n'ubushobozi bwitezwe bihita byuzura ako kanya!
-                </span>
+
+                {/* 1. Year / Grade Selection Buttons (P1 - S6) */}
+                <div>
+                  <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide block mb-1.5">
+                    Intambwe ya 1: Hitamo Umwaka w'Amashuri (Class / Year):
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'].map((yearCode) => (
+                      <button
+                        key={yearCode}
+                        type="button"
+                        onClick={() => {
+                          setSelectedKinyarwandaYear(yearCode);
+                          const matched = KINYARWANDA_CURRICULUM_PRESETS.find(p => p.classLevel.includes(yearCode));
+                          if (matched) {
+                            setClassLevel(matched.classLevel);
+                          }
+                        }}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                          selectedKinyarwandaYear === yearCode
+                            ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                        }`}
+                      >
+                        {yearCode}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. Units for the selected year */}
+                <div>
+                  <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide block mb-1.5">
+                    Intambwe ya 2: Kanda ku Mutwe w'Isomo ushaka (Amasomo yose ahita yikoreramo ako kanya):
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {getKinyarwandaUnitsByClass(selectedKinyarwandaYear).map((u, uIdx) => (
+                      <div
+                        key={uIdx}
+                        onClick={() => handleSelectUnitDirectly(u)}
+                        className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/80 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 cursor-pointer transition shadow-xs group"
+                      >
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <span className="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase bg-amber-500/15 text-amber-800 dark:text-amber-300">
+                            Umutwe {u.unitNumber} • {u.subject}
+                          </span>
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                            {u.sampleLessons.length} Amasomo
+                          </span>
+                        </div>
+                        <h4 className="text-xs font-black text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition truncate">
+                          {u.unitTitle}
+                        </h4>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                          {u.sampleLessons.join(', ')}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dropdown fallback option */}
+                <div className="pt-1">
+                  <select
+                    value={selectedCurriculumPreset}
+                    onChange={(e) => handleSelectCurriculumPreset(e.target.value)}
+                    className="w-full text-xs px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-300 focus:outline-none focus:border-amber-400 cursor-pointer"
+                  >
+                    <option value="">-- Cyangwa hitamo mu mitwe yose uko yakabaye --</option>
+                    {KINYARWANDA_CURRICULUM_PRESETS.map((p, pIdx) => (
+                      <option key={pIdx} value={pIdx}>
+                        {p.subject} ({p.classLevel}) - Umutwe {p.unitNumber}: {p.unitTitle}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             )}
 
@@ -1183,39 +1298,54 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
             </div>
 
             {/* Optional / School Settings Toggle (Keeps UI clean and simple for newcomers) */}
-            <div className="pt-2 border-t border-slate-800">
-              <button
-                type="button"
-                onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
-                className="w-full flex items-center justify-between py-2 text-xs font-semibold text-slate-400 hover:text-white transition"
-              >
-                <span className="flex items-center gap-2">
+            <div className="pt-2 border-t border-slate-800 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+                  className="flex items-center gap-2 py-2 text-xs font-semibold text-slate-400 hover:text-white transition cursor-pointer"
+                >
                   <Sliders className="w-3.5 h-3.5 text-amber-400" />
-                  <span>School Name, Teacher Name & Class Settings</span>
-                  <span className="text-[10px] text-slate-500">(Optional)</span>
-                </span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showAdvancedSettings ? 'rotate-180' : ''}`} />
-              </button>
+                  <span>School & Teacher Structure Settings</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showAdvancedSettings ? 'rotate-180' : ''}`} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={openSchoolProfileModal}
+                  className="px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 text-[11px] font-bold border border-amber-500/30 transition flex items-center gap-1 cursor-pointer"
+                  title="Fungura Idirishya ryo Kuzuza Imiterere y'Ishuri"
+                >
+                  <School className="w-3 h-3" />
+                  <span>Kuzuza Imiterere y'Ishuri</span>
+                </button>
+              </div>
 
               {showAdvancedSettings && (
                 <div className="space-y-4 pt-3 mt-2 bg-slate-950 p-4 rounded-2xl border border-slate-800 animate-fade-in text-xs">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-300 mb-1">School Name</label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-[11px] font-bold text-slate-300">Izina ry'Ishuri (School Name)</label>
+                        <span className="text-[10px] text-emerald-400 font-semibold">Bikoreshwa hose</span>
+                      </div>
                       <input
                         type="text"
                         value={schoolName}
-                        onChange={(e) => setSchoolName(e.target.value)}
+                        onChange={(e) => handleSchoolNameChange(e.target.value)}
                         placeholder="GS Amahoro Kigali"
                         className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-300 mb-1">Teacher's Name</label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-[11px] font-bold text-slate-300">Amazina ya Mwarimu (Teacher)</label>
+                        <span className="text-[10px] text-emerald-400 font-semibold">Bikoreshwa hose</span>
+                      </div>
                       <input
                         type="text"
                         value={teacherName}
-                        onChange={(e) => setTeacherName(e.target.value)}
+                        onChange={(e) => handleTeacherNameChange(e.target.value)}
                         placeholder="e.g. Teacher Joel"
                         className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
                       />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Sparkles, 
   FileText, 
@@ -8,34 +8,79 @@ import {
   CheckCircle2, 
   ArrowRight, 
   Heart, 
-  Presentation, 
-  Image as ImageIcon, 
   ShieldCheck, 
-  Clock, 
   Download, 
-  Zap,
-  Globe,
-  Users,
+  HelpCircle,
+  Layers,
+  Calendar,
   Check,
-  MessageCircle,
-  Phone,
-  HelpCircle
+  Globe
 } from 'lucide-react';
 import { useElimu } from '../../context/ElimuContext';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
+import { SchoolProfileReminderBanner } from '../common/SchoolProfileReminderBanner';
+import { QuickQuestionDownloadPopup } from './QuickQuestionDownloadPopup';
+import { getQuickClassSubjectQuestions } from '../../utils/kinyarwandaQuestionBankData';
+import { exportQuestionsToDocx, exportQuestionsToPdf } from '../../utils/quizExportHelper';
 
 interface ServicesOverviewHomeProps {
-  onNavigate: (tab: 'generator' | 'converter' | 'library' | 'question_bank' | 'guide' | 'faq' | 'privacy') => void;
+  onNavigate: (tab: 'generator' | 'converter' | 'library' | 'question_bank' | 'reb_library' | 'guide' | 'faq' | 'privacy') => void;
 }
 
 export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNavigate }) => {
-  const { openShareModal, savedLessonPlans } = useElimu();
+  const { openShareModal, savedLessonPlans, schoolProfile } = useElimu();
+  const [quickDownloadModalOpen, setQuickDownloadModalOpen] = useState(false);
+
+  // In-card fast class question downloader state
+  const [cardSelectedClass, setCardSelectedClass] = useState('P6');
+  const [cardSelectedSubject, setCardSelectedSubject] = useState('Ikinyarwanda');
+  const [cardDownloading, setCardDownloading] = useState(false);
+  const [cardMessage, setCardMessage] = useState<string | null>(null);
+
+  const handleCardFastDownload = async (format: 'docx' | 'pdf') => {
+    setCardDownloading(true);
+    setCardMessage(null);
+    try {
+      const questions = getQuickClassSubjectQuestions(cardSelectedClass, cardSelectedSubject, '2025', 20);
+      if (questions.length === 0) {
+        setCardMessage('Nta bibazo byabonetse kuri iri somo. Hitamo irindi somo.');
+        setCardDownloading(false);
+        return;
+      }
+
+      const options = {
+        schoolName: schoolProfile.schoolName || 'GS Rwanda Amahoro',
+        examTitle: `ISUZUMABUMENYI RYA ${cardSelectedSubject.toUpperCase()} (${cardSelectedClass})`,
+        subject: cardSelectedSubject,
+        classLevel: cardSelectedClass,
+        term: 'Igihembwe cya 1 (Term 1)',
+        duration: 'Iminota 60 (1h 00min)',
+        includeAnswers: true
+      };
+
+      if (format === 'docx') {
+        await exportQuestionsToDocx(questions, options);
+        setCardMessage(`Wamanuye neza ikizamini cya ${cardSelectedSubject} (${cardSelectedClass}) muri Word (.docx)!`);
+      } else {
+        exportQuestionsToPdf(questions, options);
+        setCardMessage(`Wamanuye neza ikizamini cya ${cardSelectedSubject} (${cardSelectedClass}) muri PDF!`);
+      }
+    } catch (e) {
+      console.error(e);
+      setCardMessage('Habaye ikosa mu kumanura. Ongera ugerageze.');
+    } finally {
+      setCardDownloading(false);
+    }
+  };
 
   return (
-    <div className="space-y-12 animate-fade-in pb-12">
+    <div className="space-y-10 animate-fade-in pb-12">
+
+      {/* School Profile Persistent Reminder Banner at the very top */}
+      <SchoolProfileReminderBanner />
       
       {/* Hero Banner Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 shadow-2xl">
+      <div className="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 shadow-2xl text-white">
         <div className="absolute top-0 right-0 -translate-y-16 translate-x-16 w-[500px] h-[500px] bg-gradient-to-br from-amber-500/20 via-emerald-500/10 to-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative z-10 max-w-4xl space-y-6">
@@ -51,41 +96,47 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white font-display tracking-tight leading-tight">
             Elimu360 Open System: <br />
             <span className="bg-gradient-to-r from-amber-400 via-emerald-400 to-sky-400 bg-clip-text text-transparent">
-              AI Lesson Plans & Document Converter
+              AI Lesson Plans, Questions & REB Books
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
-            Sovereign, fast, and free toolkit for educators in Rwanda and across Africa. Draft inspectorate-ready REB Competency-Based lesson plans in seconds and convert teaching documents (PDF to DOCX, PPT to PDF/DOCX, PNG to PDF) with layout preservation.
+            Sovereign, fast, and free toolkit for educators in Rwanda and across Africa. Draft inspectorate-ready REB Competency-Based lesson plans, download exam questions and answers by class, browse revised REB textbooks and schemes of work, and convert teaching documents with layout preservation.
           </p>
 
           {/* Core Call to Action Buttons */}
-          <div className="pt-4 flex flex-wrap items-center gap-4">
+          <div className="pt-4 flex flex-wrap items-center gap-3">
             <button
               onClick={() => onNavigate('generator')}
-              className="px-6 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-sm shadow-xl transition flex items-center gap-3 cursor-pointer group"
+              className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-sm shadow-xl transition flex items-center gap-2.5 cursor-pointer group"
             >
               <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              <span>Create Lesson Plans Now</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span>Create Lesson Plans</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
 
             <button
-              onClick={() => onNavigate('question_bank')}
-              className="px-6 py-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-black text-sm border border-amber-500/30 shadow-xl transition flex items-center gap-3 cursor-pointer group"
+              onClick={() => setQuickDownloadModalOpen(true)}
+              className="px-5 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm shadow-xl transition flex items-center gap-2 cursor-pointer group"
             >
-              <HelpCircle className="w-5 h-5 text-amber-400" />
-              <span>🇷🇼 Question Bank (2,200+)</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <Download className="w-5 h-5 text-slate-950" />
+              <span>📥 Download Questions by Class</span>
+            </button>
+
+            <button
+              onClick={() => onNavigate('reb_library')}
+              className="px-5 py-3.5 rounded-2xl bg-blue-600/90 hover:bg-blue-600 text-white font-black text-sm shadow-xl transition flex items-center gap-2 cursor-pointer"
+            >
+              <BookOpen className="w-4 h-4 text-sky-300" />
+              <span>📚 REB Books & Schemes (1806)</span>
             </button>
 
             <button
               onClick={() => onNavigate('converter')}
-              className="px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-sm border border-slate-700 shadow-xl transition flex items-center gap-3 cursor-pointer group"
+              className="px-5 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-sm border border-slate-700 shadow-xl transition flex items-center gap-2 cursor-pointer group"
             >
-              <RefreshCw className="w-5 h-5 text-amber-400 group-hover:rotate-180 transition-transform duration-500" />
+              <RefreshCw className="w-4 h-4 text-amber-400 group-hover:rotate-180 transition-transform duration-500" />
               <span>Document Converter</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
 
@@ -105,205 +156,290 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Works Offline Locally</span>
+              <span>Retains School & Teacher Profile</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Featured Quick Class-Based Question Downloader Section with Nearby Ad Integration */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/20 text-amber-700 dark:text-amber-400">
+                Instant Exam Papers & Questions
+              </span>
+              <span className="text-xs text-slate-500 font-medium">• 3,000+ REB Questions</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
+              🇷🇼 Manura Ibibazo n'Ibizamini ku Masomo Atandukanye
+            </h2>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              Hitamo gusa umwaka w'amashuri n'isomo, maze umanure ikizamini cyuzuye gifite ibisubizo n'akaraso k'ikosora ako kanya!
+            </p>
+          </div>
+
+          <button
+            onClick={() => setQuickDownloadModalOpen(true)}
+            className="px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-md transition flex items-center gap-2 cursor-pointer shrink-0 self-start md:self-auto"
+          >
+            <Download className="w-4 h-4" />
+            <span>Fungura Idirishya ryo Kumanura (Popup)</span>
+          </button>
+        </div>
+
+        {cardMessage && (
+          <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs font-bold flex items-center gap-2 animate-fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{cardMessage}</span>
+          </div>
+        )}
+
+        {/* 2-Column Layout: Left = Quick Selector & Download, Right = Educational Sponsor Ad */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          {/* Left Controls (8 cols) */}
+          <div className="lg:col-span-8 space-y-4">
+            {/* Step 1: Subject Selection */}
+            <div>
+              <label className="block text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <BookOpen className="w-4 h-4 text-amber-500" />
+                1. Hitamo Isomo (Subject):
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  'Ikinyarwanda', 
+                  'Imibare (Mathematics)', 
+                  'Science & Elementary Technology (SET)', 
+                  'English Language', 
+                  'Physics', 
+                  'Chemistry', 
+                  'Biology', 
+                  'Social & Religious Studies (SRS / SST)'
+                ].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setCardSelectedSubject(s)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                      cardSelectedSubject === s
+                        ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Step 2: Class Selection */}
+            <div>
+              <label className="block text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-emerald-500" />
+                2. Hitamo Umwaka w'Amashuri (Class Level):
+              </label>
+
+              {/* Primary */}
+              <div className="mb-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block mb-1">
+                  Amashuri Abanza (Primary):
+                </span>
+                <div className="grid grid-cols-6 gap-1.5">
+                  {['P1', 'P2', 'P3', 'P4', 'P5', 'P6'].map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setCardSelectedClass(c)}
+                      className={`py-2 rounded-xl text-xs font-black transition cursor-pointer text-center ${
+                        cardSelectedClass === c
+                          ? 'bg-emerald-600 text-white shadow-md'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Secondary */}
+              <div>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block mb-1">
+                  Amashuri Yisumbuye (Secondary O/A-Level):
+                </span>
+                <div className="grid grid-cols-6 gap-1.5">
+                  {['S1', 'S2', 'S3', 'S4', 'S5', 'S6'].map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setCardSelectedClass(c)}
+                      className={`py-2 rounded-xl text-xs font-black transition cursor-pointer text-center ${
+                        cardSelectedClass === c
+                          ? 'bg-emerald-600 text-white shadow-md'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Direct Download Action Buttons */}
+            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                disabled={cardDownloading}
+                onClick={() => handleCardFastDownload('docx')}
+                className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Manura Ikizamini cya {cardSelectedSubject} ({cardSelectedClass}) muri Word (.docx)</span>
+              </button>
+
+              <button
+                type="button"
+                disabled={cardDownloading}
+                onClick={() => handleCardFastDownload('pdf')}
+                className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Download className="w-4 h-4" />
+                <span>Manura muri PDF Doc</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right Sponsor Ad Banner (Must be near the download form as requested) */}
+          <div className="lg:col-span-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-3xl border border-slate-200 dark:border-slate-700/60">
+            <span className="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider block mb-2 text-center">
+              Educational Sponsor & Ad Banner
+            </span>
+            <AdsterraNativeBanner />
+          </div>
+
         </div>
       </div>
 
       {/* Services Grid Section */}
       <div className="space-y-6">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-display">
             Our Free Educator Services
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
             Everything you need for teaching preparation, lesson planning, and document formatting in one unified open workspace.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           
           {/* Service 1: AI REB Lesson Plan Generator */}
-          <div className="bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-xl">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-sm hover:shadow-md">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center font-bold">
                 <Sparkles className="w-6 h-6" />
               </div>
 
-              <h3 className="text-lg font-bold text-white font-display group-hover:text-amber-300 transition">
-                AI REB CBC Lesson Plan Generator
+              <h3 className="text-base font-bold text-slate-900 dark:text-white font-display group-hover:text-amber-500 transition">
+                AI REB CBC Lesson Generator
               </h3>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Draft official Rwanda Education Board (REB) Competency-Based Curriculum lesson plans for Nursery, Primary, Secondary, and TVET levels. Includes 3-step lesson steps, generic competences, and cross-cutting issues.
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Draft official REB Competency-Based Curriculum lesson plans with 100% Kinyarwanda option, sequential dates, and direct PDF/Word exports.
               </p>
-
-              <ul className="space-y-2 text-xs text-slate-400">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Bulk batch generation with 1,200+ distinct action verbs</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Sequential weekday date calculator</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Direct Unit Folder export (No unzipping needed!)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>A4 Blank Unfilled Sheet generator</span>
-                </li>
-              </ul>
             </div>
 
-            <div className="pt-4 border-t border-slate-800">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
               <button
                 onClick={() => onNavigate('generator')}
-                className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
               >
-                <span>Launch Lesson Generator</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Launch Generator</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Service: Kinyarwanda Question Bank & Curricula */}
-          <div className="bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-xl">
+          {/* Service 2: Question Bank (🇷🇼 Ikigega) */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-sm hover:shadow-md">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center font-bold">
                 <HelpCircle className="w-6 h-6" />
               </div>
 
-              <h3 className="text-lg font-bold text-white font-display group-hover:text-amber-300 transition">
-                🇷🇼 Ikigega cy'Ibibazo n'Amagambo (2,800+)
+              <h3 className="text-base font-bold text-slate-900 dark:text-white font-display group-hover:text-amber-500 transition">
+                🇷🇼 Question Bank (3,000+)
               </h3>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Ikigega kirimo ibibazo birenga 2,200 n'amagambo arenga 600 yo gutegura amasomo 100% mu Kinyarwanda ku masomo yose (Ikinyarwanda, Imibare P1-P3, Ibidukikije, n'Ubugeni).
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Over 3,000 CBC examination questions with answers, marking schemes, and multi-year coverage (2020 - 2026) across P1 to S6.
               </p>
-
-              <ul className="space-y-2 text-xs text-slate-400">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Amateguriro y'amasomo <strong>100% mu Kinyarwanda</strong></span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Inshinga za Bloom n'amagambo ya REB CBC arenga 600</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Gusohora ibizamini n'amateguriro muri <strong>Word (.docx)</strong> na <strong>PDF</strong></span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Ibibazo by'amashuri abanza n'ayisumbuye (P1 - S6)</span>
-                </li>
-              </ul>
             </div>
 
-            <div className="pt-4 border-t border-slate-800">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
               <button
                 onClick={() => onNavigate('question_bank')}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
               >
-                <span>Fungura Ikigega cy'Ibibazo</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Browse Question Bank</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Service 2: Universal Document Converter */}
-          <div className="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-xl">
+          {/* Service 3: REB Course 1806 Revised Books & Schemes of Work */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-sm hover:shadow-md">
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-bold">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-500 border border-blue-500/20 flex items-center justify-center font-bold">
+                <BookOpen className="w-6 h-6" />
+              </div>
+
+              <h3 className="text-base font-bold text-slate-900 dark:text-white font-display group-hover:text-blue-500 transition">
+                REB Books & Schemes (1806)
+              </h3>
+
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Direct access to revised REB textbooks, Teacher Guides, syllabi, and downloadable Scheme of Work Word (.docx) templates.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+              <button
+                onClick={() => onNavigate('reb_library')}
+                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <span>Open REB Library (1806)</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Service 4: Universal Document Converter */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-sm hover:shadow-md">
+            <div className="space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center font-bold">
                 <RefreshCw className="w-6 h-6" />
               </div>
 
-              <h3 className="text-lg font-bold text-white font-display group-hover:text-emerald-300 transition">
-                Universal Document Converter
+              <h3 className="text-base font-bold text-slate-900 dark:text-white font-display group-hover:text-emerald-500 transition">
+                Document Converter
               </h3>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Convert lesson documents and teaching materials effortlessly with strict layout preservation and proper word spacing.
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Convert lesson documents (PDF to DOCX, PPT to PDF/Word, PNG to PDF) with layout preservation and zero formatting loss.
               </p>
-
-              <ul className="space-y-2 text-xs text-slate-400">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span><strong>PDF to DOCX</strong> with styled headings & word spacing</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span><strong>PPT to PDF or DOCX</strong> slide deck extraction</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span><strong>PNG/JPG to PDF</strong> photo worksheet compiler</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>100% private, client-side processing</span>
-                </li>
-              </ul>
             </div>
 
-            <div className="pt-4 border-t border-slate-800">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
               <button
                 onClick={() => onNavigate('converter')}
-                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
               >
-                <span>Launch Document Converter</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Service 3: REB CBC Standards Guide */}
-          <div className="bg-slate-900 border border-slate-800 hover:border-sky-500/50 rounded-3xl p-6 space-y-4 transition group flex flex-col justify-between shadow-xl">
-            <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center justify-center font-bold">
-                <Award className="w-6 h-6" />
-              </div>
-
-              <h3 className="text-lg font-bold text-white font-display group-hover:text-sky-300 transition">
-                REB CBC Pedagogical Guide
-              </h3>
-
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Comprehensive guide to Rwanda Education Board Competency-Based Curriculum standards, Bloom's Taxonomy verbs, and assessment rules.
-              </p>
-
-              <ul className="space-y-2 text-xs text-slate-400">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                  <span>Bloom's Taxonomy active verb dictionary</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                  <span>Generic Competences integration rules</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                  <span>Cross-cutting issues & inclusivity guide</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                  <span>Inspectorate checklist reference</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="pt-4 border-t border-slate-800">
-              <button
-                onClick={() => onNavigate('guide')}
-                className="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
-              >
-                <span>Read CBC Standards Guide</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Launch Converter</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -311,153 +447,12 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
         </div>
       </div>
 
-      {/* Adsterra Native Banner - Strategic Monetization Unit (Separated Slot 4) */}
-      <AdsterraNativeBanner 
-        badgeLabel="Sponsored Educational & Career Resources" 
-        slotIndex={4} 
+      {/* Quick Question Download Popup Dialog */}
+      <QuickQuestionDownloadPopup
+        isOpen={quickDownloadModalOpen}
+        onClose={() => setQuickDownloadModalOpen(false)}
+        onOpenFullQuestionBank={() => onNavigate('question_bank')}
       />
-
-      {/* 24/7 Teacher WhatsApp Help Banner (Everywhere Accessible) */}
-      <div className="rounded-3xl bg-gradient-to-r from-emerald-950/80 via-slate-900 to-teal-950/80 border border-emerald-500/40 p-6 sm:p-7 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-5">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0 text-emerald-400">
-            <MessageCircle className="w-6 h-6 fill-emerald-400" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
-                24/7 Teacher Support
-              </span>
-              <span className="text-xs font-bold text-slate-400">
-                The Palace, Inc — The Palace Tech House
-              </span>
-            </div>
-            <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-              Need Instant Help with Lesson Plans or CBC Alignment?
-            </h3>
-            <p className="text-xs text-slate-300 mt-0.5">
-              Chat directly with educational curriculum specialists on WhatsApp: <strong>+250 792 612 139</strong>
-            </p>
-          </div>
-        </div>
-
-        <a
-          href="https://wa.me/250792612139?text=Hello%20Elimu360%20Tech%20House%2C%20I%20need%20assistance%20with%20teaching%20tools"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 transition cursor-pointer"
-        >
-          <MessageCircle className="w-4 h-4 fill-slate-950" />
-          <span>Chat on WhatsApp (+250 792 612 139)</span>
-        </a>
-      </div>
-
-      {/* Local Saved Plans & Share Banner */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4 flex flex-col justify-between shadow-xl">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-              <BookOpen className="w-4 h-4" /> Local Saved Library
-            </div>
-
-            <h3 className="text-xl font-bold text-white font-display">
-              Access & Edit Your Saved Lesson Plans ({savedLessonPlans.length})
-            </h3>
-
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Every lesson plan created on Elimu360 is saved directly to your device storage. You can search, filter by subject, modify text, print, or download PDF/Word copies anytime offline.
-            </p>
-          </div>
-
-          <div className="pt-4 flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => onNavigate('library')}
-              className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition flex items-center gap-2 cursor-pointer"
-            >
-              <BookOpen className="w-4 h-4 text-amber-400" />
-              <span>Open Saved Plans Library ({savedLessonPlans.length})</span>
-            </button>
-
-            <button
-              onClick={() => onNavigate('generator')}
-              className="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center gap-2 cursor-pointer"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Create New Lesson Plan</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Community Share Card */}
-        <div className="bg-gradient-to-br from-emerald-500/15 via-slate-900 to-slate-900 border border-emerald-500/30 rounded-3xl p-6 space-y-4 flex flex-col justify-between shadow-xl">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
-              <Heart className="w-4 h-4 fill-emerald-400" /> Community Empowerment
-            </div>
-
-            <h3 className="text-lg font-bold text-white font-display">
-              Spread the Goodness to Fellow Teachers
-            </h3>
-
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Help make teaching preparation stress-free for your colleagues. Share Elimu360 with teachers in your school and staffroom WhatsApp groups!
-            </p>
-          </div>
-
-          <button
-            onClick={openShareModal}
-            className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <Heart className="w-4 h-4 fill-slate-950" />
-            <span>Share Elimu360 with Colleagues</span>
-          </button>
-        </div>
-
-      </div>
-
-      {/* Quick Help & PWA Install Promo Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-3 flex flex-col justify-between shadow-xl">
-          <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full inline-block">
-              Educator Help & FAQ
-            </span>
-            <h3 className="text-lg font-bold text-white font-display">
-              Have Questions About REB Formatting or Offline Usage?
-            </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Check out our clear, step-by-step FAQ covering unit folder exports, Bloom's Taxonomy integration, and offline lesson drafting.
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigate('faq')}
-            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition border border-slate-700 cursor-pointer self-start"
-          >
-            Read Educator FAQ & Answers →
-          </button>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-3 flex flex-col justify-between shadow-xl">
-          <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full inline-block">
-              Privacy & Legal
-            </span>
-            <h3 className="text-lg font-bold text-white font-display">
-              Sovereign Local Privacy & Intellectual Rights
-            </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Your lessons never leave your browser without permission. Learn more about our privacy architecture and terms of use.
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigate('privacy')}
-            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition border border-slate-700 cursor-pointer self-start"
-          >
-            View Privacy Policy & Terms →
-          </button>
-        </div>
-      </div>
 
     </div>
   );
