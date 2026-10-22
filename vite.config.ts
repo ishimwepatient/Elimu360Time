@@ -955,6 +955,24 @@ function rebBookProxyPlugin(): Plugin {
             const watermarkedCachePath = path.join(CACHE_DIR, `watermarked_${watermarkedKey}.pdf`);
             const rawCachePath = path.join(CACHE_DIR, `raw_${urlHash}.pdf`);
 
+            // Probe mode (instant 2ms cache check)
+            const checkOnly = urlObj.searchParams.get('checkOnly') === '1';
+            if (checkOnly) {
+              if (fs.existsSync(watermarkedCachePath)) {
+                const stat = fs.statSync(watermarkedCachePath);
+                res.setHeader('Content-Type', 'application/json');
+                res.setHeader('X-REB-Cache', 'HIT-WATERMARKED');
+                res.statusCode = 200;
+                res.end(JSON.stringify({ cached: true, size: stat.size }));
+                return;
+              }
+              res.setHeader('Content-Type', 'application/json');
+              res.setHeader('X-REB-Cache', 'MISS');
+              res.statusCode = 404;
+              res.end(JSON.stringify({ cached: false }));
+              return;
+            }
+
             // Check cache for already-watermarked PDF version before regenerating!
             if (fs.existsSync(watermarkedCachePath)) {
               console.log(`[REB Cache HIT] Serving already-watermarked PDF (${watermarkedKey}) for "${title}"`);
@@ -1314,15 +1332,30 @@ function rebBookProxyPlugin(): Plugin {
             res.setHeader('Content-Type', 'application/pdf');
 
             if (fs.existsSync(rawCachePath)) {
+              const stat = fs.statSync(rawCachePath);
+              res.setHeader('Content-Length', stat.size);
+              res.setHeader('X-REB-Cache', 'HIT-RAW');
               res.statusCode = 200;
-              res.end(fs.readFileSync(rawCachePath));
+              fs.createReadStream(rawCachePath).pipe(res);
               return;
             }
 
             https.get(targetUrl, {
-              headers: { 'User-Agent': 'Mozilla/5.0' },
-              insecureHTTPParser: true
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'application/pdf,*/*'
+              },
+              insecureHTTPParser: true,
+              timeout: 60000
             }, (rebRes) => {
+              if (rebRes.statusCode && rebRes.statusCode >= 400) {
+                res.statusCode = rebRes.statusCode;
+                res.end(`REB server returned ${rebRes.statusCode}`);
+                return;
+              }
+              if (rebRes.headers['content-length']) {
+                res.setHeader('Content-Length', rebRes.headers['content-length']);
+              }
               const chunks: Buffer[] = [];
               rebRes.on('data', (c) => {
                 chunks.push(Buffer.from(c));
@@ -1330,7 +1363,9 @@ function rebBookProxyPlugin(): Plugin {
               });
               rebRes.on('end', () => {
                 const full = Buffer.concat(chunks);
-                if (full.length > 500) fs.writeFileSync(rawCachePath, full);
+                if (full.length > 500) {
+                  try { fs.writeFileSync(rawCachePath, full); } catch (_) {}
+                }
                 res.end();
               });
             }).on('error', (err) => {

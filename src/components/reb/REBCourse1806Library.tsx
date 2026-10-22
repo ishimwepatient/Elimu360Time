@@ -22,13 +22,23 @@ import {
   Check,
   AlertCircle,
   School,
-  Play
+  Play,
+  Square,
+  CheckSquare,
+  FolderArchive,
+  ListPlus,
+  Loader2
 } from 'lucide-react';
 import { Document, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, HeadingLevel, Packer } from 'docx';
 import { saveAs } from 'file-saver';
 import { useElimu } from '../../context/ElimuContext';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
-import { downloadREBBookDirectly, openDirectREBLink, generateBrandedCoverPdf } from '../../utils/directBookGenerator';
+import { 
+  downloadREBBookDirectly, 
+  openDirectREBLink, 
+  generateBrandedCoverPdf,
+  compileAndDownloadBatchREBBooks 
+} from '../../utils/directBookGenerator';
 import { REB_OFFICIAL_CATALOG, REBBookMetadata } from '../../utils/rebBooksCatalog';
 
 export const REBCourse1806Library: React.FC = () => {
@@ -40,10 +50,22 @@ export const REBCourse1806Library: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const [selectedSubject, setSelectedSubject] = useState<string>('ALL');
 
-  // Direct downloading state with exact feedback
-  const [downloadingBookId, setDownloadingBookId] = useState<string | null>(null);
-  const [downloadProgressMessage, setDownloadProgressMessage] = useState<string | null>(null);
-  const [downloadProgressPercent, setDownloadProgressPercent] = useState<number>(0);
+  // Multi-book selection state
+  const [selectedBookIds, setSelectedBookIds] = useState<Set<string>>(new Set());
+
+  // Concurrent per-book downloading tracking map (allows multiple books to download simultaneously!)
+  const [downloadProgressMap, setDownloadProgressMap] = useState<Record<string, { message: string; percent: number }>>({});
+
+  // Batch download progress modal / banner state
+  const [batchProgress, setBatchProgress] = useState<{
+    active: boolean;
+    current: number;
+    total: number;
+    currentTitle: string;
+    stepMessage: string;
+    percent: number;
+  } | null>(null);
+
   const [isGeneratingSow, setIsGeneratingSow] = useState<string | null>(null);
   const [downloadSuccessNotice, setDownloadSuccessNotice] = useState<string | null>(null);
   const [copiedBookId, setCopiedBookId] = useState<string | null>(null);
@@ -71,17 +93,39 @@ export const REBCourse1806Library: React.FC = () => {
   // Extract unique subjects for filtering
   const availableSubjects = Array.from(new Set(REB_OFFICIAL_CATALOG.map(b => b.subject))).sort();
 
+  // Selection toggle handlers
+  const handleToggleSelectBook = (id: string) => {
+    setSelectedBookIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleSelectAllFiltered = () => {
+    setSelectedBookIds(new Set(filteredItems.map(b => b.id)));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedBookIds(new Set());
+  };
+
+  const handleSelectByClass = (classGrade: string) => {
+    const classBooks = REB_OFFICIAL_CATALOG.filter(b => b.classGrade === classGrade);
+    setSelectedBookIds(new Set(classBooks.map(b => b.id)));
+  };
+
   /**
-   * DIRECT BOOK DOWNLOAD HANDLER
-   * Fetches the actual genuine REB textbook/guide from REB's eLearning site,
-   * prepends the official Rwanda CBC / Elimu360 Front Page (with scannable QR Code),
-   * stamps the subtle watermark on all pages, and delivers ONE SINGLE COMPILED PDF.
+   * DIRECT BOOK DOWNLOAD HANDLER (Non-blocking & Concurrent)
+   * Allows teachers to click download on multiple books in parallel!
    */
   const handleDirectDownloadBook = async (book: REBBookMetadata) => {
-    setDownloadingBookId(book.id);
+    setDownloadProgressMap(prev => ({
+      ...prev,
+      [book.id]: { message: 'Kureba niba gihari...', percent: 10 }
+    }));
     setDownloadSuccessNotice(null);
-    setDownloadProgressMessage('Kureba niba igitabo gihari...');
-    setDownloadProgressPercent(10);
 
     try {
       const res = await downloadREBBookDirectly(
@@ -91,8 +135,10 @@ export const REBCourse1806Library: React.FC = () => {
         schoolProfile?.academicYear,
         schoolProfile?.district,
         (msg, pct) => {
-          setDownloadProgressMessage(msg);
-          setDownloadProgressPercent(pct);
+          setDownloadProgressMap(prev => ({
+            ...prev,
+            [book.id]: { message: msg, percent: pct }
+          }));
         }
       );
       setDownloadSuccessNotice(res.message);
@@ -103,9 +149,56 @@ export const REBCourse1806Library: React.FC = () => {
       setDownloadSuccessNotice(`Igitabo cya REB "${book.title}" cyatangiye kumanurwa kuri elearning.reb.rw!`);
       setTimeout(() => setDownloadSuccessNotice(null), 5000);
     } finally {
-      setDownloadingBookId(null);
-      setDownloadProgressMessage(null);
-      setDownloadProgressPercent(0);
+      setDownloadProgressMap(prev => {
+        const next = { ...prev };
+        delete next[book.id];
+        return next;
+      });
+    }
+  };
+
+  /**
+   * BATCH DOWNLOAD HANDLER
+   * Compiles multiple selected books into a single ZIP file or downloads in queue
+   */
+  const handleBatchDownload = async (asZip: boolean) => {
+    const selectedBooks = REB_OFFICIAL_CATALOG.filter(b => selectedBookIds.has(b.id));
+    if (selectedBooks.length === 0) return;
+
+    setBatchProgress({
+      active: true,
+      current: 1,
+      total: selectedBooks.length,
+      currentTitle: selectedBooks[0].title,
+      stepMessage: 'Gutangira kumanura ibitabo byatoranyijwe...',
+      percent: 5
+    });
+
+    try {
+      const res = await compileAndDownloadBatchREBBooks(
+        selectedBooks,
+        schoolProfile,
+        (current, total, currentTitle, stepMessage, overallPercent) => {
+          setBatchProgress({
+            active: true,
+            current,
+            total,
+            currentTitle,
+            stepMessage,
+            percent: overallPercent
+          });
+        },
+        asZip
+      );
+
+      setDownloadSuccessNotice(res.message);
+      setTimeout(() => setDownloadSuccessNotice(null), 8000);
+      setSelectedBookIds(new Set());
+    } catch (err: any) {
+      console.error('Batch download error:', err);
+      alert('Habaye ikibazo mu kumanura ibitabo byose hamwe. Ongera ugerageze.');
+    } finally {
+      setBatchProgress(null);
     }
   };
 
@@ -528,78 +621,159 @@ export const REBCourse1806Library: React.FC = () => {
             </div>
           </div>
 
+          {/* Batch Selection & Multi-Book Action Toolbar */}
+          <div className="bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-sky-500/10 border border-amber-500/30 rounded-3xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-black text-slate-800 dark:text-amber-300 flex items-center gap-1.5 mr-1">
+                <ListPlus className="w-4 h-4 text-amber-500" />
+                <span>Kumanura Ibitabo Byinshi (Batch):</span>
+              </span>
+
+              <button
+                type="button"
+                onClick={handleSelectAllFiltered}
+                className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <CheckSquare className="w-3.5 h-3.5 text-amber-500" />
+                <span>Hitamo Byose Kuri Paji ({filteredItems.length})</span>
+              </button>
+
+              {selectedBookIds.size > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearSelection}
+                  className="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5 text-rose-500" />
+                  <span>Kureka ({selectedBookIds.size})</span>
+                </button>
+              )}
+            </div>
+
+            {/* Quick Class Presets for instant single-click batch selection */}
+            <div className="flex items-center gap-1 overflow-x-auto py-1 max-w-full">
+              <span className="text-[10px] font-bold text-slate-400 mr-1 shrink-0">Hitamo Umwaka:</span>
+              {(['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3'] as const).map(cls => {
+                const count = REB_OFFICIAL_CATALOG.filter(b => b.classGrade === cls).length;
+                return (
+                  <button
+                    key={cls}
+                    type="button"
+                    onClick={() => handleSelectByClass(cls)}
+                    className="px-2 py-1 rounded-lg bg-white/80 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-600 dark:text-slate-300 text-[10px] font-bold transition border border-slate-200 dark:border-slate-700 shrink-0 cursor-pointer"
+                    title={`Hitamo ibitabo byose bya ${cls} (${count})`}
+                  >
+                    {cls} ({count})
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Results Summary Bar */}
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1 font-medium">
             <span>
-              Habonetse ibitabo <strong>{filteredItems.length}</strong> bya REB eLearning bihwanye n'ibyo wahisemo
+              Habonetse ibitabo <strong>{filteredItems.length}</strong> bya REB eLearning {selectedBookIds.size > 0 && <span className="font-bold text-amber-500">• {selectedBookIds.size} Byatoranyijwe</span>}
             </span>
             <span>REB Course ID: 1806 • Revised 2026/2027</span>
           </div>
 
           {/* Catalog Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredItems.map((item) => (
-              <div 
-                key={item.id}
-                id={`book-${item.id}`}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition group"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="px-2.5 py-1 rounded-xl text-[10px] font-extrabold uppercase bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
-                      {item.classGrade} • {item.subject}
-                    </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                      {item.type === 'STUDENT_BOOK' ? "Pupil's Book" : item.type === 'TEACHER_GUIDE' ? "Teacher's Guide" : item.type === 'SCHEME_OF_WORK' ? 'Scheme of Work' : item.type === 'SYLLABUS' ? 'Syllabus' : 'Distribution'}
-                    </span>
-                  </div>
+            {filteredItems.map((item) => {
+              const isSelected = selectedBookIds.has(item.id);
+              const itemProgress = downloadProgressMap[item.id];
+              const isDownloadingThis = Boolean(itemProgress);
 
-                  <h3 className="text-base font-black text-slate-900 dark:text-white font-display group-hover:text-amber-600 dark:group-hover:text-amber-400 transition leading-snug">
-                    {item.title}
-                  </h3>
+              return (
+                <div 
+                  key={item.id}
+                  id={`book-${item.id}`}
+                  className={`bg-white dark:bg-slate-900 border rounded-3xl p-6 flex flex-col justify-between shadow-sm transition group relative ${
+                    isSelected 
+                      ? 'border-amber-500 ring-2 ring-amber-500/30 bg-amber-50/10' 
+                      : 'border-slate-200 dark:border-slate-800 hover:border-amber-500/50'
+                  }`}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      {/* Batch Selection Checkbox */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSelectBook(item.id)}
+                        className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition cursor-pointer ${
+                          isSelected
+                            ? 'bg-amber-500 border-amber-600 text-slate-950 font-black shadow-xs'
+                            : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-amber-400'
+                        }`}
+                        title={isSelected ? 'Kureka guhitamo' : 'Hitamo iki gitabo muri batch'}
+                      >
+                        {isSelected ? (
+                          <CheckSquare className="w-3.5 h-3.5 text-slate-950" />
+                        ) : (
+                          <Square className="w-3.5 h-3.5 text-slate-400" />
+                        )}
+                        <span className="text-[10px]">
+                          {isSelected ? 'Cyatoranyijwe' : 'Hitamo'}
+                        </span>
+                      </button>
 
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                    {item.description}
-                  </p>
-
-                  <div className="pt-1 flex items-center justify-between text-[11px]">
-                    <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>{item.edition}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-2.5 py-1 rounded-xl text-[10px] font-extrabold uppercase bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                          {item.classGrade} • {item.subject}
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                          {item.type === 'STUDENT_BOOK' ? "Pupil's Book" : item.type === 'TEACHER_GUIDE' ? "Teacher's Guide" : item.type === 'SCHEME_OF_WORK' ? 'Scheme of Work' : item.type === 'SYLLABUS' ? 'Syllabus' : 'Distribution'}
+                        </span>
+                      </div>
                     </div>
 
-                    <span className="text-[10px] text-slate-400 font-bold">
-                      {item.size}
-                    </span>
-                  </div>
-                </div>
+                    <h3 className="text-base font-black text-slate-900 dark:text-white font-display group-hover:text-amber-600 dark:group-hover:text-amber-400 transition leading-snug">
+                      {item.title}
+                    </h3>
 
-                <div className="pt-5 border-t border-slate-100 dark:border-slate-800/80 mt-4 space-y-2.5">
-                  
-                  {/* Primary Download Button: Compiles genuine REB book with custom cover page, QR Code, and watermark as ONE PDF */}
-                  <button
-                    type="button"
-                    onClick={() => handleDirectDownloadBook(item)}
-                    disabled={downloadingBookId === item.id}
-                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md transition flex flex-col items-center justify-center gap-1.5 cursor-pointer disabled:opacity-90"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Download className={`w-4 h-4 ${downloadingBookId === item.id ? 'animate-bounce text-amber-300' : ''}`} />
-                      <span>
-                        {downloadingBookId === item.id 
-                          ? (downloadProgressMessage || 'Gufatanya igitabo cyose...') 
-                          : "Manura Igitabo n'Igifuniko (.pdf)"}
+                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                      {item.description}
+                    </p>
+
+                    <div className="pt-1 flex items-center justify-between text-[11px]">
+                      <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>{item.edition}</span>
+                      </div>
+
+                      <span className="text-[10px] text-slate-400 font-bold">
+                        {item.size}
                       </span>
                     </div>
-                    {downloadingBookId === item.id && (
-                      <div className="w-full bg-emerald-950/40 rounded-full h-1.5 overflow-hidden">
-                        <div 
-                          className="bg-amber-400 h-full rounded-full transition-all duration-300"
-                          style={{ width: `${downloadProgressPercent || 30}%` }}
-                        />
+                  </div>
+
+                  <div className="pt-5 border-t border-slate-100 dark:border-slate-800/80 mt-4 space-y-2.5">
+                    
+                    {/* Primary Download Button: Compiles genuine REB book with custom cover page, QR Code, and watermark as ONE PDF */}
+                    <button
+                      type="button"
+                      onClick={() => handleDirectDownloadBook(item)}
+                      disabled={isDownloadingThis}
+                      className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md transition flex flex-col items-center justify-center gap-1.5 cursor-pointer disabled:opacity-90"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Download className={`w-4 h-4 ${isDownloadingThis ? 'animate-bounce text-amber-300' : ''}`} />
+                        <span className="line-clamp-1">
+                          {isDownloadingThis 
+                            ? (itemProgress.message || 'Gufatanya igitabo cyose...') 
+                            : "Manura Igitabo n'Igifuniko (.pdf)"}
+                        </span>
                       </div>
-                    )}
-                  </button>
+                      {isDownloadingThis && (
+                        <div className="w-full bg-emerald-950/40 rounded-full h-1.5 overflow-hidden">
+                          <div 
+                            className="bg-amber-400 h-full rounded-full transition-all duration-300"
+                            style={{ width: `${itemProgress.percent || 20}%` }}
+                          />
+                        </div>
+                      )}
+                    </button>
 
                   {/* Secondary Run Exact REB Link Button */}
                   <div className="grid grid-cols-2 gap-2">
@@ -658,7 +832,8 @@ export const REBCourse1806Library: React.FC = () => {
 
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
 
           {/* Ad banner integration */}
@@ -697,6 +872,104 @@ export const REBCourse1806Library: React.FC = () => {
               className="w-full h-full border-0"
               sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
             />
+          </div>
+        </div>
+      )}
+
+      {/* Floating Sticky Batch Action Dock (Appears when books are selected) */}
+      {selectedBookIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-2xl bg-slate-900/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-amber-500 text-white p-4 sm:p-5 rounded-3xl shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-bounce-subtle">
+          <div className="flex items-center gap-3">
+            <span className="flex items-center justify-center w-11 h-11 rounded-2xl bg-amber-500 text-slate-950 font-black text-lg shadow-md shrink-0">
+              {selectedBookIds.size}
+            </span>
+            <div>
+              <h4 className="font-black text-sm text-amber-400 flex items-center gap-2">
+                <span>{selectedBookIds.size} {selectedBookIds.size === 1 ? 'Igitabo Cyatoranyijwe' : 'Ibitabo Byatoranyijwe'}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold uppercase">Batch Ready</span>
+              </h4>
+              <p className="text-[11px] text-slate-300">
+                Buri gitabo gishyirwaho igifuniko cy'ishuri na QR Code muri dosiye imwe!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => handleBatchDownload(true)}
+              disabled={Boolean(batchProgress?.active)}
+              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              title="Manura ibitabo byose byatoranyijwe byose hamwe muri dosiye imwe ya ZIP"
+            >
+              <FolderArchive className="w-4 h-4 text-slate-950" />
+              <span>Manura Muri ZIP (.zip)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleBatchDownload(false)}
+              disabled={Boolean(batchProgress?.active)}
+              className="px-3.5 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              title="Manura kimwe ku kindi mu buryo bwikurikira"
+            >
+              <Download className="w-3.5 h-3.5 text-amber-400" />
+              <span>Queue</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleClearSelection}
+              className="p-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition cursor-pointer"
+              title="Kureka guhitamo"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Batch Download Progress Modal */}
+      {batchProgress?.active && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 border-2 border-amber-500/80 rounded-3xl p-6 sm:p-8 max-w-lg w-full text-white shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5 text-amber-400 font-black text-sm sm:text-base">
+                <FolderArchive className="w-6 h-6 animate-pulse text-amber-400 shrink-0" />
+                <span>Kumanura Ibitabo Byinshi bya REB ({batchProgress.current} / {batchProgress.total})</span>
+              </div>
+              <span className="text-xs font-mono font-black px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950">
+                {batchProgress.percent}%
+              </span>
+            </div>
+
+            <div className="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700 space-y-1">
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Igitabo Kirimo Gutunganywa:</span>
+              <p className="text-xs sm:text-sm text-white font-bold truncate">
+                {batchProgress.currentTitle}
+              </p>
+            </div>
+
+            {/* Overall Progress Bar */}
+            <div className="space-y-1.5">
+              <div className="w-full bg-slate-800 rounded-full h-3.5 overflow-hidden border border-slate-700 p-0.5">
+                <div 
+                  className="bg-gradient-to-r from-amber-400 via-emerald-400 to-sky-400 h-full rounded-full transition-all duration-300"
+                  style={{ width: `${batchProgress.percent}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-slate-300 pt-1 font-medium">
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400 shrink-0" />
+                  <span className="truncate">{batchProgress.stepMessage}</span>
+                </span>
+                <span className="shrink-0 text-slate-400">REB Course 1806</span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-slate-400 text-center italic pt-1">
+              Ntufunge iri dirishya, amapaji n'ibifuniko birimo gufatanyirizwa hamwe ku gikoresho cyawe mu buryo bwihuse.
+            </p>
           </div>
         </div>
       )}

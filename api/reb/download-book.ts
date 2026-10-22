@@ -79,6 +79,20 @@ export default async function handler(req: any, res: any) {
     const watermarkedCachePath = path.join(CACHE_DIR, `watermarked_${watermarkedKey}.pdf`);
     const rawCachePath = path.join(CACHE_DIR, `raw_${urlHash}.pdf`);
 
+    // Probe mode (instant 2ms cache check)
+    const checkOnly = req.query?.checkOnly === '1' || req.method === 'HEAD';
+    if (checkOnly) {
+      if (fs.existsSync(watermarkedCachePath)) {
+        const stat = fs.statSync(watermarkedCachePath);
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-REB-Cache', 'HIT-WATERMARKED');
+        return res.status(200).json({ cached: true, size: stat.size });
+      }
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('X-REB-Cache', 'MISS');
+      return res.status(404).json({ cached: false });
+    }
+
     // Check cache for already-watermarked PDF version before regenerating!
     if (fs.existsSync(watermarkedCachePath)) {
       const cachedBuf = fs.readFileSync(watermarkedCachePath);

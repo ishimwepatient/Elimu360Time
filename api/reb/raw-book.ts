@@ -43,8 +43,11 @@ export default async function handler(req: any, res: any) {
 
     res.setHeader('Content-Type', 'application/pdf');
 
-    // If disk cache has it, stream immediately
+    // If disk cache has it, stream immediately with Content-Length
     if (fs.existsSync(rawCachePath)) {
+      const stat = fs.statSync(rawCachePath);
+      res.setHeader('Content-Length', stat.size);
+      res.setHeader('X-REB-Cache', 'HIT-RAW');
       const stream = fs.createReadStream(rawCachePath);
       return stream.pipe(res);
     }
@@ -61,6 +64,10 @@ export default async function handler(req: any, res: any) {
       if (rebRes.statusCode && rebRes.statusCode >= 400) {
         res.statusCode = rebRes.statusCode;
         return res.end(`REB server returned HTTP ${rebRes.statusCode}`);
+      }
+
+      if (rebRes.headers['content-length']) {
+        res.setHeader('Content-Length', rebRes.headers['content-length']);
       }
 
       const chunks: Buffer[] = [];
