@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import https from 'https';
 import crypto from 'crypto';
+import QRCode from 'qrcode';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import {defineConfig, Plugin} from 'vite';
 import { generateKinyarwandaLessonPlan } from './src/utils/kinyarwandaPedagogicalBank';
@@ -946,13 +947,31 @@ function rebBookProxyPlugin(): Plugin {
               return;
             }
 
-            // 1. Fetch raw REB PDF (with disk caching)
+            // 1. Watermarked Cache Key based on URL hash + specific school/teacher metadata
             const urlHash = crypto.createHash('md5').update(targetUrl).digest('hex');
-            const cachePath = path.join(CACHE_DIR, `reb_${urlHash}.pdf`);
+            const metaKeyString = `${urlHash}::${(schoolName || '').trim().toLowerCase()}::${(teacherName || '').trim().toLowerCase()}::${classGrade}::${academicYear}::${(district || '').trim().toLowerCase()}`;
+            const watermarkedKey = crypto.createHash('md5').update(metaKeyString).digest('hex');
 
+            const watermarkedCachePath = path.join(CACHE_DIR, `watermarked_${watermarkedKey}.pdf`);
+            const rawCachePath = path.join(CACHE_DIR, `raw_${urlHash}.pdf`);
+
+            // Check cache for already-watermarked PDF version before regenerating!
+            if (fs.existsSync(watermarkedCachePath)) {
+              console.log(`[REB Cache HIT] Serving already-watermarked PDF (${watermarkedKey}) for "${title}"`);
+              const cachedBuf = fs.readFileSync(watermarkedCachePath);
+              res.setHeader('Content-Type', 'application/pdf');
+              res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
+              res.setHeader('Content-Length', cachedBuf.length);
+              res.setHeader('X-REB-Cache', 'HIT-WATERMARKED');
+              res.statusCode = 200;
+              res.end(cachedBuf);
+              return;
+            }
+
+            // 2. Fetch raw REB PDF (with disk caching)
             let rawBuffer: Buffer;
-            if (fs.existsSync(cachePath)) {
-              rawBuffer = fs.readFileSync(cachePath);
+            if (fs.existsSync(rawCachePath)) {
+              rawBuffer = fs.readFileSync(rawCachePath);
             } else {
               rawBuffer = await new Promise<Buffer>((resolve, reject) => {
                 const clientReq = https.get(targetUrl, {
@@ -971,7 +990,7 @@ function rebBookProxyPlugin(): Plugin {
                   rebRes.on('end', () => {
                     const buf = Buffer.concat(chunks);
                     if (buf.length > 500) {
-                      fs.writeFileSync(cachePath, buf);
+                      fs.writeFileSync(rawCachePath, buf);
                     }
                     resolve(buf);
                   });
@@ -988,11 +1007,20 @@ function rebBookProxyPlugin(): Plugin {
               throw new Error('Downloaded file from REB was not a valid PDF buffer');
             }
 
-            // 2. Load into pdf-lib to prepend custom Front Page & add subtle watermark
+            // 3. Load into pdf-lib to prepend custom Front Page & add subtle watermark
             const pdfDoc = await PDFDocument.load(rawBuffer, { ignoreEncryption: true });
 
             const pw = 595.28;
             const ph = 841.89;
+
+            // Generate Scannable QR Code
+            const verifyUrl = `https://elimu360-sims.vercel.app/?verified=reb1806&book=${encodeURIComponent(cleanSafeName)}&class=${encodeURIComponent(classGrade)}&school=${encodeURIComponent(schoolName)}`;
+            const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+              margin: 1,
+              width: 250,
+              color: { dark: '#0f172a', light: '#ffffff' }
+            });
+            const qrImage = await pdfDoc.embedPng(Buffer.from(qrDataUrl.split(',')[1], 'base64'));
 
             // Prepend custom front cover page at index 0
             const frontPage = pdfDoc.insertPage(0, [pw, ph]);
@@ -1013,9 +1041,33 @@ function rebBookProxyPlugin(): Plugin {
             frontPage.drawRectangle({ x: 0, y: ph - 147, width: pw, height: 3, color: rgb(250/255, 210/255, 1/255) });
             frontPage.drawRectangle({ x: 0, y: ph - 150, width: pw, height: 3, color: rgb(32/255, 102/255, 71/255) });
 
+            // Scannable QR Code Badge on Top Right
+            frontPage.drawRectangle({
+              x: pw - 120,
+              y: ph - 140,
+              width: 95,
+              height: 120,
+              color: rgb(1, 1, 1),
+              borderColor: rgb(203/255, 213/255, 225/255),
+              borderWidth: 1
+            });
+            frontPage.drawImage(qrImage, {
+              x: pw - 115,
+              y: ph - 116,
+              width: 85,
+              height: 85
+            });
+            frontPage.drawText('SCAN TO VERIFY', {
+              x: pw - 108,
+              y: ph - 132,
+              size: 7,
+              font: fontBold,
+              color: rgb(15/255, 23/255, 42/255)
+            });
+
             // Official Header Titles
             frontPage.drawText('REPUBLIC OF RWANDA', {
-              x: pw / 2 - 95,
+              x: 50,
               y: ph - 40,
               size: 15,
               font: fontBold,
@@ -1023,7 +1075,7 @@ function rebBookProxyPlugin(): Plugin {
             });
 
             frontPage.drawText('MINISTRY OF EDUCATION (MINEDUC)', {
-              x: pw / 2 - 120,
+              x: 50,
               y: ph - 58,
               size: 11,
               font: fontBold,
@@ -1031,7 +1083,7 @@ function rebBookProxyPlugin(): Plugin {
             });
 
             frontPage.drawText('RWANDA BASIC EDUCATION BOARD (REB)', {
-              x: pw / 2 - 130,
+              x: 50,
               y: ph - 76,
               size: 12,
               font: fontBold,
@@ -1039,7 +1091,7 @@ function rebBookProxyPlugin(): Plugin {
             });
 
             frontPage.drawText('Competency-Based Curriculum (CBC) • Digital Learning Repository', {
-              x: pw / 2 - 150,
+              x: 50,
               y: ph - 94,
               size: 9,
               font: fontNormal,
@@ -1220,12 +1272,19 @@ function rebBookProxyPlugin(): Plugin {
               });
             }
 
-            // 4. Save and stream modified PDF
+            // 4. Save and stream modified PDF (and store in watermarked cache for instant repeat downloads)
             const modifiedPdfBytes = await pdfDoc.save();
+            try {
+              fs.writeFileSync(watermarkedCachePath, Buffer.from(modifiedPdfBytes));
+              console.log(`[REB Cache SAVED] Watermarked PDF cached for "${title}" (${watermarkedKey})`);
+            } catch (wErr) {
+              console.warn('Failed to write watermarked PDF to cache:', wErr);
+            }
 
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
             res.setHeader('Content-Length', modifiedPdfBytes.length);
+            res.setHeader('X-REB-Cache', 'MISS-GENERATED');
             res.statusCode = 200;
             res.end(Buffer.from(modifiedPdfBytes));
             return;
@@ -1234,6 +1293,54 @@ function rebBookProxyPlugin(): Plugin {
             res.statusCode = 500;
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({ error: err?.message || 'Failed to process REB book download' }));
+            return;
+          }
+        }
+
+        // Fast streaming endpoint for client device compilation
+        if (req.url?.startsWith('/api/reb/raw-book') && req.method === 'GET') {
+          try {
+            const urlObj = new URL(req.url, 'http://localhost:3000');
+            const targetUrl = urlObj.searchParams.get('url') || '';
+            if (!targetUrl) {
+              res.statusCode = 400;
+              res.end('Missing url');
+              return;
+            }
+            const urlHash = crypto.createHash('md5').update(targetUrl).digest('hex');
+            const rawCachePath = path.join(CACHE_DIR, `raw_${urlHash}.pdf`);
+
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Content-Type', 'application/pdf');
+
+            if (fs.existsSync(rawCachePath)) {
+              res.statusCode = 200;
+              res.end(fs.readFileSync(rawCachePath));
+              return;
+            }
+
+            https.get(targetUrl, {
+              headers: { 'User-Agent': 'Mozilla/5.0' },
+              insecureHTTPParser: true
+            }, (rebRes) => {
+              const chunks: Buffer[] = [];
+              rebRes.on('data', (c) => {
+                chunks.push(Buffer.from(c));
+                res.write(c);
+              });
+              rebRes.on('end', () => {
+                const full = Buffer.concat(chunks);
+                if (full.length > 500) fs.writeFileSync(rawCachePath, full);
+                res.end();
+              });
+            }).on('error', (err) => {
+              res.statusCode = 502;
+              res.end(err.message);
+            });
+            return;
+          } catch (err: any) {
+            res.statusCode = 500;
+            res.end(err.message);
             return;
           }
         }

@@ -42,6 +42,8 @@ export const REBCourse1806Library: React.FC = () => {
 
   // Direct downloading state with exact feedback
   const [downloadingBookId, setDownloadingBookId] = useState<string | null>(null);
+  const [downloadProgressMessage, setDownloadProgressMessage] = useState<string | null>(null);
+  const [downloadProgressPercent, setDownloadProgressPercent] = useState<number>(0);
   const [isGeneratingSow, setIsGeneratingSow] = useState<string | null>(null);
   const [downloadSuccessNotice, setDownloadSuccessNotice] = useState<string | null>(null);
   const [copiedBookId, setCopiedBookId] = useState<string | null>(null);
@@ -72,12 +74,14 @@ export const REBCourse1806Library: React.FC = () => {
   /**
    * DIRECT BOOK DOWNLOAD HANDLER
    * Fetches the actual genuine REB textbook/guide from REB's eLearning site,
-   * prepends the official Rwanda CBC / Elimu360 Front Page, stamps the subtle watermark,
-   * and delivers the PDF straight to the teacher's downloads folder.
+   * prepends the official Rwanda CBC / Elimu360 Front Page (with scannable QR Code),
+   * stamps the subtle watermark on all pages, and delivers ONE SINGLE COMPILED PDF.
    */
   const handleDirectDownloadBook = async (book: REBBookMetadata) => {
     setDownloadingBookId(book.id);
     setDownloadSuccessNotice(null);
+    setDownloadProgressMessage('Kureba niba igitabo gihari...');
+    setDownloadProgressPercent(10);
 
     try {
       const res = await downloadREBBookDirectly(
@@ -85,15 +89,23 @@ export const REBCourse1806Library: React.FC = () => {
         schoolProfile?.schoolName,
         schoolProfile?.teacherName,
         schoolProfile?.academicYear,
-        schoolProfile?.district
+        schoolProfile?.district,
+        (msg, pct) => {
+          setDownloadProgressMessage(msg);
+          setDownloadProgressPercent(pct);
+        }
       );
       setDownloadSuccessNotice(res.message);
       setTimeout(() => setDownloadSuccessNotice(null), 6000);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Direct download error:', err);
       openDirectREBLink(book);
+      setDownloadSuccessNotice(`Igitabo cya REB "${book.title}" cyatangiye kumanurwa kuri elearning.reb.rw!`);
+      setTimeout(() => setDownloadSuccessNotice(null), 5000);
     } finally {
       setDownloadingBookId(null);
+      setDownloadProgressMessage(null);
+      setDownloadProgressPercent(0);
     }
   };
 
@@ -564,19 +576,29 @@ export const REBCourse1806Library: React.FC = () => {
 
                 <div className="pt-5 border-t border-slate-100 dark:border-slate-800/80 mt-4 space-y-2.5">
                   
-                  {/* Primary Download Button: Fetches genuine REB book with custom cover page and watermark */}
+                  {/* Primary Download Button: Compiles genuine REB book with custom cover page, QR Code, and watermark as ONE PDF */}
                   <button
                     type="button"
                     onClick={() => handleDirectDownloadBook(item)}
                     disabled={downloadingBookId === item.id}
-                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md transition flex flex-col items-center justify-center gap-1.5 cursor-pointer disabled:opacity-90"
                   >
-                    <Download className="w-4 h-4" />
-                    <span>
-                      {downloadingBookId === item.id 
-                        ? 'Tegereza gato (Gushyiraho igifuniko)...' 
-                        : 'Manura Igitabo n\'Igifuniko (.pdf)'}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <Download className={`w-4 h-4 ${downloadingBookId === item.id ? 'animate-bounce text-amber-300' : ''}`} />
+                      <span>
+                        {downloadingBookId === item.id 
+                          ? (downloadProgressMessage || 'Gufatanya igitabo cyose...') 
+                          : "Manura Igitabo n'Igifuniko (.pdf)"}
+                      </span>
+                    </div>
+                    {downloadingBookId === item.id && (
+                      <div className="w-full bg-emerald-950/40 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                          className="bg-amber-400 h-full rounded-full transition-all duration-300"
+                          style={{ width: `${downloadProgressPercent || 30}%` }}
+                        />
+                      </div>
+                    )}
                   </button>
 
                   {/* Secondary Run Exact REB Link Button */}
