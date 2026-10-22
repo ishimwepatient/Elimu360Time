@@ -4,11 +4,11 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 /**
  * DIRECT REB BOOK DOWNLOAD SERVICE
  * 
- * We do NOT create synthetic books. Genuine books are published and revised by REB.
- * This service fetches the exact authentic textbooks, teacher guides, syllabi, and schemes
- * directly from REB's eLearning repository (Course 1806 / elearning.reb.rw).
- * It automatically prepends our custom Rwandan CBC Front Page and adds a subtle watermark,
- * delivering the authentic REB educational materials directly to the teacher.
+ * Tailored for instant performance on Vercel Free Mode.
+ * We do NOT make teachers wait on slow 40MB serverless proxy timeouts.
+ * This service generates the official high-resolution Elimu360 / Rwanda CBC Front Cover Page
+ * in <100ms directly in the browser, and immediately pairs it with the authentic revised REB
+ * textbook downloaded directly from elearning.reb.rw.
  */
 
 export interface REBBookMetadata {
@@ -53,7 +53,7 @@ function wrapPdfText(text: string, maxChars: number): string[] {
 
 /**
  * Procedurally generates the official high-resolution Elimu360 / Rwanda CBC Front Cover Page.
- * Can be run in browser or server in <100ms.
+ * Runs in the browser in <100ms with zero server latency or Vercel timeouts.
  */
 export async function generateBrandedCoverPdf(
   book: REBBookMetadata,
@@ -280,12 +280,9 @@ export async function generateBrandedCoverPdf(
 }
 
 /**
- * Downloads the actual, authentic REB book fetched from REB's eLearning site,
- * with our official Elimu360 / Rwanda CBC front cover page prepended and watermark stamped.
- * 
- * Uses serverless Vercel function / local Vite endpoint. If the server response is ever
- * interrupted or returns HTML, it avoids saving an invalid index.html and downloads the
- * branded cover page + genuine book safely.
+ * Downloads the REB book paired with the official Elimu360 Front Cover Page.
+ * Fast, instant execution (<1 second) that completely avoids Vercel free tier timeouts
+ * and payload limits on 40MB textbooks.
  */
 export async function downloadREBBookDirectly(
   book: REBBookMetadata,
@@ -293,49 +290,20 @@ export async function downloadREBBookDirectly(
   teacherName?: string,
   academicYear?: string,
   district?: string
-): Promise<void> {
-  const params = new URLSearchParams({
-    url: book.downloadUrl,
-    title: book.title,
-    class: book.classGrade,
-    subject: book.subject,
-    type: book.type,
-    schoolName: schoolName || 'Urwunge rw\'Amashuri Amahoro',
-    teacherName: teacherName || 'Umwarimu',
-    academicYear: academicYear || '2026 - 2027',
-    district: district || 'Rwanda'
-  });
-
-  const downloadUrl = `/api/reb/download-book?${params.toString()}`;
+): Promise<{ success: boolean; message: string }> {
   const cleanName = book.title.replace(/[^a-zA-Z0-9_-]/g, '_');
 
-  try {
-    const res = await fetch(downloadUrl);
-    const contentType = res.headers.get('content-type') || '';
+  // 1. Instantly generate & download the official high-resolution Branded Front Cover Page (<100ms)
+  const coverBytes = await generateBrandedCoverPdf(book, schoolName, teacherName, academicYear, district);
+  saveAs(new Blob([coverBytes], { type: 'application/pdf' }), `Elimu360_Igifuniko_${book.classGrade}_${cleanName}.pdf`);
 
-    // If server returned valid PDF (from Vercel serverless function or Vite backend)
-    if (res.ok && contentType.includes('application/pdf')) {
-      const blob = await res.blob();
-      saveAs(blob, `REB_${book.classGrade}_${cleanName}.pdf`);
-      return;
-    }
+  // 2. Immediately trigger the authentic REB textbook download directly from elearning.reb.rw
+  openDirectREBLink(book);
 
-    // If server returned text/html (Vercel SPA fallback rewrite) or error:
-    console.warn('Server endpoint returned non-PDF content type:', contentType);
-    
-    // 1. Generate & download the official branded front cover page PDF
-    const coverBytes = await generateBrandedCoverPdf(book, schoolName, teacherName, academicYear, district);
-    saveAs(new Blob([coverBytes], { type: 'application/pdf' }), `Elimu360_Igifuniko_${book.classGrade}_${cleanName}.pdf`);
-
-    // 2. Launch the direct REB download link so the teacher gets the authentic book file immediately
-    openDirectREBLink(book);
-  } catch (err) {
-    console.error('Download fetch error:', err);
-    // On network failure, provide both: branded cover and direct REB book
-    const coverBytes = await generateBrandedCoverPdf(book, schoolName, teacherName, academicYear, district);
-    saveAs(new Blob([coverBytes], { type: 'application/pdf' }), `Elimu360_Igifuniko_${book.classGrade}_${cleanName}.pdf`);
-    openDirectREBLink(book);
-  }
+  return {
+    success: true,
+    message: `Igifuniko cy'ishuri ryawe n'Igitabo cya REB "${book.title}" byamanuwe neza ako kanya!`
+  };
 }
 
 /**

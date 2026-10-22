@@ -80,18 +80,17 @@ export const REBCourse1806Library: React.FC = () => {
     setDownloadSuccessNotice(null);
 
     try {
-      await downloadREBBookDirectly(
+      const res = await downloadREBBookDirectly(
         book,
         schoolProfile?.schoolName,
         schoolProfile?.teacherName,
         schoolProfile?.academicYear,
         schoolProfile?.district
       );
-      setDownloadSuccessNotice(`Igitabo nyacyo cya REB "${book.title}" cyatangiye kumanurwa gifite igifuniko cy'ishuri na watermark!`);
+      setDownloadSuccessNotice(res.message);
       setTimeout(() => setDownloadSuccessNotice(null), 6000);
     } catch (err) {
       console.error('Direct download error:', err);
-      // Fallback: open direct link immediately if network blocked proxy
       openDirectREBLink(book);
     } finally {
       setDownloadingBookId(null);
@@ -575,7 +574,7 @@ export const REBCourse1806Library: React.FC = () => {
                     <Download className="w-4 h-4" />
                     <span>
                       {downloadingBookId === item.id 
-                        ? 'Igitabo kirimo kumanurwa gifite igifuniko...' 
+                        ? 'Tegereza gato (Gushyiraho igifuniko)...' 
                         : 'Manura Igitabo n\'Igifuniko (.pdf)'}
                     </span>
                   </button>
