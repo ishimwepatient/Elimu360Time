@@ -28,7 +28,7 @@ import { Document, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, Bo
 import { saveAs } from 'file-saver';
 import { useElimu } from '../../context/ElimuContext';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
-import { downloadREBBookDirectly, openDirectREBLink } from '../../utils/directBookGenerator';
+import { downloadREBBookDirectly, openDirectREBLink, generateBrandedCoverPdf } from '../../utils/directBookGenerator';
 import { REB_OFFICIAL_CATALOG, REBBookMetadata } from '../../utils/rebBooksCatalog';
 
 export const REBCourse1806Library: React.FC = () => {
@@ -106,6 +106,27 @@ export const REBCourse1806Library: React.FC = () => {
     openDirectREBLink(book);
     setDownloadSuccessNotice(`Link y'igitabo cya REB "${book.title}" yafunguwe neza ako kanya!`);
     setTimeout(() => setDownloadSuccessNotice(null), 4000);
+  };
+
+  /**
+   * Direct Branded Cover Page PDF download
+   */
+  const handleDownloadCoverOnly = async (book: REBBookMetadata) => {
+    try {
+      const coverBytes = await generateBrandedCoverPdf(
+        book,
+        schoolProfile?.schoolName,
+        schoolProfile?.teacherName,
+        schoolProfile?.academicYear,
+        schoolProfile?.district
+      );
+      const cleanName = book.title.replace(/[^a-zA-Z0-9_-]/g, '_');
+      saveAs(new Blob([coverBytes], { type: 'application/pdf' }), `Elimu360_Igifuniko_${book.classGrade}_${cleanName}.pdf`);
+      setDownloadSuccessNotice(`Igifuniko cy'umwimerere cy'ishuri kuri "${book.title}" cyamanuwe neza muri PDF!`);
+      setTimeout(() => setDownloadSuccessNotice(null), 4000);
+    } catch (e) {
+      console.error('Error generating cover:', e);
+    }
   };
 
   /**
@@ -602,6 +623,17 @@ export const REBCourse1806Library: React.FC = () => {
                       </button>
                     )}
                   </div>
+
+                  {/* Standalone Official Branded Front Cover Download */}
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadCoverOnly(item)}
+                    className="w-full py-1.5 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-[11px] border border-amber-500/30 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                    title="Manura igifuniko cyonyine gifite amazina y'ishuri na mwarimu muri PDF"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <span>Manura Igifuniko Cyonyine cy'Ishuri (.pdf)</span>
+                  </button>
 
                 </div>
               </div>
