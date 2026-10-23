@@ -15,6 +15,7 @@ import {
   Award,
   ShieldCheck,
   ChevronRight,
+  ChevronLeft,
   Eye,
   X,
   Share2,
@@ -70,6 +71,10 @@ export const REBCourse1806Library: React.FC = () => {
   const [downloadSuccessNotice, setDownloadSuccessNotice] = useState<string | null>(null);
   const [copiedBookId, setCopiedBookId] = useState<string | null>(null);
 
+  // Pagination State for displaying a compact curated list of some few books
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(8);
+
   // Preview Modal State
   const [previewBook, setPreviewBook] = useState<REBBookMetadata | null>(null);
 
@@ -89,6 +94,11 @@ export const REBCourse1806Library: React.FC = () => {
     }
     return true;
   });
+
+  // Calculate pagination
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedItems = filteredItems.slice((safeCurrentPage - 1) * pageSize, safeCurrentPage * pageSize);
 
   // Extract unique subjects for filtering
   const availableSubjects = Array.from(new Set(REB_OFFICIAL_CATALOG.map(b => b.subject))).sort();
@@ -200,16 +210,6 @@ export const REBCourse1806Library: React.FC = () => {
     } finally {
       setBatchProgress(null);
     }
-  };
-
-  /**
-   * RUN DIRECT REB LINK HANDLER
-   * Directly triggers or opens the exact link of the revised REB book from elearning.reb.rw
-   */
-  const handleRunExactRebLink = (book: REBBookMetadata) => {
-    openDirectREBLink(book);
-    setDownloadSuccessNotice(`Link y'igitabo cya REB "${book.title}" yafunguwe neza ako kanya!`);
-    setTimeout(() => setDownloadSuccessNotice(null), 4000);
   };
 
   /**
@@ -538,14 +538,20 @@ export const REBCourse1806Library: React.FC = () => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
                 placeholder="Shakisha igitabo, isomo (Ikinyarwanda, English, Mathematics, SET, SST, French...), cyangwa umwaka..."
                 className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:border-amber-500"
               />
               {searchQuery && (
                 <button
                   type="button"
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => {
+                    setSearchQuery('');
+                    setCurrentPage(1);
+                  }}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 >
                   <X className="w-4 h-4" />
@@ -562,7 +568,10 @@ export const REBCourse1806Library: React.FC = () => {
                   <button
                     key={lvl}
                     type="button"
-                    onClick={() => setSelectedLevel(lvl)}
+                    onClick={() => {
+                      setSelectedLevel(lvl);
+                      setCurrentPage(1);
+                    }}
                     className={`px-3 py-1.5 rounded-xl text-[11px] font-black transition cursor-pointer ${
                       selectedLevel === lvl
                         ? 'bg-amber-500 text-slate-950 shadow'
@@ -580,7 +589,10 @@ export const REBCourse1806Library: React.FC = () => {
                   <button
                     key={cls}
                     type="button"
-                    onClick={() => setSelectedClass(cls)}
+                    onClick={() => {
+                      setSelectedClass(cls);
+                      setCurrentPage(1);
+                    }}
                     className={`px-2.5 py-1.5 rounded-xl text-[11px] font-black transition shrink-0 cursor-pointer ${
                       selectedClass === cls
                         ? 'bg-emerald-600 text-white shadow'
@@ -595,7 +607,10 @@ export const REBCourse1806Library: React.FC = () => {
               {/* Type Filter */}
               <select
                 value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
+                onChange={(e) => {
+                  setSelectedType(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border-0 text-slate-700 dark:text-slate-200 text-[11px] font-bold focus:outline-none"
               >
                 <option value="ALL">Ubwoko Bwose (Student Book, Teacher Guide, Syllabi, Schemes)</option>
@@ -609,7 +624,10 @@ export const REBCourse1806Library: React.FC = () => {
               {/* Subject Filter */}
               <select
                 value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
+                onChange={(e) => {
+                  setSelectedSubject(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border-0 text-slate-700 dark:text-slate-200 text-[11px] font-bold focus:outline-none"
               >
                 <option value="ALL">Amasomo Yose ({availableSubjects.length} Masomo)</option>
@@ -670,17 +688,71 @@ export const REBCourse1806Library: React.FC = () => {
             </div>
           </div>
 
-          {/* Results Summary Bar */}
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1 font-medium">
-            <span>
-              Habonetse ibitabo <strong>{filteredItems.length}</strong> bya REB eLearning {selectedBookIds.size > 0 && <span className="font-bold text-amber-500">• {selectedBookIds.size} Byatoranyijwe</span>}
-            </span>
-            <span>REB Course ID: 1806 • Revised 2026/2027</span>
+          {/* Results Summary Bar with Pagination Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 px-1 font-medium bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+            <div className="flex items-center gap-2">
+              <span>
+                Ibyerekanwa: <strong className="text-slate-900 dark:text-white">{(safeCurrentPage - 1) * pageSize + 1} - {Math.min(safeCurrentPage * pageSize, filteredItems.length)}</strong> kuri <strong>{filteredItems.length}</strong>
+              </span>
+              {selectedBookIds.size > 0 && (
+                <span className="font-extrabold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                  {selectedBookIds.size} Byatoranyijwe
+                </span>
+              )}
+            </div>
+
+            {/* Pagination Controls Header */}
+            <div className="flex items-center gap-3 self-end sm:self-auto">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-slate-400">Ku paji:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200 focus:outline-none"
+                >
+                  <option value={6}>6</option>
+                  <option value={8}>8</option>
+                  <option value={12}>12</option>
+                  <option value={16}>16</option>
+                </select>
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    disabled={safeCurrentPage <= 1}
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    className="p-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                    title="Paji ibanza"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <span className="px-2 py-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-200">
+                    {safeCurrentPage} / {totalPages}
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={safeCurrentPage >= totalPages}
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    className="p-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                    title="Paji ikurikira"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Catalog Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredItems.map((item) => {
+          {/* Catalog Grid with Compact Book Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {paginatedItems.map((item) => {
               const isSelected = selectedBookIds.has(item.id);
               const itemProgress = downloadProgressMap[item.id];
               const isDownloadingThis = Boolean(itemProgress);
@@ -689,19 +761,19 @@ export const REBCourse1806Library: React.FC = () => {
                 <div 
                   key={item.id}
                   id={`book-${item.id}`}
-                  className={`bg-white dark:bg-slate-900 border rounded-3xl p-6 flex flex-col justify-between shadow-sm transition group relative ${
+                  className={`bg-white dark:bg-slate-900 border rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:shadow-md transition group relative ${
                     isSelected 
                       ? 'border-amber-500 ring-2 ring-amber-500/30 bg-amber-50/10' 
                       : 'border-slate-200 dark:border-slate-800 hover:border-amber-500/50'
                   }`}
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between gap-2">
-                      {/* Batch Selection Checkbox */}
+                  <div className="space-y-2.5">
+                    {/* Header Row: Checkbox & Category Badges */}
+                    <div className="flex items-center justify-between gap-1.5">
                       <button
                         type="button"
                         onClick={() => handleToggleSelectBook(item.id)}
-                        className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition cursor-pointer ${
+                        className={`px-2 py-0.5 rounded-lg border flex items-center gap-1 text-[10px] font-bold transition cursor-pointer ${
                           isSelected
                             ? 'bg-amber-500 border-amber-600 text-slate-950 font-black shadow-xs'
                             : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-amber-400'
@@ -709,64 +781,58 @@ export const REBCourse1806Library: React.FC = () => {
                         title={isSelected ? 'Kureka guhitamo' : 'Hitamo iki gitabo muri batch'}
                       >
                         {isSelected ? (
-                          <CheckSquare className="w-3.5 h-3.5 text-slate-950" />
+                          <CheckSquare className="w-3 h-3 text-slate-950" />
                         ) : (
-                          <Square className="w-3.5 h-3.5 text-slate-400" />
+                          <Square className="w-3 h-3 text-slate-400" />
                         )}
-                        <span className="text-[10px]">
-                          {isSelected ? 'Cyatoranyijwe' : 'Hitamo'}
-                        </span>
+                        <span>{isSelected ? 'Cyatoranyijwe' : 'Hitamo'}</span>
                       </button>
 
-                      <div className="flex items-center gap-1.5">
-                        <span className="px-2.5 py-1 rounded-xl text-[10px] font-extrabold uppercase bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                      <div className="flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md text-[9.5px] font-extrabold uppercase bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
                           {item.classGrade} • {item.subject}
                         </span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                          {item.type === 'STUDENT_BOOK' ? "Pupil's Book" : item.type === 'TEACHER_GUIDE' ? "Teacher's Guide" : item.type === 'SCHEME_OF_WORK' ? 'Scheme of Work' : item.type === 'SYLLABUS' ? 'Syllabus' : 'Distribution'}
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                          {item.type === 'STUDENT_BOOK' ? 'PB' : item.type === 'TEACHER_GUIDE' ? 'TG' : item.type === 'SCHEME_OF_WORK' ? 'SOW' : 'Syllabus'}
                         </span>
                       </div>
                     </div>
 
-                    <h3 className="text-base font-black text-slate-900 dark:text-white font-display group-hover:text-amber-600 dark:group-hover:text-amber-400 transition leading-snug">
+                    {/* Book Title (Compact, 2-line clamp) */}
+                    <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white font-display group-hover:text-amber-600 dark:group-hover:text-amber-400 transition leading-snug line-clamp-2">
                       {item.title}
                     </h3>
 
-                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                      {item.description}
-                    </p>
-
-                    <div className="pt-1 flex items-center justify-between text-[11px]">
-                      <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>{item.edition}</span>
+                    {/* Compact Metadata Row (Edition & Size, No Long Description) */}
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-0.5">
+                      <div className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle2 className="w-3 h-3 shrink-0" />
+                        <span>REB CBC 2026/2027</span>
                       </div>
-
-                      <span className="text-[10px] text-slate-400 font-bold">
-                        {item.size}
-                      </span>
+                      <span className="font-mono font-medium">{item.size}</span>
                     </div>
                   </div>
 
-                  <div className="pt-5 border-t border-slate-100 dark:border-slate-800/80 mt-4 space-y-2.5">
+                  {/* Actions Section */}
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 mt-3 space-y-2">
                     
-                    {/* Primary Download Button: Compiles genuine REB book with custom cover page, QR Code, and watermark as ONE PDF */}
+                    {/* Primary Branded Book Download Button */}
                     <button
                       type="button"
                       onClick={() => handleDirectDownloadBook(item)}
                       disabled={isDownloadingThis}
-                      className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md transition flex flex-col items-center justify-center gap-1.5 cursor-pointer disabled:opacity-90"
+                      className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-[11px] shadow-sm transition flex flex-col items-center justify-center gap-1 cursor-pointer disabled:opacity-90"
                     >
-                      <div className="flex items-center gap-2">
-                        <Download className={`w-4 h-4 ${isDownloadingThis ? 'animate-bounce text-amber-300' : ''}`} />
+                      <div className="flex items-center gap-1.5">
+                        <Download className={`w-3.5 h-3.5 ${isDownloadingThis ? 'animate-bounce text-amber-300' : ''}`} />
                         <span className="line-clamp-1">
                           {isDownloadingThis 
-                            ? (itemProgress.message || 'Gufatanya igitabo cyose...') 
+                            ? (itemProgress.message || 'Gufatanya igitabo...') 
                             : "Manura Igitabo n'Igifuniko (.pdf)"}
                         </span>
                       </div>
                       {isDownloadingThis && (
-                        <div className="w-full bg-emerald-950/40 rounded-full h-1.5 overflow-hidden">
+                        <div className="w-full bg-emerald-950/40 rounded-full h-1 overflow-hidden">
                           <div 
                             className="bg-amber-400 h-full rounded-full transition-all duration-300"
                             style={{ width: `${itemProgress.percent || 20}%` }}
@@ -775,66 +841,117 @@ export const REBCourse1806Library: React.FC = () => {
                       )}
                     </button>
 
-                  {/* Secondary Run Exact REB Link Button */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleRunExactRebLink(item)}
-                      className="py-2 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] transition flex items-center justify-center gap-1.5 cursor-pointer"
-                      title="Run exact link of this revised REB book from elearning.reb.rw"
-                    >
-                      <Play className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Run REB Link</span>
-                    </button>
+                    {/* Secondary Actions: Scheme of Work Word file or Cover-only */}
+                    <div className="flex items-center gap-1.5">
+                      {item.type === 'SCHEME_OF_WORK' ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadSchemeOfWorkDocx(item)}
+                            disabled={isGeneratingSow === item.id}
+                            className="flex-1 py-1.5 px-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-[10px] transition flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
+                            title="Manura Gahunda y'Amasomo muri Microsoft Word"
+                          >
+                            <FileText className="w-3 h-3" />
+                            <span>{isGeneratingSow === item.id ? 'Word...' : 'Word (.docx)'}</span>
+                          </button>
 
-                    {item.type === 'SCHEME_OF_WORK' ? (
-                      <button
-                        type="button"
-                        onClick={() => handleDownloadSchemeOfWorkDocx(item)}
-                        disabled={isGeneratingSow === item.id}
-                        className="py-2 px-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-[11px] transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>{isGeneratingSow === item.id ? 'Word...' : 'Word (.docx)'}</span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => handleCopyDirectLink(item)}
-                        className="py-2 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] transition flex items-center justify-center gap-1.5 cursor-pointer"
-                        title="Copy direct REB link"
-                      >
-                        {copiedBookId === item.id ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-500" />
-                            <span className="text-emerald-600 dark:text-emerald-400">Yakopiwe!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5" />
-                            <span>Kopi Link</span>
-                          </>
-                        )}
-                      </button>
-                    )}
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadCoverOnly(item)}
+                            className="py-1.5 px-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-[10px] border border-amber-500/20 transition flex items-center justify-center gap-1 cursor-pointer"
+                            title="Manura igifuniko cyonyine cy'ishuri (.pdf)"
+                          >
+                            <span>Igifuniko</span>
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadCoverOnly(item)}
+                          className="w-full py-1 px-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold text-[10px] border border-slate-200 dark:border-slate-700 transition flex items-center justify-center gap-1 cursor-pointer"
+                          title="Manura igifuniko cyonyine cy'ishuri na mwarimu muri PDF"
+                        >
+                          <FileText className="w-3 h-3 text-amber-500" />
+                          <span>Manura Igifuniko Cyonyine (.pdf)</span>
+                        </button>
+                      )}
+                    </div>
+
                   </div>
-
-                  {/* Standalone Official Branded Front Cover Download */}
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadCoverOnly(item)}
-                    className="w-full py-1.5 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-[11px] border border-amber-500/30 transition flex items-center justify-center gap-1.5 cursor-pointer"
-                    title="Manura igifuniko cyonyine gifite amazina y'ishuri na mwarimu muri PDF"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                    <span>Manura Igifuniko Cyonyine cy'Ishuri (.pdf)</span>
-                  </button>
-
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
+
+          {/* Bottom Pagination Bar */}
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-3 shadow-xs">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Paji <strong>{safeCurrentPage}</strong> kuri <strong>{totalPages}</strong> (Ibitabo {filteredItems.length} Byose)
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  disabled={safeCurrentPage <= 1}
+                  onClick={() => {
+                    setCurrentPage(p => Math.max(1, p - 1));
+                    window.scrollTo({ top: 400, behavior: 'smooth' });
+                  }}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>Ibanza</span>
+                </button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum: number;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (safeCurrentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (safeCurrentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = safeCurrentPage - 2 + i;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        type="button"
+                        onClick={() => {
+                          setCurrentPage(pageNum);
+                          window.scrollTo({ top: 400, behavior: 'smooth' });
+                        }}
+                        className={`w-7 h-7 rounded-lg text-xs font-black transition cursor-pointer flex items-center justify-center ${
+                          safeCurrentPage === pageNum
+                            ? 'bg-amber-500 text-slate-950 shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={safeCurrentPage >= totalPages}
+                  onClick={() => {
+                    setCurrentPage(p => Math.min(totalPages, p + 1));
+                    window.scrollTo({ top: 400, behavior: 'smooth' });
+                  }}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <span>Ikuriyeho</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Ad banner integration */}
           <div className="pt-4">
