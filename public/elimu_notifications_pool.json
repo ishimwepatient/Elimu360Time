@@ -1,0 +1,1922 @@
+[
+  {
+    "id": "smart_lp_1",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "🌅 Umunsi mushya w'amasomo, {name}!",
+    "body": "Tegura Lesson Plan yawe mu masegonda 30 gusa ukoresheje AI Lesson Plan Generator y'ubuntu."
+  },
+  {
+    "id": "smart_lp_2",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "📝 Tegura Lesson Plan yawe hakiri kare",
+    "body": "Kugera mu ishuri witeguye biguha ituze n'icyubahiro mu banyeshuri bawe {school}."
+  },
+  {
+    "id": "smart_lp_3",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "⚡ Isomo ry'uyu munsi mu masegonda 30",
+    "body": "Intego zinoze zifasha abanyeshuri kugera ku bushobozi bw'ingenzi bukenewe mu mibereho."
+  },
+  {
+    "id": "smart_lp_4",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "🎯 Intego z'isomo ry'uyu munsi {school}",
+    "body": "Koresha uburyo bwa Competency-Based Curriculum (CBC) bufasha umunyeshuri gukora aho gutega amatwi gusa."
+  },
+  {
+    "id": "smart_lp_5",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "💡 Mwarimu mwiza ahora yiteguye",
+    "body": "Elimu Smart Assistant yakorohereje akazi! Lesson plan yawe iboneka ifite ibice byose byasabwe na REB."
+  },
+  {
+    "id": "smart_lp_6",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "📋 CBC Lesson Plan itunganyijwe neza",
+    "body": "Abarimu b'indashyikirwa bategura hakiri kare kugira ngo babone umwanya wo kuruhuka nimugoroba."
+  },
+  {
+    "id": "smart_lp_7",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "✨ Gutangira isomo ufite icyizere",
+    "body": "Itondere gushyiramo ibikorwa by'abanyeshuri bafite ubumuga cyangwa abakeneye ubufasha bwihariye."
+  },
+  {
+    "id": "smart_lp_8",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "🌱 Icyiciro cyo gutangira isomo (Introduction)",
+    "body": "Ibuka ko iminota 40 icungwa neza iyo ufite gahunda yanditse neza."
+  },
+  {
+    "id": "smart_lp_9",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "🚀 Ibikorwa by'abanyeshuri mu isomo",
+    "body": "Isomo ryawe riraba rimwe mu masomo meza cyane abanyeshuri bawe bazibuka uyu munsi."
+  },
+  {
+    "id": "smart_lp_10",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "🔍 Isuzumabumenyi rigamije gutera intambwe",
+    "body": "Muri Elimu360, Lesson Plans zawe zose zibikwa mu buryo bwite kuri telefoni yawe utiriwe uzitakaza."
+  },
+  {
+    "id": "smart_lp_11",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "⏱️ Gucunga neza iminota 40 y'isomo",
+    "body": "Tegura Lesson Plan yawe mu masegonda 30 gusa ukoresheje AI Lesson Plan Generator y'ubuntu."
+  },
+  {
+    "id": "smart_lp_12",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "📖 Guhuza isomo n'Integanyanyigisho ya REB",
+    "body": "Kugera mu ishuri witeguye biguha ituze n'icyubahiro mu banyeshuri bawe {school}."
+  },
+  {
+    "id": "smart_lp_13",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "🌟 Isomo riryoheye abanyeshuri uyu munsi",
+    "body": "Intego zinoze zifasha abanyeshuri kugera ku bushobozi bw'ingenzi bukenewe mu mibereho."
+  },
+  {
+    "id": "smart_lp_14",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "✏️ Imfashanyigisho zoroheje z'isomo",
+    "body": "Koresha uburyo bwa Competency-Based Curriculum (CBC) bufasha umunyeshuri gukora aho gutega amatwi gusa."
+  },
+  {
+    "id": "smart_lp_15",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "morning",
+    "title": "🎨 Uburyo bugezweho bwo kwigisha (Active Learning)",
+    "body": "Elimu Smart Assistant yakorohereje akazi! Lesson plan yawe iboneka ifite ibice byose byasabwe na REB."
+  },
+  {
+    "id": "smart_lp_16",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "📊 Competence-Based Indicators z'isomo",
+    "body": "Abarimu b'indashyikirwa bategura hakiri kare kugira ngo babone umwanya wo kuruhuka nimugoroba."
+  },
+  {
+    "id": "smart_lp_17",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "🔔 Isomo ry'ejo rirateguye, {name}?",
+    "body": "Itondere gushyiramo ibikorwa by'abanyeshuri bafite ubumuga cyangwa abakeneye ubufasha bwihariye."
+  },
+  {
+    "id": "smart_lp_18",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "📚 Umuganda wawe mu myigire y'umwana",
+    "body": "Ibuka ko iminota 40 icungwa neza iyo ufite gahunda yanditse neza."
+  },
+  {
+    "id": "smart_lp_19",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "🌈 Gusangiza abanyeshuri intego z'isomo",
+    "body": "Isomo ryawe riraba rimwe mu masomo meza cyane abanyeshuri bawe bazibuka uyu munsi."
+  },
+  {
+    "id": "smart_lp_20",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "🏆 Mwarimu w'icyitegererezo mu gutegura",
+    "body": "Muri Elimu360, Lesson Plans zawe zose zibikwa mu buryo bwite kuri telefoni yawe utiriwe uzitakaza."
+  },
+  {
+    "id": "smart_lp_21",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "🤝 Kwigisha binyuze mu matsinda y'abanyeshuri",
+    "body": "Tegura Lesson Plan yawe mu masegonda 30 gusa ukoresheje AI Lesson Plan Generator y'ubuntu."
+  },
+  {
+    "id": "smart_lp_22",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "💬 Kubaza ibibazo bikangura ubwonko",
+    "body": "Kugera mu ishuri witeguye biguha ituze n'icyubahiro mu banyeshuri bawe {school}."
+  },
+  {
+    "id": "smart_lp_23",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "🧩 Gukemura ibibazo mu isomo (Problem Solving)",
+    "body": "Intego zinoze zifasha abanyeshuri kugera ku bushobozi bw'ingenzi bukenewe mu mibereho."
+  },
+  {
+    "id": "smart_lp_24",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "🛡️ Kurinda uburenganzira bw'umwana mu myigire",
+    "body": "Koresha uburyo bwa Competency-Based Curriculum (CBC) bufasha umunyeshuri gukora aho gutega amatwi gusa."
+  },
+  {
+    "id": "smart_lp_25",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "afternoon",
+    "title": "🎯 Guhuza amagambo n'ibikorwa mu isomo",
+    "body": "Elimu Smart Assistant yakorohereje akazi! Lesson plan yawe iboneka ifite ibice byose byasabwe na REB."
+  },
+  {
+    "id": "smart_lp_26",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "📌 Bika Lesson Plan yawe muri Saved Plans",
+    "body": "Abarimu b'indashyikirwa bategura hakiri kare kugira ngo babone umwanya wo kuruhuka nimugoroba."
+  },
+  {
+    "id": "smart_lp_27",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "⏳ Siga umwanya wo gusubiramo iby'ingenzi",
+    "body": "Itondere gushyiramo ibikorwa by'abanyeshuri bafite ubumuga cyangwa abakeneye ubufasha bwihariye."
+  },
+  {
+    "id": "smart_lp_28",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "🌍 Isomo rihuje n'ubuzima bwa buri munsi",
+    "body": "Ibuka ko iminota 40 icungwa neza iyo ufite gahunda yanditse neza."
+  },
+  {
+    "id": "smart_lp_29",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "🌞 Amasomo yo mu gitondo agendekere neza",
+    "body": "Isomo ryawe riraba rimwe mu masomo meza cyane abanyeshuri bawe bazibuka uyu munsi."
+  },
+  {
+    "id": "smart_lp_30",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "🌤️ Amasomo yo ku gicamunsi yiteguwe neza",
+    "body": "Muri Elimu360, Lesson Plans zawe zose zibikwa mu buryo bwite kuri telefoni yawe utiriwe uzitakaza."
+  },
+  {
+    "id": "smart_lp_31",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "☕ Kuruhuka mbere y'isomo rikurikiyeho",
+    "body": "Tegura Lesson Plan yawe mu masegonda 30 gusa ukoresheje AI Lesson Plan Generator y'ubuntu."
+  },
+  {
+    "id": "smart_lp_32",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "💡 Inyunganizi ku banyeshuri bafite intege nke",
+    "body": "Kugera mu ishuri witeguye biguha ituze n'icyubahiro mu banyeshuri bawe {school}."
+  },
+  {
+    "id": "smart_lp_33",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "⭐ Gushimira abanyeshuri bitabiriye neza",
+    "body": "Intego zinoze zifasha abanyeshuri kugera ku bushobozi bw'ingenzi bukenewe mu mibereho."
+  },
+  {
+    "id": "smart_lp_34",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "📝 Guha abanyeshuri umukoro unoze (Homework)",
+    "body": "Koresha uburyo bwa Competency-Based Curriculum (CBC) bufasha umunyeshuri gukora aho gutega amatwi gusa."
+  },
+  {
+    "id": "smart_lp_35",
+    "category": "lesson_plan",
+    "tab": "generator",
+    "timeWindow": "evening",
+    "title": "🎉 Ukoze neza ku isomo rirangiye, {name}!",
+    "body": "Elimu Smart Assistant yakorohereje akazi! Lesson plan yawe iboneka ifite ibice byose byasabwe na REB."
+  },
+  {
+    "id": "smart_reb_1",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Mathematics (P1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Mathematics P1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_2",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Ikinyarwanda (P2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Ikinyarwanda P2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_3",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: English (P3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya English P3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_4",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Science (P4)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Science P4 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_5",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Social Studies (P5)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Social Studies P5 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_6",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Physics (P6)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Physics P6 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_7",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Chemistry (S1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Chemistry S1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_8",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Biology (S2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Biology S2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_9",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Mathematics (S3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Mathematics S3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_10",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Ikinyarwanda (P1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Ikinyarwanda P1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_11",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: English (P2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya English P2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_12",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Science (P3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Science P3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_13",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Social Studies (P4)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Social Studies P4 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_14",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Physics (P5)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Physics P5 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_15",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Chemistry (P6)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Chemistry P6 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_16",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Biology (S1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Biology S1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_17",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Mathematics (S2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Mathematics S2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_18",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Ikinyarwanda (S3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Ikinyarwanda S3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_19",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: English (P1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya English P1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_20",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Science (P2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Science P2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_21",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Social Studies (P3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Social Studies P3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_22",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Physics (P4)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Physics P4 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_23",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Chemistry (P5)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Chemistry P5 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_24",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Biology (P6)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Biology P6 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_25",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Mathematics (S1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Mathematics S1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_26",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Ikinyarwanda (S2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Ikinyarwanda S2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_27",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: English (S3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya English S3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_28",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Science (P1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Science P1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_29",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Social Studies (P2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Social Studies P2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_30",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Physics (P3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Physics P3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_31",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Chemistry (P4)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Chemistry P4 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_32",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Biology (P5)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Biology P5 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_33",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Mathematics (P6)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Mathematics P6 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_34",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Ikinyarwanda (S1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Ikinyarwanda S1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_35",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: English (S2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya English S2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_36",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Science (S3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Science S3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_37",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Social Studies (P1)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Social Studies P1 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_38",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Physics (P2)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Physics P2 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_39",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "morning",
+    "title": "📚 Igitabo cya REB: Chemistry (P3)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Chemistry P3 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_reb_40",
+    "category": "reb_book",
+    "tab": "reb_library",
+    "timeWindow": "afternoon",
+    "title": "📚 Igitabo cya REB: Biology (P4)",
+    "body": "{name}, urabona Textbook cyangwa Teacher's Guide ya Biology P4 muri Library yacu ifite ikimenyetso cy'ishuri ryawe n'igifuniko cya PDF cyiteguye."
+  },
+  {
+    "id": "smart_qb_1",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Isuzumabumenyi ry'Ikinyarwanda",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_2",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Imyitozo y'Imibare (Mathematics Quiz)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_3",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Ibibazo bya Science & Elementary Technology",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_4",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Social Studies & Civic Education Quiz",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_5",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: English Grammar & Comprehension",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_6",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Ibizamini bisoza igihembwe (End of Term)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_7",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Isuzuma ryo gusoma no kwandika",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_8",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Ibibazo by'amahitamo menshi (MCQs)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_9",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Ibibazo bisaba ibisobanuro (Open Questions)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_10",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Isuzuma rigamije gufasha (Formative Assessment)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_11",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Isuzumabumenyi ry'Ikinyarwanda",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_12",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Imyitozo y'Imibare (Mathematics Quiz)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_13",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Ibibazo bya Science & Elementary Technology",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_14",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Social Studies & Civic Education Quiz",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_15",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: English Grammar & Comprehension",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_16",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Ibizamini bisoza igihembwe (End of Term)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_17",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Isuzuma ryo gusoma no kwandika",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_18",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Ibibazo by'amahitamo menshi (MCQs)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_19",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Ibibazo bisaba ibisobanuro (Open Questions)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_20",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Isuzuma rigamije gufasha (Formative Assessment)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_21",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Isuzumabumenyi ry'Ikinyarwanda",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_22",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Imyitozo y'Imibare (Mathematics Quiz)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_23",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Ibibazo bya Science & Elementary Technology",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_24",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Social Studies & Civic Education Quiz",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_25",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: English Grammar & Comprehension",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_26",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Ibizamini bisoza igihembwe (End of Term)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_27",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Isuzuma ryo gusoma no kwandika",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_28",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Ibibazo by'amahitamo menshi (MCQs)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_29",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Ibibazo bisaba ibisobanuro (Open Questions)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_30",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Isuzuma rigamije gufasha (Formative Assessment)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_31",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Isuzumabumenyi ry'Ikinyarwanda",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_32",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Imyitozo y'Imibare (Mathematics Quiz)",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_33",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: Ibibazo bya Science & Elementary Technology",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_34",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "noon",
+    "title": "💡 Question Bank: Social Studies & Civic Education Quiz",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_qb_35",
+    "category": "question_bank",
+    "tab": "question_bank",
+    "timeWindow": "mid_morning",
+    "title": "💡 Question Bank: English Grammar & Comprehension",
+    "body": "Ukeneye ibibazo bishya byo gusuzuma abanyeshuri? Question bank yacu ifite ibibazo birenga 3,200 bifite ibisubizo n'akaraso k'ikosora ku buntu."
+  },
+  {
+    "id": "smart_conv_1",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: PDF to Word Converter y'ubuntu",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_2",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Hindura ibizamini bishaje ubyandike bushya",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_3",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Slides z'amasomo (PPT) zihinduke muri PDF",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_4",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Guhuza amashusho menshi akavamo igitabo cya PDF",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_5",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Gukosora inyandiko muri Microsoft Word",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_6",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Kumanura inyandiko zisomeka kuri telefoni",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_7",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Kurinda imiterere y'inyandiko (Formatting & Tables)",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_8",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Kubika umwanya wo kongera kwandika inyandiko",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_9",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: PDF to Word Converter y'ubuntu",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_10",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Hindura ibizamini bishaje ubyandike bushya",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_11",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Slides z'amasomo (PPT) zihinduke muri PDF",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_12",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Guhuza amashusho menshi akavamo igitabo cya PDF",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_13",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Gukosora inyandiko muri Microsoft Word",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_14",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Kumanura inyandiko zisomeka kuri telefoni",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_15",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Kurinda imiterere y'inyandiko (Formatting & Tables)",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_16",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Kubika umwanya wo kongera kwandika inyandiko",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_17",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: PDF to Word Converter y'ubuntu",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_18",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Hindura ibizamini bishaje ubyandike bushya",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_19",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Slides z'amasomo (PPT) zihinduke muri PDF",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_20",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Guhuza amashusho menshi akavamo igitabo cya PDF",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_21",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Gukosora inyandiko muri Microsoft Word",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_22",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Kumanura inyandiko zisomeka kuri telefoni",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_23",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: Kurinda imiterere y'inyandiko (Formatting & Tables)",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_24",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "afternoon",
+    "title": "⚡ Universal Converter: Kubika umwanya wo kongera kwandika inyandiko",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_conv_25",
+    "category": "converter",
+    "tab": "converter",
+    "timeWindow": "noon",
+    "title": "⚡ Universal Converter: PDF to Word Converter y'ubuntu",
+    "body": "{name}, niba ufite inyandiko ushaka gukosora muri Word cyangwa gusangiza abandi muri PDF, koresha Universal Converter yacu yihuse 100%."
+  },
+  {
+    "id": "smart_ped_1",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Kwakira ibisubizo by'abanyeshuri utabaciye intege",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_2",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukoresha amatsinda mato (Think-Pair-Share)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_3",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Kuringaniza umwanya abakobwa n'abahungu bavugiraho mu ishuri",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_4",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gufasha umunyeshuri ufite amasoni cyangwa ubwoba",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_5",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Koresha imikino y'amasomo yoroshye (Educational Games)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_6",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gutanga amabwiriza asobanutse mu magambo make",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_7",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gucunga urusaku mu ishuri utarakaye (Positive Discipline)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_8",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukoresha ibidukikije nk'imfashanyigisho mu cyaro no mu mugi",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_9",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukurikirana imyandikire y'abanyeshuri ku kibaho",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_10",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gushimira imbaraga umunyeshuri yashyizemo aho kureba amanota gusa",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_11",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Kwakira ibisubizo by'abanyeshuri utabaciye intege",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_12",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukoresha amatsinda mato (Think-Pair-Share)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_13",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Kuringaniza umwanya abakobwa n'abahungu bavugiraho mu ishuri",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_14",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gufasha umunyeshuri ufite amasoni cyangwa ubwoba",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_15",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Koresha imikino y'amasomo yoroshye (Educational Games)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_16",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gutanga amabwiriza asobanutse mu magambo make",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_17",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gucunga urusaku mu ishuri utarakaye (Positive Discipline)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_18",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukoresha ibidukikije nk'imfashanyigisho mu cyaro no mu mugi",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_19",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukurikirana imyandikire y'abanyeshuri ku kibaho",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_20",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gushimira imbaraga umunyeshuri yashyizemo aho kureba amanota gusa",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_21",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Kwakira ibisubizo by'abanyeshuri utabaciye intege",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_22",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukoresha amatsinda mato (Think-Pair-Share)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_23",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Kuringaniza umwanya abakobwa n'abahungu bavugiraho mu ishuri",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_24",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gufasha umunyeshuri ufite amasoni cyangwa ubwoba",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_25",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Koresha imikino y'amasomo yoroshye (Educational Games)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_26",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gutanga amabwiriza asobanutse mu magambo make",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_27",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gucunga urusaku mu ishuri utarakaye (Positive Discipline)",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_28",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukoresha ibidukikije nk'imfashanyigisho mu cyaro no mu mugi",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_29",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gukurikirana imyandikire y'abanyeshuri ku kibaho",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_ped_30",
+    "category": "pedagogy",
+    "tab": "guide",
+    "timeWindow": "anytime",
+    "title": "🌱 Inama ya Mwarimu: Gushimira imbaraga umunyeshuri yashyizemo aho kureba amanota gusa",
+    "body": "Uburezi bushingiye ku mutima mwiza n'ubuhanga. Fata aka kanya wunguke ubumenyi bwisumbuye ku myigishirize ya CBC muri Elimu360 Guide."
+  },
+  {
+    "id": "smart_cc_1",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Inclusive Education: Guha agaciro umunyeshuri ufite ubumuga",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_2",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Gender Equality: Guteza imbere umwana w'umukobwa mu mibare na siyanse",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_3",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Peace and Values: Kubaka umuco w'amahoro n'ubworoherane",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_4",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Financial Education: Kwigisha abanyeshuri kwizigamira hakiri kare",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_5",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Environment & Climate: Kurinda ibidukikije ku ishuri",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_6",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Standardization Culture: Gukunda ibyiza n'ubuziranenge",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_7",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: ICT Integration: Gukoresha ikoranabuhanga mu masomo yose",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_8",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Inclusive Education: Guha agaciro umunyeshuri ufite ubumuga",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_9",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Gender Equality: Guteza imbere umwana w'umukobwa mu mibare na siyanse",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_10",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Peace and Values: Kubaka umuco w'amahoro n'ubworoherane",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_11",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Financial Education: Kwigisha abanyeshuri kwizigamira hakiri kare",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_12",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Environment & Climate: Kurinda ibidukikije ku ishuri",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_13",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Standardization Culture: Gukunda ibyiza n'ubuziranenge",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_14",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: ICT Integration: Gukoresha ikoranabuhanga mu masomo yose",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_15",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Inclusive Education: Guha agaciro umunyeshuri ufite ubumuga",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_16",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Gender Equality: Guteza imbere umwana w'umukobwa mu mibare na siyanse",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_17",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Peace and Values: Kubaka umuco w'amahoro n'ubworoherane",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_18",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Financial Education: Kwigisha abanyeshuri kwizigamira hakiri kare",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_19",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Environment & Climate: Kurinda ibidukikije ku ishuri",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_20",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Standardization Culture: Gukunda ibyiza n'ubuziranenge",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_21",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: ICT Integration: Gukoresha ikoranabuhanga mu masomo yose",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_22",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Inclusive Education: Guha agaciro umunyeshuri ufite ubumuga",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_23",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Gender Equality: Guteza imbere umwana w'umukobwa mu mibare na siyanse",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_24",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Peace and Values: Kubaka umuco w'amahoro n'ubworoherane",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_cc_25",
+    "category": "cross_cutting",
+    "tab": "guide",
+    "timeWindow": "afternoon",
+    "title": "🌍 CBC Cross-Cutting: Financial Education: Kwigisha abanyeshuri kwizigamira hakiri kare",
+    "body": "Integanyanyigisho ya REB idusaba gushyira iyi nkingi mu masomo yacu ya buri munsi. Reba ingero z'uburyo wayihuza n'isomo ryawe uyu munsi."
+  },
+  {
+    "id": "smart_mot_1",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_2",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_3",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_4",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_5",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_6",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_7",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_8",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_9",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_10",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_11",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_12",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_13",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_14",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_15",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_16",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_17",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_18",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_19",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_20",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_21",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_22",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_23",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_24",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_25",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_26",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_27",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_28",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_29",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_mot_30",
+    "category": "motivation",
+    "tab": "library",
+    "timeWindow": "anytime",
+    "title": "🔥 Ubwitange bwawe: Iminsi {streak} y'Umwuga!",
+    "body": "{name}, urugendo rwawe mu burezi ni ishema ry'u Rwanda {school}. Abarimu bagenzi bawe bishimira umuhati n'ubuhanga ukomeza kugaragaza."
+  },
+  {
+    "id": "smart_wrap_1",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_2",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_3",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_4",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_5",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_6",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_7",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_8",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_9",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_10",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_11",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_12",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_13",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_14",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_15",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_16",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_17",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_18",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_19",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  },
+  {
+    "id": "smart_wrap_20",
+    "category": "wrap_up",
+    "tab": "generator",
+    "timeWindow": "night",
+    "title": "🌙 Ijoro ryiza, {name}!",
+    "body": "Umunsi urarangiye neza. Ukoze imirimo ikomeye cyane uyu munsi. Ryama utekanye uzi ko amasomo n'inyandiko byose bibitswe neza muri Elimu360."
+  }
+]

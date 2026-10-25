@@ -1,6 +1,16 @@
 // Elimu Smart Notification System
 // Intelligent, contextual, and deeply personalized teacher assistant
-// Dispatches smart notifications to Native Lock Screen, Mobile Shade, and In-App Assistant.
+// Dispatches hundreds of smart notifications to Native Lock Screen, Mobile Shade, and In-App Assistant.
+// Fully resilient offline with CacheStorage and LocalStorage fallback.
+
+export interface SmartNotificationItem {
+  id: string;
+  category: 'lesson_plan' | 'reb_book' | 'streak' | 'question_bank' | 'converter' | 'motivation' | 'wrap_up';
+  title: string;
+  body: string;
+  timeWindow: 'morning' | 'mid_morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'anytime';
+  tab: 'generator' | 'reb_library' | 'question_bank' | 'converter' | 'guide' | 'library' | 'home';
+}
 
 export interface SmartNotificationSlot {
   id: string;
@@ -8,8 +18,7 @@ export interface SmartNotificationSlot {
   minute: number;
   focusTitle: string;
   category: 'lesson_plan' | 'reb_book' | 'streak' | 'question_bank' | 'converter' | 'motivation' | 'wrap_up';
-  tab: 'generator' | 'reb_library' | 'question_bank' | 'converter' | 'guide' | 'library';
-  // Dynamic generator function that produces varied, human, personal messages
+  tab: 'generator' | 'reb_library' | 'question_bank' | 'converter' | 'guide' | 'library' | 'home';
   generateMessage: (context: TeacherContext) => { title: string; body: string };
 }
 
@@ -33,345 +42,6 @@ export interface NotificationLogItem {
   tab: string;
   read: boolean;
 }
-
-const RW_DAY_NAMES = [
-  'Ku Cyumweru',
-  'Kuwa Mbere',
-  'Kuwa Kabiri',
-  'Kuwa Gatatu',
-  'Kuwa Kane',
-  'Kuwa Gatanu',
-  'Kuwa Gatandatu'
-];
-
-const EN_DAY_NAMES = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday'
-];
-
-// Helper to get respectful personalized salutation
-function getSalutation(ctx: TeacherContext): string {
-  if (ctx.teacherName && ctx.teacherName.trim().length > 0) {
-    const cleanName = ctx.teacherName.trim();
-    if (cleanName.toLowerCase().startsWith('mwarimu') || cleanName.toLowerCase().startsWith('teacher')) {
-      return cleanName;
-    }
-    return `Mwarimu ${cleanName}`;
-  }
-  return "Mwarimu w'icyubahiro";
-}
-
-function getSchoolMention(ctx: TeacherContext): string {
-  if (ctx.schoolName && ctx.schoolName.trim().length > 0) {
-    return `muri ${ctx.schoolName.trim()}`;
-  }
-  return "mu ishuri ryawe";
-}
-
-// 12 Smart Teacher Milestones across the 24-hour cycle with rich contextual variety
-export const ELIMU_SMART_SCHEDULE: SmartNotificationSlot[] = [
-  // 1. Early Morning (06:45) - Personalized Wake-Up & Daily Readiness
-  {
-    id: 'smart_slot_0645',
-    hour: 6,
-    minute: 45,
-    focusTitle: "Gutegura Umunsi n'Isomo rya Mbere",
-    category: 'lesson_plan',
-    tab: 'generator',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const school = getSchoolMention(ctx);
-      const variants = [
-        {
-          title: `🌅 Umunsi mwiza, ${salutation}!`,
-          body: `${ctx.dayNameRw} gitangiye neza! Tegura Lesson Plan yawe y'uyu munsi ${school} mu masegonda 30 gusa utazagira umunaniro mu ishuri.`
-        },
-        {
-          title: `☀️ ${salutation}, uburere bw'u Rwanda buragushimiye!`,
-          body: `Umunsi mushya w'amasomo utangiye neza. Gira ituze witegure hakiri kare ukoresheje Elimu Smart Assistant.`
-        },
-        {
-          title: `✨ Gutangira neza ${ctx.dayNameRw}, ${salutation}!`,
-          body: `Amasomo y'uyu munsi arakwiteguye. Kora Lesson Plan yujuje ibisabwa na REB CBC ubu uhe abanyeshuri ubumenyi bunoze.`
-        }
-      ];
-      return variants[(ctx.dayOfWeek + ctx.streakDays) % variants.length];
-    }
-  },
-
-  // 2. Morning Class Bell (08:00) - REB CBC Curriculum Textbooks & Guides
-  {
-    id: 'smart_slot_0800',
-    hour: 8,
-    minute: 0,
-    focusTitle: "Ibitabo n'Imfashanyigisho bya REB",
-    category: 'reb_book',
-    tab: 'reb_library',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const subject = ctx.defaultSubject ? `ku isomo rya ${ctx.defaultSubject}` : "ku masomo yose";
-      const variants = [
-        {
-          title: `📚 Ibitabo bya REB CBC biri ku buntu, ${salutation}`,
-          body: `Waba ukeneye Textbook cyangwa Teacher's Guide ${subject}? Manura ibitabo 1,806 bifite ikimenyetso cy'ishuri ryawe ubu.`
-        },
-        {
-          title: `📖 Imfashanyigisho zigezweho za REB 1806`,
-          body: `${salutation}, ibitabo byose by'amashuri abanza n'ayisumbuye biri muri Library yacu. Bimanure mu minota mike gusa kuri telefoni.`
-        }
-      ];
-      return variants[ctx.dayOfWeek % variants.length];
-    }
-  },
-
-  // 3. Mid-Morning Engagement (09:30) - Teacher Dedication & Momentum
-  {
-    id: 'smart_slot_0930',
-    hour: 9,
-    minute: 30,
-    focusTitle: "Ubwitange n'Umuhati w'Umwuga",
-    category: 'streak',
-    tab: 'generator',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const variants = [
-        {
-          title: `🔥 Iminsi ${ctx.streakDays} y'Ubwitange bwawe, ${salutation}!`,
-          body: `Umuhati ugira mu burezi urigaragaza cyane. Komeza uyu murongo mwiza w'ubuhanga mu myigishirize yawe ya buri munsi.`
-        },
-        {
-          title: `🌟 ${salutation}, urabikora neza cyane!`,
-          body: `Abanyeshuri bawe bafite mwarimu w'indashyikirwa. Reba indi mirongo y'amasomo yiteguye neza muri Elimu360.`
-        }
-      ];
-      return variants[(ctx.streakDays) % variants.length];
-    }
-  },
-
-  // 4. Late Morning Evaluation (11:00) - Question Bank (3,200+ Questions)
-  {
-    id: 'smart_slot_1100',
-    hour: 11,
-    minute: 0,
-    focusTitle: "Question Bank & Isuzumabumenyi",
-    category: 'question_bank',
-    tab: 'question_bank',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const variants = [
-        {
-          title: `💡 Urakeneye ibibazo by'isuzuma, ${salutation}?`,
-          body: `Question Bank yacu ifite ibibazo birenga 3,200 bya CBC bifite ibisubizo n'akaraso k'ikosora. Manura ikizamini ako kanya!`
-        },
-        {
-          title: `📝 Isuzumabumenyi ry'abanyeshuri uyu munsi`,
-          body: `${salutation}, suzuma aho abanyeshuri bageze kuri competence-based indicators ukoresheje imyitozo iteguye muri Question Bank.`
-        }
-      ];
-      return variants[ctx.dayOfWeek % variants.length];
-    }
-  },
-
-  // 5. Lunch & Midday Rest (12:30) - Schemes of Work & Time-Saving Prep
-  {
-    id: 'smart_slot_1230',
-    hour: 12,
-    minute: 30,
-    focusTitle: "Akaruhuko ka Saa Sita & Schemes of Work",
-    category: 'lesson_plan',
-    tab: 'reb_library',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const variants = [
-        {
-          title: `☕ Akaruhuko keza ka saa sita, ${salutation}!`,
-          body: `Fata umwanya wo kuruhuka. Niba ukeneye Schemes of Work z'icyumweru cyose, uzisanga ziteguye muri library yacu.`
-        },
-        {
-          title: `🍲 Saa sita nziza, ${salutation}!`,
-          body: `Kwigisha bisaba imbaraga n'umutima mwiza. Ruhuka neza, amakuru n'amasomo byose bibitswe neza kuri konti yawe.`
-        }
-      ];
-      return variants[(ctx.dayOfWeek + 1) % variants.length];
-    }
-  },
-
-  // 6. Early Afternoon Tools (14:00) - Document Converter (PDF to Word)
-  {
-    id: 'smart_slot_1400',
-    hour: 14,
-    minute: 0,
-    focusTitle: "Universal Document Converter",
-    category: 'converter',
-    tab: 'converter',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const variants = [
-        {
-          title: `📄 Hindura inyandiko zawe, ${salutation}!`,
-          body: `Ufite ibizamini bishaje cyangwa notes za PDF ushaka gukosora muri Word? Koresha Universal Converter y'ubuntu ubu.`
-        },
-        {
-          title: `⚡ Ubuhanga bwo guhindura PDF muri Word`,
-          body: `${salutation}, ntugakenera kongera kwandika ibizamini bushya. Bishyire muri Converter bihinduke muri Word mu masegonda.`
-        }
-      ];
-      return variants[ctx.dayOfWeek % variants.length];
-    }
-  },
-
-  // 7. Afternoon Class Support (15:45) - Active Learning & CBC Guidance
-  {
-    id: 'smart_slot_1545',
-    hour: 15,
-    minute: 45,
-    focusTitle: "Imyigishirize Ishingiye ku Bushobozi (CBC)",
-    category: 'motivation',
-    tab: 'guide',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const variants = [
-        {
-          title: `🎯 Amasomo yo ku gicamunsi, ${salutation}!`,
-          body: `Ese abanyeshuri bishimiye isomo rya none? Reba inama z'uburyo bwo guhuza amasomo n'ubushobozi fatizo bwa CBC mu Guide yacu.`
-        },
-        {
-          title: `🌱 Guteza imbere ubushobozi bw'abanyeshuri`,
-          body: `${salutation}, buri munsi uha abana b'u Rwanda ubumenyi butagira igiciro. Elimu360 iri kumwe nawe mu rugendo rwose.`
-        }
-      ];
-      return variants[(ctx.dayOfWeek + 2) % variants.length];
-    }
-  },
-
-  // 8. End of School Day (17:15) - Relaxed Prep for Tomorrow
-  {
-    id: 'smart_slot_1715',
-    hour: 17,
-    minute: 15,
-    focusTitle: "Gutegura Amasomo y'Ejo Hakiri Kare",
-    category: 'lesson_plan',
-    tab: 'generator',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const tomorrowName = RW_DAY_NAMES[(ctx.dayOfWeek + 1) % 7];
-      const variants = [
-        {
-          title: `⏰ ${salutation}, ejo ${tomorrowName} uzigisha iki?`,
-          body: `Ntuzatungurwe mu gitondo. Fata iminota 2 gusa ubu ukore Lesson Plan y'ejo, uze kurara utekanye 100%.`
-        },
-        {
-          title: `🏡 Amasomo ararangiye, ${salutation}!`,
-          body: `Ukoze neza uyu munsi. Mbere y'uko urangiza umunsi, tegura isomo ry'ejo hakiri kare kugira ngo ejo mu gitondo uzagere mu ishuri utuje.`
-        }
-      ];
-      return variants[ctx.dayOfWeek % variants.length];
-    }
-  },
-
-  // 9. Evening Library Access (19:00) - Whole Class Batch Downloads
-  {
-    id: 'smart_slot_1900',
-    hour: 19,
-    minute: 0,
-    focusTitle: "Kumanura Ibitabo by'Ishuri Byose (ZIP)",
-    category: 'reb_book',
-    tab: 'reb_library',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const school = getSchoolMention(ctx);
-      const variants = [
-        {
-          title: `📦 Manura ibitabo byose by'umwaka (Batch ZIP)`,
-          body: `${salutation}, ushobora kumanura ibitabo bya P1 kugeza S3 byose icyarimwe muri ZIP imwe ifite ikimenyetso ${school}.`
-        },
-        {
-          title: `📚 Isomero ryuzuye ry'ibitabo bya REB ku buntu`,
-          body: `Gira isomero ryuzuye kuri telefoni cyangwa mudasobwa yawe udatakaje amafaranga na make. Sangiza n'abandi barimu!`
-        }
-      ];
-      return variants[(ctx.dayOfWeek + 3) % variants.length];
-    }
-  },
-
-  // 10. Community & Teacher Recognition (20:15) - Professional Esteem
-  {
-    id: 'smart_slot_2015',
-    hour: 20,
-    minute: 15,
-    focusTitle: "Mwarimu w'Indashyikirwa",
-    category: 'motivation',
-    tab: 'library',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const variants = [
-        {
-          title: `🏆 Urakoze ku bwitange bwawe, ${salutation}!`,
-          body: `Abarimu barenga 24,000 bakoresha Elimu360 bishimira umwuga w'uburezi. Amasomo wateguye abitswe neza muri Saved Plans.`
-        },
-        {
-          title: `⭐ Mwarimu w'Icyitegererezo mu Burezi`,
-          body: `${salutation}, kera byafataga amasaha gutegura amasomo, none ubikora mu masegonda. Komeza kuba indashyikirwa!`
-        }
-      ];
-      return variants[ctx.dayOfWeek % variants.length];
-    }
-  },
-
-  // 11. Peaceful Night Wind-Down (21:30) - Rest & Care
-  {
-    id: 'smart_slot_2130',
-    hour: 21,
-    minute: 30,
-    focusTitle: "Kuryama Utekanye & Uruhushya",
-    category: 'wrap_up',
-    tab: 'generator',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const school = getSchoolMention(ctx);
-      const variants = [
-        {
-          title: `🌙 Ijoro ryiza, ${salutation}!`,
-          body: `Ukoze imirimo myiza ${school} uyu munsi. Ryama utekanye uzi ko ibyo gukora byose byateguwe neza. Ijoro ryiza cyane!`
-        },
-        {
-          title: `✨ Kuruhuka neza Mwarimu dukunda`,
-          body: `${salutation}, ubwonko n'umubiri birakeneye kuruhuka. Elimu360 irakwifuriza ijoro ryiza n'amasomo meza y'ejo.`
-        }
-      ];
-      return variants[(ctx.dayOfWeek + 4) % variants.length];
-    }
-  },
-
-  // 12. Gentle Late Safeguard (22:45) - Next Day Serenity
-  {
-    id: 'smart_slot_2245',
-    hour: 22,
-    minute: 45,
-    focusTitle: "Gufunga Umunsi mu Mutuzo",
-    category: 'wrap_up',
-    tab: 'generator',
-    generateMessage: (ctx) => {
-      const salutation = getSalutation(ctx);
-      const variants = [
-        {
-          title: `🌌 Umunsi urarangiye mu mahoro, ${salutation}`,
-          body: `Gahunda zose z'ejo zimeze neza. Elimu Smart Assistant izakuburira ejo mu gitondo hakiri kare. Uruhuke neza!`
-        },
-        {
-          title: `💤 Ryama utuje, ${salutation}`,
-          body: `Elimu360 igushimiye umuhati ugira mu burezi bw'u Rwanda. Dusangiye urugendo rw'ubwenge buri munsi.`
-        }
-      ];
-      return variants[ctx.dayOfWeek % variants.length];
-    }
-  }
-];
 
 export interface TeacherCustomReminder {
   id: string;
@@ -398,6 +68,45 @@ export interface ElimuAppSettings {
   language: 'rw' | 'en' | 'both';
 }
 
+const RW_DAY_NAMES = [
+  'Ku Cyumweru',
+  'Kuwa Mbere',
+  'Kuwa Kabiri',
+  'Kuwa Gatatu',
+  'Kuwa Kane',
+  'Kuwa Gatanu',
+  'Kuwa Gatandatu'
+];
+
+const EN_DAY_NAMES = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday'
+];
+
+// Helper to get respectful personalized salutation
+export function getSalutation(ctx: TeacherContext): string {
+  if (ctx.teacherName && ctx.teacherName.trim().length > 0) {
+    const cleanName = ctx.teacherName.trim();
+    if (cleanName.toLowerCase().startsWith('mwarimu') || cleanName.toLowerCase().startsWith('teacher')) {
+      return cleanName;
+    }
+    return `Mwarimu ${cleanName}`;
+  }
+  return "Mwarimu w'icyubahiro";
+}
+
+export function getSchoolMention(ctx: TeacherContext): string {
+  if (ctx.schoolName && ctx.schoolName.trim().length > 0) {
+    return `muri ${ctx.schoolName.trim()}`;
+  }
+  return "mu ishuri ryawe";
+}
+
 const DEFAULT_SETTINGS: ElimuAppSettings = {
   lessonPlanAlerts: true,
   rebBooksAlerts: true,
@@ -412,14 +121,166 @@ const DEFAULT_SETTINGS: ElimuAppSettings = {
 
 const SETTINGS_STORAGE_KEY = 'elimu_smart_settings';
 const CUSTOM_REMINDERS_STORAGE_KEY = 'elimu_custom_teacher_reminders';
+const OFFLINE_POOL_STORAGE_KEY = 'elimu_cached_notifications_pool';
+const LAST_DISPATCH_TIME_KEY = 'elimu_last_smart_dispatch_time';
+
+// Standby default items in case initial fetch hasn't completed yet
+const STANDBY_POOL: SmartNotificationItem[] = [
+  {
+    id: "lp_standby_1",
+    category: "lesson_plan",
+    timeWindow: "morning",
+    tab: "generator",
+    title: "🌅 Umunsi mwiza, {name}!",
+    body: "Tegura Lesson Plan y'uyu munsi {school} mu masegonda 30 gusa ukoresheje REB CBC Assistant."
+  },
+  {
+    id: "reb_standby_1",
+    category: "reb_book",
+    timeWindow: "mid_morning",
+    tab: "reb_library",
+    title: "📚 Ibitabo bya REB CBC biri ku buntu, {name}",
+    body: "Manura ibitabo 1,806 n'amapaji ya REB y'ubuntu afite ikimenyetso cy'ishuri ryawe ako kanya."
+  },
+  {
+    id: "qb_standby_1",
+    category: "question_bank",
+    timeWindow: "afternoon",
+    tab: "question_bank",
+    title: "💡 Urakeneye ibibazo by'isuzuma, {name}?",
+    body: "Question Bank ifite ibibazo birenga 3,200 bya CBC bifite ibisubizo n'akaraso k'ikosora."
+  },
+  {
+    id: "conv_standby_1",
+    category: "converter",
+    timeWindow: "afternoon",
+    tab: "converter",
+    title: "⚡ Hindura inyandiko zawe muri Word, {name}!",
+    body: "Ufite ibizamini bishaje cyangwa notes za PDF? Bishyire muri Universal Converter bihinduke muri Word ako kanya."
+  },
+  {
+    id: "wrap_standby_1",
+    category: "wrap_up",
+    timeWindow: "night",
+    tab: "generator",
+    title: "🌙 Ijoro ryiza, {name}!",
+    body: "Ukoze imirimo myiza {school} uyu munsi. Ryama utekanye uzi ko amasomo y'ejo yateguwe neza."
+  }
+];
 
 class NotificationEngine {
   private listeners: Array<() => void> = [];
   private checkInterval: any = null;
+  private notificationPool: SmartNotificationItem[] = [];
+  private isPoolLoaded = false;
 
   constructor() {
     this.updateStreak();
+    this.loadOfflineNotificationPool();
     this.startSchedulerLoop();
+    this.setupNetworkAndWorkerSync();
+  }
+
+  // Load and cache offline notification pool
+  private async loadOfflineNotificationPool() {
+    if (typeof window === 'undefined') return;
+
+    // 1. First hydrate instantly from local storage cache
+    try {
+      const cached = localStorage.getItem(OFFLINE_POOL_STORAGE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.notificationPool = parsed;
+          this.isPoolLoaded = true;
+        }
+      }
+    } catch (e) {
+      console.warn('[ElimuSmart] LocalStorage cache read error:', e);
+    }
+
+    if (this.notificationPool.length === 0) {
+      this.notificationPool = [...STANDBY_POOL];
+    }
+
+    // 2. Fetch fresh pool from public asset (CacheStorage / Network)
+    try {
+      const res = await fetch('/elimu_notifications_pool.json');
+      if (res.ok) {
+        const freshPool: SmartNotificationItem[] = await res.json();
+        if (Array.isArray(freshPool) && freshPool.length > 0) {
+          this.notificationPool = freshPool;
+          this.isPoolLoaded = true;
+          localStorage.setItem(OFFLINE_POOL_STORAGE_KEY, JSON.stringify(freshPool));
+          this.syncProfileWithServiceWorker();
+        }
+      }
+    } catch (e) {
+      console.log('[ElimuSmart] Running offline mode with cached notifications pool (' + this.notificationPool.length + ' items)');
+    }
+  }
+
+  // Network online listener & Service Worker background sync
+  private setupNetworkAndWorkerSync() {
+    if (typeof window === 'undefined') return;
+
+    // Refresh when device comes online
+    window.addEventListener('online', () => {
+      this.loadOfflineNotificationPool();
+      this.syncProfileWithServiceWorker();
+      this.registerPeriodicBackgroundSync();
+    });
+
+    // Send profile sync once service worker is ready
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(() => {
+        this.syncProfileWithServiceWorker();
+        this.registerPeriodicBackgroundSync();
+      }).catch(() => {});
+    }
+  }
+
+  // Synchronize teacher identity to Service Worker for autonomous offline lock screen alerts
+  public syncProfileWithServiceWorker() {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+    try {
+      const ctx = this.getTeacherContext();
+      const payload = {
+        type: 'SYNC_TEACHER_PROFILE',
+        profile: {
+          teacherName: getSalutation(ctx),
+          schoolName: ctx.schoolName || '',
+          streak: ctx.streakDays
+        }
+      };
+
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage(payload);
+      }
+      navigator.serviceWorker.ready.then(reg => {
+        if (reg.active) {
+          reg.active.postMessage(payload);
+        }
+      });
+    } catch (e) {
+      // SW message safe fallback
+    }
+  }
+
+  // Register Periodic Background Sync (runs in background without browser opened)
+  public async registerPeriodicBackgroundSync() {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+    try {
+      const registration: any = await navigator.serviceWorker.ready;
+      if (registration && 'periodicSync' in registration) {
+        // Request min interval ~35 mins
+        await registration.periodicSync.register('elimu-smart-notifications', {
+          minInterval: 35 * 60 * 1000
+        });
+      }
+    } catch (e) {
+      // Periodic sync not permitted on some browsers
+    }
   }
 
   // Settings Management
@@ -490,7 +351,6 @@ class NotificationEngine {
     this.notifyListeners();
   }
 
-
   public subscribe(listener: () => void) {
     this.listeners.push(listener);
     return () => {
@@ -526,6 +386,8 @@ class NotificationEngine {
           tab: 'generator',
           tag: 'elimu-smart-welcome'
         });
+        this.syncProfileWithServiceWorker();
+        this.registerPeriodicBackgroundSync();
       }
       return result;
     } catch (e) {
@@ -618,6 +480,7 @@ class NotificationEngine {
       list.push(id);
       localStorage.setItem(todayKey, JSON.stringify(list));
     }
+    localStorage.setItem(LAST_DISPATCH_TIME_KEY, Date.now().toString());
   }
 
   // Notification history log
@@ -641,7 +504,7 @@ class NotificationEngine {
       time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       read: false
     };
-    const updated = [newItem, ...history].slice(0, 30);
+    const updated = [newItem, ...history].slice(0, 40);
     localStorage.setItem('elimu_smart_history', JSON.stringify(updated));
     this.notifyListeners();
   }
@@ -720,18 +583,19 @@ class NotificationEngine {
     window.dispatchEvent(event);
   }
 
-  // Background Loop: Checks if any of the 12 daily schedule slots matches current time
+  // Background Loop: Evaluates teacher reminders and spaced pool notifications
   private startSchedulerLoop() {
     if (typeof window === 'undefined') return;
     if (this.checkInterval) clearInterval(this.checkInterval);
 
     this.checkSchedule();
+    // Run checks every 30 seconds
     this.checkInterval = setInterval(() => {
       this.checkSchedule();
     }, 30000);
   }
 
-  private checkSchedule() {
+  public checkSchedule() {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
@@ -739,38 +603,11 @@ class NotificationEngine {
     const delivered = this.getDeliveredIdsToday();
     const settings = this.getSettings();
 
-    // 1. Process Elimu Smart Timetable (12 slots)
-    for (const slot of ELIMU_SMART_SCHEDULE) {
-      // Check feature settings toggles
-      if (slot.category === 'lesson_plan' && !settings.lessonPlanAlerts) continue;
-      if (slot.category === 'reb_book' && !settings.rebBooksAlerts) continue;
-      if (slot.category === 'question_bank' && !settings.questionBankAlerts) continue;
-      if (slot.category === 'converter' && !settings.converterAlerts) continue;
-
-      const slotMinutes = slot.hour * 60 + slot.minute;
-      const currentMinutes = currentHour * 60 + currentMinute;
-      const diff = currentMinutes - slotMinutes;
-
-      if (diff >= 0 && diff <= 15 && !delivered.includes(slot.id)) {
-        this.markDeliveredToday(slot.id);
-        const ctx = this.getTeacherContext();
-        const msg = slot.generateMessage(ctx);
-
-        this.sendLockScreenNotification({
-          title: msg.title,
-          body: msg.body,
-          tab: slot.tab,
-          tag: slot.id
-        });
-      }
-    }
-
-    // 2. Process Teacher Custom Reminders (Staff meetings, grading, duty, etc.)
+    // 1. Process Teacher Custom Reminders (Exact matching on scheduled minute)
     const customReminders = this.getCustomReminders();
     for (const rem of customReminders) {
       if (!rem.enabled) continue;
 
-      // Check day matching
       const matchesDay = rem.days.length === 0 || rem.days.includes(currentDay);
       if (!matchesDay) continue;
 
@@ -779,7 +616,7 @@ class NotificationEngine {
       const diff = currentMinutes - remMinutes;
       const customDeliveredKey = 'custom_' + rem.id;
 
-      if (diff >= 0 && diff <= 15 && !delivered.includes(customDeliveredKey)) {
+      if (diff >= 0 && diff <= 10 && !delivered.includes(customDeliveredKey)) {
         this.markDeliveredToday(customDeliveredKey);
         this.sendLockScreenNotification({
           title: `⏰ ${rem.title}`,
@@ -791,7 +628,102 @@ class NotificationEngine {
         });
       }
     }
+
+    // 2. Process Autonomous Spaced Notifications from the 240+ Pool
+    // Restrict between 06:00 and 22:30 (Quiet hours: 22:30 to 06:00 to never disturb educator sleep)
+    if (currentHour >= 23 || currentHour < 6) {
+      return;
+    }
+
+    const lastDispatchRaw = localStorage.getItem(LAST_DISPATCH_TIME_KEY);
+    const lastDispatchTime = lastDispatchRaw ? parseInt(lastDispatchRaw, 10) : 0;
+    const timeSinceLastMs = Date.now() - lastDispatchTime;
+
+    // Minimum interval between autonomous notifications: 35 minutes (2,100,000 ms)
+    const MIN_INTERVAL_MS = 35 * 60 * 1000;
+    if (timeSinceLastMs < MIN_INTERVAL_MS) {
+      return;
+    }
+
+    // Determine current time window
+    let windowKey: 'morning' | 'mid_morning' | 'noon' | 'afternoon' | 'evening' | 'night' = 'morning';
+    if (currentHour >= 6 && currentHour < 9) windowKey = 'morning';
+    else if (currentHour >= 9 && currentHour < 12) windowKey = 'mid_morning';
+    else if (currentHour >= 12 && currentHour < 14) windowKey = 'noon';
+    else if (currentHour >= 14 && currentHour < 18) windowKey = 'afternoon';
+    else if (currentHour >= 18 && currentHour < 21) windowKey = 'evening';
+    else windowKey = 'night';
+
+    // Filter available pool by time window & category settings
+    const pool = this.notificationPool.length > 0 ? this.notificationPool : STANDBY_POOL;
+    const filtered = pool.filter(item => {
+      // Feature toggles
+      if (item.category === 'lesson_plan' && !settings.lessonPlanAlerts) return false;
+      if (item.category === 'reb_book' && !settings.rebBooksAlerts) return false;
+      if (item.category === 'question_bank' && !settings.questionBankAlerts) return false;
+      if (item.category === 'converter' && !settings.converterAlerts) return false;
+      if (item.category === 'streak' && !settings.streakEnabled) return false;
+
+      // Window check
+      return item.timeWindow === windowKey || item.timeWindow === 'anytime';
+    });
+
+    if (filtered.length === 0) return;
+
+    // Filter out items already delivered today to prevent repetitive prompts
+    let candidates = filtered.filter(item => !delivered.includes(item.id));
+    if (candidates.length === 0) {
+      // If all have been sent in this window, pick least recently delivered
+      candidates = filtered;
+    }
+
+    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+    if (!chosen) return;
+
+    this.markDeliveredToday(chosen.id);
+
+    const ctx = this.getTeacherContext();
+    const salutation = getSalutation(ctx);
+    const school = getSchoolMention(ctx);
+
+    const title = chosen.title
+      .replace(/{name}/g, salutation)
+      .replace(/{school}/g, school)
+      .replace(/{streak}/g, ctx.streakDays.toString());
+
+    const body = chosen.body
+      .replace(/{name}/g, salutation)
+      .replace(/{school}/g, school)
+      .replace(/{streak}/g, ctx.streakDays.toString());
+
+    this.sendLockScreenNotification({
+      title,
+      body,
+      tab: chosen.tab,
+      tag: chosen.id
+    });
+  }
+
+  // Get count of total pool notifications loaded
+  public getPoolCount(): number {
+    return this.notificationPool.length;
   }
 }
 
 export const notificationEngine = new NotificationEngine();
+
+// Legacy compatibility export
+export const ELIMU_SMART_SCHEDULE: SmartNotificationSlot[] = [
+  {
+    id: 'smart_slot_morning',
+    hour: 7,
+    minute: 0,
+    focusTitle: "Gutegura Umunsi n'Isomo rya Mbere",
+    category: 'lesson_plan',
+    tab: 'generator',
+    generateMessage: (ctx) => ({
+      title: `🌅 Umunsi mwiza, ${getSalutation(ctx)}!`,
+      body: `Amasomo y'uyu munsi arakwiteguye. Kora Lesson Plan yujuje ibisabwa na REB CBC ubu.`
+    })
+  }
+];
