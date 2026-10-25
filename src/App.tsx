@@ -32,6 +32,10 @@ import { LiveActivityTicker } from './components/common/LiveActivityTicker';
 import { REBCourse1806Library } from './components/reb/REBCourse1806Library';
 import { SchoolProfileModal } from './components/common/SchoolProfileModal';
 import { SchoolProfileReminderBanner } from './components/common/SchoolProfileReminderBanner';
+import { NotificationBellHeader } from './components/notifications/NotificationBellHeader';
+import { NotificationCenterModal } from './components/notifications/NotificationCenterModal';
+import { DuolingoNotificationPromptBanner } from './components/notifications/DuolingoNotificationPromptBanner';
+import { InAppNotificationToast } from './components/notifications/InAppNotificationToast';
 
 type ActiveTab = 'home' | 'converter' | 'generator' | 'question_bank' | 'reb_library' | 'library' | 'guide' | 'faq' | 'privacy';
 
@@ -49,6 +53,39 @@ const MainAppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedQuestionForPlan, setSelectedQuestionForPlan] = useState<any>(null);
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
+
+  // Handle direct notification clicks and service worker navigation
+  React.useEffect(() => {
+    // Check URL query parameters (e.g. ?tab=reb_library)
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab') as ActiveTab | null;
+      if (tabParam && ['home', 'converter', 'generator', 'question_bank', 'reb_library', 'library', 'guide', 'faq', 'privacy'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    } catch (e) {
+      // Ignore URL parsing errors
+    }
+
+    // Listen for Service Worker messages when user taps lock screen notifications
+    const handleServiceWorkerMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'NAVIGATE_TAB' && event.data.tab) {
+        setActiveTab(event.data.tab);
+      }
+    };
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+    }
+
+    return () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
+      }
+    };
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
@@ -152,6 +189,9 @@ const MainAppContent: React.FC = () => {
           {/* Right Header Actions */}
           <div className="hidden md:flex items-center gap-2.5">
             
+            {/* Duolingo / Phoenix Notifications & Streak */}
+            <NotificationBellHeader onOpenCenter={() => setNotificationCenterOpen(true)} />
+
             {/* School Profile Persistent Quick Reminder Button */}
             <SchoolProfileReminderBanner compact />
 
@@ -180,6 +220,7 @@ const MainAppContent: React.FC = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center md:hidden gap-2">
+            <NotificationBellHeader onOpenCenter={() => setNotificationCenterOpen(true)} />
             <PWAInstallHeaderButton />
             <button
               onClick={openShareModal}
@@ -304,7 +345,12 @@ const MainAppContent: React.FC = () => {
 
       {/* Main Workspace Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'home' && <ServicesOverviewHome onNavigate={tab => setActiveTab(tab)} />}
+        {activeTab === 'home' && (
+          <ServicesOverviewHome 
+            onNavigate={tab => setActiveTab(tab)} 
+            onOpenNotificationCenter={() => setNotificationCenterOpen(true)}
+          />
+        )}
         {activeTab === 'converter' && <DocumentConverter />}
         {activeTab === 'generator' && (
           <LessonPlanGeneratorHub 
@@ -342,6 +388,22 @@ const MainAppContent: React.FC = () => {
 
       {/* PWA Install Promotion Modal (Auto on First Load & Offline Support) */}
       <PWAInstallModal />
+
+      {/* Duolingo & Phoenix Notifications Center Modal */}
+      <NotificationCenterModal
+        isOpen={notificationCenterOpen}
+        onClose={() => setNotificationCenterOpen(false)}
+        onNavigateTab={(tab) => {
+          setActiveTab(tab);
+          setNotificationCenterOpen(false);
+        }}
+      />
+
+      {/* Duolingo Notification Opt-In Banner */}
+      <DuolingoNotificationPromptBanner />
+
+      {/* Active In-App Notification Toast */}
+      <InAppNotificationToast onNavigateTab={(tab) => setActiveTab(tab)} />
 
       {/* Global Footer with All Rights Copyright Attribution */}
       <footer className="border-t border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-950 py-10 px-4 text-center text-xs text-slate-600 dark:text-slate-400 space-y-4">

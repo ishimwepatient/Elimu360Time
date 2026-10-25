@@ -23,12 +23,14 @@ import { QuickQuestionDownloadPopup } from './QuickQuestionDownloadPopup';
 import { InteractiveServiceSuggestions } from './InteractiveServiceSuggestions';
 import { getQuickClassSubjectQuestions } from '../../utils/kinyarwandaQuestionBankData';
 import { exportQuestionsToDocx, exportQuestionsToPdf } from '../../utils/quizExportHelper';
+import { DuolingoNotificationFeatureCard } from './DuolingoNotificationFeatureCard';
 
 interface ServicesOverviewHomeProps {
   onNavigate: (tab: 'home' | 'generator' | 'converter' | 'library' | 'question_bank' | 'reb_library' | 'guide' | 'faq' | 'privacy') => void;
+  onOpenNotificationCenter?: () => void;
 }
 
-export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNavigate }) => {
+export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNavigate, onOpenNotificationCenter }) => {
   const { openShareModal, savedLessonPlans, schoolProfile } = useElimu();
   const [quickDownloadModalOpen, setQuickDownloadModalOpen] = useState(false);
 
@@ -162,6 +164,12 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
           </div>
         </div>
       </div>
+
+      {/* Duolingo & Phoenix 10+ Daily Notifications & Lock Screen Feature Card */}
+      <DuolingoNotificationFeatureCard 
+        onOpenCenter={onOpenNotificationCenter || (() => {})} 
+        onNavigate={onNavigate} 
+      />
 
       {/* Featured Quick Class-Based Question Downloader Section with Nearby Ad Integration */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
