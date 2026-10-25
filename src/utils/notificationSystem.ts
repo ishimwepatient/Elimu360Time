@@ -373,6 +373,46 @@ export const ELIMU_SMART_SCHEDULE: SmartNotificationSlot[] = [
   }
 ];
 
+export interface TeacherCustomReminder {
+  id: string;
+  title: string;
+  body?: string;
+  time: string; // "HH:MM"
+  hour: number;
+  minute: number;
+  days: number[]; // [1,2,3,4,5] = weekdays, [] = daily
+  enabled: boolean;
+  category: 'meeting' | 'duty' | 'exam' | 'lesson' | 'general';
+  tab?: 'generator' | 'reb_library' | 'question_bank' | 'converter' | 'guide' | 'library' | 'home';
+}
+
+export interface ElimuAppSettings {
+  lessonPlanAlerts: boolean;
+  rebBooksAlerts: boolean;
+  questionBankAlerts: boolean;
+  converterAlerts: boolean;
+  soundEnabled: boolean;
+  vibrationEnabled: boolean;
+  streakEnabled: boolean;
+  fileWatcherEnabled: boolean;
+  language: 'rw' | 'en' | 'both';
+}
+
+const DEFAULT_SETTINGS: ElimuAppSettings = {
+  lessonPlanAlerts: true,
+  rebBooksAlerts: true,
+  questionBankAlerts: true,
+  converterAlerts: true,
+  soundEnabled: true,
+  vibrationEnabled: true,
+  streakEnabled: true,
+  fileWatcherEnabled: true,
+  language: 'rw'
+};
+
+const SETTINGS_STORAGE_KEY = 'elimu_smart_settings';
+const CUSTOM_REMINDERS_STORAGE_KEY = 'elimu_custom_teacher_reminders';
+
 class NotificationEngine {
   private listeners: Array<() => void> = [];
   private checkInterval: any = null;
@@ -381,6 +421,75 @@ class NotificationEngine {
     this.updateStreak();
     this.startSchedulerLoop();
   }
+
+  // Settings Management
+  public getSettings(): ElimuAppSettings {
+    if (typeof window === 'undefined') return DEFAULT_SETTINGS;
+    try {
+      const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      return stored ? { ...DEFAULT_SETTINGS, ...JSON.parse(stored) } : DEFAULT_SETTINGS;
+    } catch {
+      return DEFAULT_SETTINGS;
+    }
+  }
+
+  public updateSettings(partial: Partial<ElimuAppSettings>) {
+    if (typeof window === 'undefined') return;
+    const current = this.getSettings();
+    const updated = { ...current, ...partial };
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(updated));
+    this.notifyListeners();
+  }
+
+  // Teacher Custom Reminders Management
+  public getCustomReminders(): TeacherCustomReminder[] {
+    if (typeof window === 'undefined') return [];
+    try {
+      const stored = localStorage.getItem(CUSTOM_REMINDERS_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  public saveCustomReminder(item: Omit<TeacherCustomReminder, 'id'>): TeacherCustomReminder {
+    const list = this.getCustomReminders();
+    const newReminder: TeacherCustomReminder = {
+      ...item,
+      id: 'rem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)
+    };
+    list.unshift(newReminder);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(CUSTOM_REMINDERS_STORAGE_KEY, JSON.stringify(list));
+    }
+    this.notifyListeners();
+    return newReminder;
+  }
+
+  public updateCustomReminder(item: TeacherCustomReminder) {
+    const list = this.getCustomReminders().map(r => r.id === item.id ? item : r);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(CUSTOM_REMINDERS_STORAGE_KEY, JSON.stringify(list));
+    }
+    this.notifyListeners();
+  }
+
+  public deleteCustomReminder(id: string) {
+    const list = this.getCustomReminders().filter(r => r.id !== id);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(CUSTOM_REMINDERS_STORAGE_KEY, JSON.stringify(list));
+    }
+    this.notifyListeners();
+  }
+
+  public toggleCustomReminder(id: string) {
+    const list = this.getCustomReminders().map(r => r.id === id ? { ...r, enabled: !r.enabled } : r);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(CUSTOM_REMINDERS_STORAGE_KEY, JSON.stringify(list));
+    }
+    this.notifyListeners();
+  }
+
 
   public subscribe(listener: () => void) {
     this.listeners.push(listener);
@@ -552,7 +661,7 @@ class NotificationEngine {
   public async sendLockScreenNotification(payload: {
     title: string;
     body: string;
-    tab?: 'generator' | 'reb_library' | 'question_bank' | 'converter' | 'guide' | 'library';
+    tab?: 'generator' | 'reb_library' | 'question_bank' | 'converter' | 'guide' | 'library' | 'home';
     tag?: string;
   }): Promise<boolean> {
     const perm = this.getPermission();
@@ -626,9 +735,18 @@ class NotificationEngine {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
+    const currentDay = now.getDay();
     const delivered = this.getDeliveredIdsToday();
+    const settings = this.getSettings();
 
+    // 1. Process Elimu Smart Timetable (12 slots)
     for (const slot of ELIMU_SMART_SCHEDULE) {
+      // Check feature settings toggles
+      if (slot.category === 'lesson_plan' && !settings.lessonPlanAlerts) continue;
+      if (slot.category === 'reb_book' && !settings.rebBooksAlerts) continue;
+      if (slot.category === 'question_bank' && !settings.questionBankAlerts) continue;
+      if (slot.category === 'converter' && !settings.converterAlerts) continue;
+
       const slotMinutes = slot.hour * 60 + slot.minute;
       const currentMinutes = currentHour * 60 + currentMinute;
       const diff = currentMinutes - slotMinutes;
@@ -643,6 +761,33 @@ class NotificationEngine {
           body: msg.body,
           tab: slot.tab,
           tag: slot.id
+        });
+      }
+    }
+
+    // 2. Process Teacher Custom Reminders (Staff meetings, grading, duty, etc.)
+    const customReminders = this.getCustomReminders();
+    for (const rem of customReminders) {
+      if (!rem.enabled) continue;
+
+      // Check day matching
+      const matchesDay = rem.days.length === 0 || rem.days.includes(currentDay);
+      if (!matchesDay) continue;
+
+      const remMinutes = rem.hour * 60 + rem.minute;
+      const currentMinutes = currentHour * 60 + currentMinute;
+      const diff = currentMinutes - remMinutes;
+      const customDeliveredKey = 'custom_' + rem.id;
+
+      if (diff >= 0 && diff <= 15 && !delivered.includes(customDeliveredKey)) {
+        this.markDeliveredToday(customDeliveredKey);
+        this.sendLockScreenNotification({
+          title: `⏰ ${rem.title}`,
+          body: rem.body && rem.body.trim().length > 0 
+            ? rem.body 
+            : `Mwarimu, ni igihe cya ${rem.title}. Urwibutso rwawe bwa Elimu Smart Assistant.`,
+          tab: rem.tab || 'home',
+          tag: 'custom-rem-' + rem.id
         });
       }
     }

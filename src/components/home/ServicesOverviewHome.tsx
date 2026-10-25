@@ -28,9 +28,16 @@ import { ElimuSmartNotificationCard } from './ElimuSmartNotificationCard';
 interface ServicesOverviewHomeProps {
   onNavigate: (tab: 'home' | 'generator' | 'converter' | 'library' | 'question_bank' | 'reb_library' | 'guide' | 'faq' | 'privacy') => void;
   onOpenNotificationCenter?: () => void;
+  onOpenSettings?: () => void;
+  onOpenLegalPolicy?: (tab: 'terms' | 'privacy' | 'sovereignty') => void;
 }
 
-export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNavigate, onOpenNotificationCenter }) => {
+export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ 
+  onNavigate, 
+  onOpenNotificationCenter,
+  onOpenSettings,
+  onOpenLegalPolicy
+}) => {
   const { openShareModal, savedLessonPlans, schoolProfile } = useElimu();
   const [quickDownloadModalOpen, setQuickDownloadModalOpen] = useState(false);
 
@@ -169,6 +176,7 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
       <ElimuSmartNotificationCard 
         onOpenCenter={onOpenNotificationCenter || (() => {})} 
         onNavigate={onNavigate} 
+        onOpenSettings={onOpenSettings}
       />
 
       {/* Featured Quick Class-Based Question Downloader Section with Nearby Ad Integration */}
@@ -453,6 +461,36 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
             </div>
           </div>
 
+        </div>
+      </div>
+
+      {/* Quick Legal & Privacy Policy Popup Strip (Terms & Policies Popups on Home Screen) */}
+      <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 shadow-sm">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+          <span className="font-bold text-slate-700 dark:text-slate-300">
+            Amategeko n'Uburenganzira bwa Mwarimu:
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => onOpenLegalPolicy && onOpenLegalPolicy('privacy')}
+            className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-600 transition font-bold text-xs cursor-pointer"
+          >
+            Politiki y'Ubuzima Bwite (Privacy)
+          </button>
+          <button
+            onClick={() => onOpenLegalPolicy && onOpenLegalPolicy('terms')}
+            className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition font-bold text-xs cursor-pointer"
+          >
+            Amabwiriza y'Imikoreshereze (Terms)
+          </button>
+          <button
+            onClick={() => onOpenLegalPolicy && onOpenLegalPolicy('sovereignty')}
+            className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 dark:hover:bg-amber-600 transition font-bold text-xs cursor-pointer"
+          >
+            Umutekano w'Inyandiko (Data Safety)
+          </button>
         </div>
       </div>
 

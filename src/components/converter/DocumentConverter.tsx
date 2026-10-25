@@ -15,8 +15,12 @@ import {
   Presentation,
   FileType,
   AlignLeft,
-  Table as TableIcon
+  Table as TableIcon,
+  FolderSync,
+  FolderCheck,
+  FolderPlus
 } from 'lucide-react';
+import { intelligentFileWatcher } from '../../utils/intelligentFileWatcher';
 import jsPDF from 'jspdf';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -85,6 +89,19 @@ export const DocumentConverter: React.FC = () => {
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
   const pptInputRef = useRef<HTMLInputElement | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Intelligent Folder Watcher State
+  const [watchedFolderName, setWatchedFolderName] = useState<string | null>(() => intelligentFileWatcher.getConnectedFolderName());
+  const [isFolderConnecting, setIsFolderConnecting] = useState(false);
+
+  React.useEffect(() => {
+    const update = () => {
+      setWatchedFolderName(intelligentFileWatcher.getConnectedFolderName());
+    };
+    update();
+    const unsub = intelligentFileWatcher.subscribe(update);
+    return () => unsub();
+  }, []);
 
   // --------------------------------------------------------------------------------------
   // 1. PDF TO DOCX - ACCURATE LAYOUT & WORD SPACING EXTRACTION ENGINE
@@ -777,6 +794,52 @@ export const DocumentConverter: React.FC = () => {
             <span className="text-[11px] text-slate-400">Combine images into 1 PDF</span>
           </div>
         </button>
+      </div>
+
+      {/* Intelligent Folder Watcher Bar */}
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-transparent border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 bg-amber-500/20 text-amber-500 rounded-xl shrink-0">
+            <FolderSync className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span>Intelligent File Watcher:</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                watchedFolderName ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+              }`}>
+                {watchedFolderName ? `Bwahujwe: ${watchedFolderName}` : 'Ntaburahuza'}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              {watchedFolderName 
+                ? 'Elimu Smart Assistant iragenzura inyandiko nshya zigeze muri ubu bubiko ngo ikubaze kuzihindura.' 
+                : 'Huza ububiko bwawe bwa mudasobwa kugira ngo sisitemu ijye ikuburira guhindura inyandiko nshya zihageze.'}
+            </p>
+          </div>
+        </div>
+
+        {watchedFolderName ? (
+          <button
+            onClick={() => intelligentFileWatcher.disconnectFolder()}
+            className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-red-500 hover:text-white transition font-bold text-xs cursor-pointer shrink-0"
+          >
+            Kura Ububiko
+          </button>
+        ) : (
+          <button
+            onClick={async () => {
+              setIsFolderConnecting(true);
+              await intelligentFileWatcher.requestFolderAccess();
+              setIsFolderConnecting(false);
+            }}
+            disabled={isFolderConnecting}
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition shadow-sm cursor-pointer shrink-0 flex items-center gap-1.5"
+          >
+            <FolderPlus className="w-3.5 h-3.5" />
+            <span>{isFolderConnecting ? 'Guhuza...' : 'Huza Ububiko (Folder Access)'}</span>
+          </button>
+        )}
       </div>
 
       {/* Global Status Message */}

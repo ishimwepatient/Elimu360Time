@@ -36,6 +36,9 @@ import { NotificationBellHeader } from './components/notifications/NotificationB
 import { NotificationCenterModal } from './components/notifications/NotificationCenterModal';
 import { ElimuSmartNotificationBanner } from './components/notifications/ElimuSmartNotificationBanner';
 import { InAppNotificationToast } from './components/notifications/InAppNotificationToast';
+import { ElimuSmartSettingsModal } from './components/settings/ElimuSmartSettingsModal';
+import { LegalPolicyModal } from './components/legal/LegalPolicyModal';
+import { Settings as SettingsIcon } from 'lucide-react';
 
 type ActiveTab = 'home' | 'converter' | 'generator' | 'question_bank' | 'reb_library' | 'library' | 'guide' | 'faq' | 'privacy';
 
@@ -54,6 +57,14 @@ const MainAppContent: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedQuestionForPlan, setSelectedQuestionForPlan] = useState<any>(null);
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [legalModalOpen, setLegalModalOpen] = useState(false);
+  const [legalModalTab, setLegalModalTab] = useState<'terms' | 'privacy' | 'sovereignty'>('privacy');
+
+  const openLegalPolicy = (tab: 'terms' | 'privacy' | 'sovereignty' = 'privacy') => {
+    setLegalModalTab(tab);
+    setLegalModalOpen(true);
+  };
 
   // Handle direct notification clicks and service worker navigation
   React.useEffect(() => {
@@ -216,11 +227,27 @@ const MainAppContent: React.FC = () => {
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
             </button>
 
+            {/* Elimu Smart Settings Hub Button */}
+            <button
+              onClick={() => setSettingsModalOpen(true)}
+              className="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 text-slate-700 dark:text-slate-300 hover:text-amber-500 transition cursor-pointer shadow-xs"
+              title="Igenamiterere & Ibyibutsa Byihariye (Settings)"
+            >
+              <SettingsIcon className="w-4 h-4" />
+            </button>
+
           </div>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center md:hidden gap-2">
             <NotificationBellHeader onOpenCenter={() => setNotificationCenterOpen(true)} />
+            <button
+              onClick={() => setSettingsModalOpen(true)}
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400"
+              title="Settings"
+            >
+              <SettingsIcon className="w-4 h-4" />
+            </button>
             <PWAInstallHeaderButton />
             <button
               onClick={openShareModal}
@@ -349,6 +376,8 @@ const MainAppContent: React.FC = () => {
           <ServicesOverviewHome 
             onNavigate={tab => setActiveTab(tab)} 
             onOpenNotificationCenter={() => setNotificationCenterOpen(true)}
+            onOpenSettings={() => setSettingsModalOpen(true)}
+            onOpenLegalPolicy={openLegalPolicy}
           />
         )}
         {activeTab === 'converter' && <DocumentConverter />}
@@ -397,6 +426,24 @@ const MainAppContent: React.FC = () => {
           setActiveTab(tab);
           setNotificationCenterOpen(false);
         }}
+        onOpenSettings={() => setSettingsModalOpen(true)}
+      />
+
+      {/* Elimu Smart Settings & Custom Reminders Hub */}
+      <ElimuSmartSettingsModal
+        isOpen={settingsModalOpen}
+        onClose={() => setSettingsModalOpen(false)}
+        onOpenLegalPolicy={(tab) => {
+          setSettingsModalOpen(false);
+          openLegalPolicy(tab);
+        }}
+      />
+
+      {/* Legal, Terms & Privacy Policy Popup Modal */}
+      <LegalPolicyModal
+        isOpen={legalModalOpen}
+        onClose={() => setLegalModalOpen(false)}
+        initialTab={legalModalTab}
       />
 
       {/* Elimu Smart Notification Opt-In Banner */}
@@ -448,10 +495,17 @@ const MainAppContent: React.FC = () => {
           </button>
           <span>•</span>
           <button 
-            onClick={() => setActiveTab('privacy')} 
+            onClick={() => openLegalPolicy('terms')} 
             className="hover:text-amber-400 transition cursor-pointer"
           >
-            Privacy Policy & Terms of Use
+            Terms of Use
+          </button>
+          <span>•</span>
+          <button 
+            onClick={() => openLegalPolicy('privacy')} 
+            className="hover:text-amber-400 transition cursor-pointer"
+          >
+            Privacy Policy
           </button>
         </div>
 

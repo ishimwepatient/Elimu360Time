@@ -7,37 +7,40 @@ import {
   Clock, 
   Sparkles, 
   Lock, 
-  Smartphone, 
-  Zap, 
+  Settings, 
   BookOpen, 
   HelpCircle, 
   FileText,
   AlertTriangle,
   UserCheck,
-  ChevronRight
+  ChevronRight,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import { 
   notificationEngine, 
-  ELIMU_SMART_SCHEDULE, 
   NotificationLogItem, 
-  TeacherContext 
+  TeacherContext,
+  TeacherCustomReminder 
 } from '../../utils/notificationSystem';
 
 interface NotificationCenterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateTab: (tab: any) => void;
+  onOpenSettings: () => void;
 }
 
 export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = ({
   isOpen,
   onClose,
-  onNavigateTab
+  onNavigateTab,
+  onOpenSettings
 }) => {
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [streak, setStreak] = useState(3);
   const [logs, setLogs] = useState<NotificationLogItem[]>([]);
-  const [activeView, setActiveView] = useState<'schedule' | 'history'>('schedule');
+  const [customReminders, setCustomReminders] = useState<TeacherCustomReminder[]>([]);
   const [context, setContext] = useState<TeacherContext>(() => notificationEngine.getTeacherContext());
 
   useEffect(() => {
@@ -45,6 +48,7 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
       setPermission(notificationEngine.getPermission());
       setStreak(notificationEngine.getStreakCount());
       setLogs(notificationEngine.getNotificationLogs());
+      setCustomReminders(notificationEngine.getCustomReminders());
       setContext(notificationEngine.getTeacherContext());
     };
 
@@ -101,12 +105,24 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
               </div>
             </div>
 
-            <button
-              onClick={onClose}
-              className="p-1.5 sm:p-2 rounded-full bg-slate-950/20 hover:bg-slate-950/30 text-slate-950 transition cursor-pointer shrink-0"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenSettings();
+                }}
+                className="p-2 rounded-full bg-slate-950/20 hover:bg-slate-950/30 text-slate-950 transition cursor-pointer"
+                title="Igenamiterere (Settings)"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+              <button
+                onClick={onClose}
+                className="p-2 rounded-full bg-slate-950/20 hover:bg-slate-950/30 text-slate-950 transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Teacher Dedication & Stats Bar */}
@@ -116,11 +132,14 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
                 <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 text-amber-500" />
                 {streak} Iminsi
               </div>
-              <div className="text-[9px] sm:text-[10px] uppercase font-extrabold opacity-85">Ubwitange (Streak)</div>
+              <div className="text-[9px] sm:text-[10px] uppercase font-extrabold opacity-85">Ubwitange bwa Mwarimu</div>
             </div>
             <div>
-              <div className="text-sm sm:text-base font-black">12 / Munsi</div>
-              <div className="text-[9px] sm:text-[10px] uppercase font-extrabold opacity-85">Amasaha y'Amasomo</div>
+              <div className="text-sm sm:text-base font-black flex items-center justify-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-amber-950" />
+                Ubwenge
+              </div>
+              <div className="text-[9px] sm:text-[10px] uppercase font-extrabold opacity-85">Smart Assistant</div>
             </div>
             <div>
               <div className="text-sm sm:text-base font-black flex items-center justify-center gap-1">
@@ -138,15 +157,15 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
             <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-200">
               <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
               <div className="text-xs">
-                <span className="font-bold">Ubutumwa bwa Lock Screen ntiburakora:</span> Kanda "Kwemerera" ngo ubone ubutumwa bugufasha ku masomo no kuri Lock Screen ya telefoni.
+                <span className="font-bold">Ubutumwa bwa Lock Screen ntiburakora:</span> Kanda "Kwemerera" ngo ubone ubujyanama kuri Lock Screen ya telefoni cyangwa mudasobwa.
               </div>
             </div>
             <button
               onClick={handleRequestPermission}
               className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
             >
-              <Zap className="w-3.5 h-3.5 fill-slate-950" />
-              <span>Emera Ubutumwa (Enable)</span>
+              <Bell className="w-3.5 h-3.5 fill-slate-950" />
+              <span>Emera Ubutumwa</span>
             </button>
           </div>
         ) : (
@@ -155,131 +174,143 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span className="font-semibold">Ubujyanama bwa Elimu Smart Assistant burakora kuri Lock Screen</span>
             </div>
-            <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-emerald-600/20 text-emerald-700 dark:text-emerald-300">
-              Active
-            </span>
+            <button
+              onClick={() => {
+                onClose();
+                onOpenSettings();
+              }}
+              className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 underline hover:opacity-80 cursor-pointer"
+            >
+              Hindura Igenamiterere
+            </button>
           </div>
         )}
 
-        {/* View Switcher Tabs: Daily Milestones vs History */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 px-4 pt-2.5 shrink-0">
-          <button
-            onClick={() => setActiveView('schedule')}
-            className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 cursor-pointer transition ${
-              activeView === 'schedule'
-                ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-black'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            <Clock className="w-3.5 h-3.5" />
-            <span>Gahunda y'Umunsi (12 Milestones)</span>
-          </button>
-          <button
-            onClick={() => setActiveView('history')}
-            className={`pb-2.5 px-3 text-xs font-bold flex items-center gap-1.5 border-b-2 cursor-pointer transition ${
-              activeView === 'history'
-                ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-black'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            <Bell className="w-3.5 h-3.5" />
-            <span>Ubutumwa Bwakiriwe ({logs.length})</span>
-          </button>
-        </div>
-
-        {/* Scrollable Content Body */}
-        <div className="p-3 sm:p-4 overflow-y-auto space-y-2.5 flex-1 text-slate-800 dark:text-slate-200">
-          {activeView === 'schedule' ? (
-            <div className="space-y-2">
-              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-2 flex items-center justify-between">
-                <span>Gahunda y'amasaha y'ubujyanama (Elimu Smart Milestones):</span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">10+ alerts ziteganyijwe</span>
-              </div>
-
-              {ELIMU_SMART_SCHEDULE.map((slot) => {
-                const timeString = `${String(slot.hour).padStart(2, '0')}:${String(slot.minute).padStart(2, '0')}`;
-                const previewMsg = slot.generateMessage(context);
-
-                return (
-                  <div
-                    key={slot.id}
-                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 hover:border-amber-400/50 dark:hover:border-amber-500/50 transition flex items-center justify-between gap-3"
-                  >
-                    <div className="flex items-start gap-2.5 sm:gap-3 min-w-0">
-                      <div className="px-2 py-1 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-black text-xs rounded-lg font-mono shrink-0">
-                        {timeString}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-extrabold text-slate-900 dark:text-slate-100 truncate">
-                          {slot.focusTitle}
-                        </div>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
-                          {previewMsg.body}
-                        </p>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => handleOpenItem(slot.tab)}
-                      className="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500 text-amber-700 hover:text-slate-950 dark:text-amber-300 dark:hover:text-slate-950 transition text-xs font-bold cursor-pointer shrink-0 flex items-center gap-1"
-                    >
-                      <span>Fungura</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                );
-              })}
+        {/* Content Body: Recent Received Smart Messages + Custom Reminders */}
+        <div className="p-3 sm:p-5 overflow-y-auto space-y-4 flex-1 text-slate-800 dark:text-slate-200">
+          
+          {/* Quick Custom Reminders Preview */}
+          <div className="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-amber-500" />
+                Ibyibutsa Byihariye bya Mwarimu ({customReminders.length})
+              </span>
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenSettings();
+                }}
+                className="text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Ongeraho Bishya</span>
+              </button>
             </div>
-          ) : (
-            <div className="space-y-2">
-              {logs.length === 0 ? (
-                <div className="text-center py-12 text-slate-400 text-xs">
-                  <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  Nta butumwa bwa kera burabikwa. Ubutumwa bwawe bwa buri munsi buzaza kuri telefoni yawe uko amasaha yagenwe ageze.
-                </div>
-              ) : (
-                logs.map((log) => (
-                  <div
-                    key={log.id}
-                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
-                          {log.title}
-                        </span>
-                        <span className="text-[10px] text-slate-400 font-mono shrink-0">
-                          {log.time}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">
-                        {log.body}
-                      </p>
-                    </div>
 
-                    <button
-                      onClick={() => handleOpenItem(log.tab)}
-                      className="px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition cursor-pointer shrink-0"
-                    >
-                      Kora
-                    </button>
-                  </div>
-                ))
+            {customReminders.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {customReminders.slice(0, 3).map((rem) => (
+                  <span
+                    key={rem.id}
+                    className="px-2.5 py-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5"
+                  >
+                    <span>{rem.title}</span>
+                    <span className="text-amber-600 font-mono text-[10px]">({rem.time})</span>
+                  </span>
+                ))}
+                {customReminders.length > 3 && (
+                  <span className="text-[11px] text-slate-400 self-center">
+                    +{customReminders.length - 3} bindi...
+                  </span>
+                )}
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Ushobora kongeramo ibyibutsa by'inama, igihe cyo gukosora, cyangwa zamu ry'ishuri muri Settings.
+              </p>
+            )}
+          </div>
+
+          {/* Inbox / Ubutumwa Bwakiriwe (Smart Personal Surprises) */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Ubutumwa Bwakiriwe (Inbox)
+              </h3>
+              {logs.length > 0 && (
+                <button
+                  onClick={() => notificationEngine.markAllLogsAsRead()}
+                  className="text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
+                >
+                  Bika Byose Nka Bisomye
+                </button>
               )}
             </div>
-          )}
+
+            {logs.length === 0 ? (
+              <div className="text-center py-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-dashed border-slate-200 dark:border-slate-800 text-slate-400 text-xs space-y-2">
+                <Sparkles className="w-8 h-8 mx-auto text-amber-500/50" />
+                <div className="font-bold text-slate-700 dark:text-slate-300">
+                  Ubutumwa bwa mbere burakugeraho mu kanya!
+                </div>
+                <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+                  Elimu Smart Assistant izajya igutungura iguha ubutumwa bukwiye bujyanye n'igihe cy'umunsi n'amasomo yawe.
+                </p>
+              </div>
+            ) : (
+              logs.map((log) => (
+                <div
+                  key={log.id}
+                  className={`p-3.5 rounded-2xl border transition flex items-start justify-between gap-3 ${
+                    !log.read 
+                      ? 'bg-amber-50/60 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800/60' 
+                      : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800'
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
+                        {log.title}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                        {log.time}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-snug">
+                      {log.body}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => handleOpenItem(log.tab)}
+                    className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition cursor-pointer shrink-0 flex items-center gap-1 shadow-xs"
+                  >
+                    <span>Fungura</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* Footer with Professional Educator Guidance */}
-        <div className="p-3 sm:p-4 bg-slate-100 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 text-center sm:text-left">
-            <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
-            <span>Elimu Smart Notification System itegura amasomo yawe hakiri kare kugira ngo uhe abanyeshuri uburere bunoze.</span>
-          </div>
+        {/* Footer */}
+        <div className="p-3 sm:p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 shrink-0">
+          <button
+            onClick={() => {
+              onClose();
+              onOpenSettings();
+            }}
+            className="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-amber-500 flex items-center gap-1.5 cursor-pointer"
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span>Fungura Igenamiterere (Settings)</span>
+          </button>
 
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-4 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition cursor-pointer shrink-0"
+            className="px-4 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition cursor-pointer shrink-0"
           >
             Funga
           </button>
