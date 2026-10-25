@@ -34,7 +34,7 @@ import { SchoolProfileModal } from './components/common/SchoolProfileModal';
 import { SchoolProfileReminderBanner } from './components/common/SchoolProfileReminderBanner';
 import { NotificationBellHeader } from './components/notifications/NotificationBellHeader';
 import { NotificationCenterModal } from './components/notifications/NotificationCenterModal';
-import { DuolingoNotificationPromptBanner } from './components/notifications/DuolingoNotificationPromptBanner';
+import { ElimuSmartNotificationBanner } from './components/notifications/ElimuSmartNotificationBanner';
 import { InAppNotificationToast } from './components/notifications/InAppNotificationToast';
 
 type ActiveTab = 'home' | 'converter' | 'generator' | 'question_bank' | 'reb_library' | 'library' | 'guide' | 'faq' | 'privacy';
@@ -189,7 +189,7 @@ const MainAppContent: React.FC = () => {
           {/* Right Header Actions */}
           <div className="hidden md:flex items-center gap-2.5">
             
-            {/* Duolingo / Phoenix Notifications & Streak */}
+            {/* Elimu Smart Notification System & Teacher Streak */}
             <NotificationBellHeader onOpenCenter={() => setNotificationCenterOpen(true)} />
 
             {/* School Profile Persistent Quick Reminder Button */}
@@ -389,7 +389,7 @@ const MainAppContent: React.FC = () => {
       {/* PWA Install Promotion Modal (Auto on First Load & Offline Support) */}
       <PWAInstallModal />
 
-      {/* Duolingo & Phoenix Notifications Center Modal */}
+      {/* Elimu Smart Notification System Center Modal */}
       <NotificationCenterModal
         isOpen={notificationCenterOpen}
         onClose={() => setNotificationCenterOpen(false)}
@@ -399,8 +399,8 @@ const MainAppContent: React.FC = () => {
         }}
       />
 
-      {/* Duolingo Notification Opt-In Banner */}
-      <DuolingoNotificationPromptBanner />
+      {/* Elimu Smart Notification Opt-In Banner */}
+      <ElimuSmartNotificationBanner />
 
       {/* Active In-App Notification Toast */}
       <InAppNotificationToast onNavigateTab={(tab) => setActiveTab(tab)} />

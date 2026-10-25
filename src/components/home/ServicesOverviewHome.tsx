@@ -23,7 +23,7 @@ import { QuickQuestionDownloadPopup } from './QuickQuestionDownloadPopup';
 import { InteractiveServiceSuggestions } from './InteractiveServiceSuggestions';
 import { getQuickClassSubjectQuestions } from '../../utils/kinyarwandaQuestionBankData';
 import { exportQuestionsToDocx, exportQuestionsToPdf } from '../../utils/quizExportHelper';
-import { DuolingoNotificationFeatureCard } from './DuolingoNotificationFeatureCard';
+import { ElimuSmartNotificationCard } from './ElimuSmartNotificationCard';
 
 interface ServicesOverviewHomeProps {
   onNavigate: (tab: 'home' | 'generator' | 'converter' | 'library' | 'question_bank' | 'reb_library' | 'guide' | 'faq' | 'privacy') => void;
@@ -165,8 +165,8 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({ onNa
         </div>
       </div>
 
-      {/* Duolingo & Phoenix 10+ Daily Notifications & Lock Screen Feature Card */}
-      <DuolingoNotificationFeatureCard 
+      {/* Elimu Smart Notification System & Lock Screen Assistant Feature Card */}
+      <ElimuSmartNotificationCard 
         onOpenCenter={onOpenNotificationCenter || (() => {})} 
         onNavigate={onNavigate} 
       />

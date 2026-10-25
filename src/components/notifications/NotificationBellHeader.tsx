@@ -25,10 +25,10 @@ export const NotificationBellHeader: React.FC<NotificationBellHeaderProps> = ({ 
 
   return (
     <div className="flex items-center gap-1.5">
-      {/* Duolingo Streak Flame Badge */}
+      {/* Teacher Dedication Streak Badge */}
       <button
         onClick={onOpenCenter}
-        title={`Duolingo Teacher Streak: Iminsi ${streak} ikurikirana! Kanda urebe ubutumwa bwawe.`}
+        title={`Ubwitange bwa Mwarimu (Teacher Streak): Iminsi ${streak} ikurikirana! Kanda urebe ubutumwa bwawe bwa Elimu Smart Assistant.`}
         className="px-2.5 py-1.5 rounded-2xl bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-orange-500/20 hover:from-orange-500/20 hover:to-amber-500/30 border border-orange-500/30 text-orange-600 dark:text-orange-400 font-extrabold text-xs flex items-center gap-1 transition cursor-pointer shadow-xs"
       >
         <Flame className="w-4 h-4 fill-orange-500 text-orange-600 animate-pulse" />

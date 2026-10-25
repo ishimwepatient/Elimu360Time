@@ -60,7 +60,7 @@ export const InAppNotificationToast: React.FC<{ onNavigateTab: (tab: any) => voi
           </div>
           <div>
             <div className="flex items-center gap-1.5 text-[10px] uppercase font-black tracking-wider text-amber-400">
-              <span>Duolingo/Phoenix Reminder</span>
+              <span>Elimu Smart Assistant</span>
             </div>
             <h5 className="text-xs font-black text-white mt-0.5">
               {toast.title}

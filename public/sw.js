@@ -84,7 +84,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 // ==========================================
-// DUOLINGO / PHOENIX LOCK SCREEN NOTIFICATIONS
+// ELIMU SMART NOTIFICATION SYSTEM (LOCK SCREEN ALERTS)
 // ==========================================
 
 // Handle messages from client to display native lock screen notifications
@@ -99,7 +99,7 @@ self.addEventListener('message', (event) => {
       vibrate: [200, 100, 200, 100, 200],
       requireInteraction: false,
       renotify: true,
-      tag: options?.tag || 'elimu-reminder-' + Date.now(),
+      tag: options?.tag || 'elimu-smart-' + Date.now(),
       data: options?.data || { url: '/', tab: 'generator' },
       actions: options?.actions || [
         { action: 'open_plan', title: 'Tegura Lesson Plan 📝' },
@@ -108,7 +108,7 @@ self.addEventListener('message', (event) => {
       ...options
     };
 
-    self.registration.showNotification(title || 'Elimu360 Teacher Reminder 🔔', notificationOptions);
+    self.registration.showNotification(title || 'Elimu Smart Assistant 🔔', notificationOptions);
   } else if (event.data.type === 'SCHEDULE_LOCKSCREEN_NOTIFICATION') {
     const { title, options, delayMs } = event.data;
     setTimeout(() => {
@@ -118,14 +118,14 @@ self.addEventListener('message', (event) => {
         vibrate: [300, 150, 300, 150, 300],
         requireInteraction: true,
         renotify: true,
-        tag: options?.tag || 'elimu-scheduled-' + Date.now(),
+        tag: options?.tag || 'elimu-smart-scheduled-' + Date.now(),
         data: options?.data || { url: '/', tab: 'generator' },
         actions: options?.actions || [
           { action: 'open_plan', title: 'Fungura Elimu360 🚀' }
         ],
         ...options
       };
-      self.registration.showNotification(title || 'Mwarimu, Ubutumwa bwa Lock Screen 📱', notificationOptions);
+      self.registration.showNotification(title || 'Elimu Smart Assistant 📱', notificationOptions);
     }, delayMs || 3000);
   }
 });
