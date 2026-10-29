@@ -369,7 +369,7 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({
               </p>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
               <button
                 onClick={() => onNavigate('generator')}
                 className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
@@ -377,6 +377,16 @@ export const ServicesOverviewHome: React.FC<ServicesOverviewHomeProps> = ({
                 <span>Launch Generator</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
+              {savedLessonPlans.length > 0 && (
+                <button
+                  onClick={() => onNavigate('library')}
+                  className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-400 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+                  title="Reach already created lesson plans"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Reach Saved Plans ({savedLessonPlans.length})</span>
+                </button>
+              )}
             </div>
           </div>
 

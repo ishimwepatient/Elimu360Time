@@ -14,13 +14,20 @@ import {
   Check, 
   Download,
   Printer,
-  Layers
+  Layers,
+  FileDown,
+  RefreshCw
 } from 'lucide-react';
+import jsPDF from 'jspdf';
 import { useElimu } from '../../context/ElimuContext';
 import { LessonPlanData } from '../../types';
 import { LessonPlanViewModal } from '../generator/LessonPlanViewModal';
 import { AdsterraNativeBanner } from '../ads/AdsterraNativeBanner';
 import { BulkExportModal } from '../generator/BulkExportModal';
+import { 
+  renderLessonPlanToPdfDoc, 
+  exportPlansToCombinedDocx 
+} from '../../utils/combinedLessonPlanExport';
 
 export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> = ({ onNavigateToGenerator }) => {
   const { savedLessonPlans, plansLoading, deleteLessonPlan } = useElimu();
@@ -30,6 +37,40 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
   const [selectedClass, setSelectedClass] = useState('ALL');
   const [viewingPlan, setViewingPlan] = useState<LessonPlanData | null>(null);
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadingFormat, setDownloadingFormat] = useState<'pdf' | 'docx' | null>(null);
+
+  const handleDownloadSinglePdf = (plan: LessonPlanData) => {
+    setDownloadingId(plan.id);
+    setDownloadingFormat('pdf');
+    try {
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      renderLessonPlanToPdfDoc(doc, plan, true);
+      const safeUnit = (plan.unitNumber || '1').replace(/[^a-zA-Z0-9]/g, '');
+      const safeTitle = (plan.lessonTitle || 'Lesson').replace(/[/\\?%*:|"<>]/g, '_').substring(0, 35);
+      doc.save(`LessonPlan_Unit${safeUnit}_${safeTitle}.pdf`);
+    } catch (err) {
+      console.error('PDF Export Error:', err);
+    } finally {
+      setDownloadingId(null);
+      setDownloadingFormat(null);
+    }
+  };
+
+  const handleDownloadSingleDocx = async (plan: LessonPlanData) => {
+    setDownloadingId(plan.id);
+    setDownloadingFormat('docx');
+    try {
+      const safeUnit = (plan.unitNumber || '1').replace(/[^a-zA-Z0-9]/g, '');
+      const safeTitle = (plan.lessonTitle || 'Lesson').replace(/[/\\?%*:|"<>]/g, '_').substring(0, 35);
+      await exportPlansToCombinedDocx([plan], `Unit_${safeUnit}_${safeTitle}`);
+    } catch (err) {
+      console.error('DOCX Export Error:', err);
+    } finally {
+      setDownloadingId(null);
+      setDownloadingFormat(null);
+    }
+  };
 
   // Extract unique subjects & classes
   const uniqueSubjects = Array.from(new Set(savedLessonPlans.map(p => p.subject).filter(Boolean)));
@@ -190,24 +231,61 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5">
+              <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {/* Single PDF */}
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadSinglePdf(plan)}
+                    disabled={downloadingId === plan.id && downloadingFormat === 'pdf'}
+                    className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs flex items-center gap-1 transition border border-slate-700 cursor-pointer disabled:opacity-50"
+                    title="Export single plan as official REB A4 PDF"
+                  >
+                    {downloadingId === plan.id && downloadingFormat === 'pdf' ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <FileDown className="w-3.5 h-3.5 text-amber-400" />
+                    )}
+                    <span>PDF</span>
+                  </button>
+
+                  {/* Single Word DOCX */}
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadSingleDocx(plan)}
+                    disabled={downloadingId === plan.id && downloadingFormat === 'docx'}
+                    className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-300 font-bold text-xs flex items-center gap-1 transition border border-blue-900/40 cursor-pointer disabled:opacity-50"
+                    title="Export single plan as editable Word document (.docx)"
+                  >
+                    {downloadingId === plan.id && downloadingFormat === 'docx' ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <FileText className="w-3.5 h-3.5 text-blue-400" />
+                    )}
+                    <span>Word</span>
+                  </button>
+
+                  {/* View */}
                   <button
                     type="button"
                     onClick={() => setViewingPlan(plan)}
-                    className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1 transition"
+                    className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1 transition cursor-pointer"
                   >
-                    <Eye className="w-3.5 h-3.5 text-amber-400" /> View
+                    <Eye className="w-3.5 h-3.5 text-slate-400" />
+                    <span>View</span>
                   </button>
+
+                  {/* Print */}
                   <button
                     type="button"
                     onClick={() => {
                       setViewingPlan(plan);
                       setTimeout(() => window.print(), 350);
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1 transition shadow-sm"
+                    className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs flex items-center transition cursor-pointer"
+                    title="Print"
                   >
-                    <Printer className="w-3.5 h-3.5" /> Print Lesson Plan
+                    <Printer className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
@@ -215,7 +293,7 @@ export const SavedPlansLibrary: React.FC<{ onNavigateToGenerator: () => void }> 
                   type="button"
                   onClick={() => deleteLessonPlan(plan.id)}
                   title="Delete plan"
-                  className="p-1.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition"
+                  className="p-1.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

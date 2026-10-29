@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { X, Printer, Download, Copy, Check, Edit3, Save, Sparkles, Award } from 'lucide-react';
+import { X, Printer, Download, Copy, Check, Edit3, Save, Sparkles, Award, FileText, FileDown, RefreshCw } from 'lucide-react';
 import { LessonPlanData } from '../../types';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { renderLessonPlanToPdfDoc, exportPlansToCombinedDocx } from '../../utils/combinedLessonPlanExport';
 
 interface Props {
   plan: LessonPlanData;
@@ -74,32 +74,37 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const [downloadingDocx, setDownloadingDocx] = useState(false);
+
   const handleDownloadPDF = async () => {
     setDownloading(true);
     try {
-      const element = document.getElementById('reb-lesson-plan-print-area');
-      if (!element) return;
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      const fileName = `LessonPlan_${plan.subject}_${plan.classLevel}_Unit${plan.unitNumber}_${plan.lessonTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
-      pdf.save(fileName);
+      const targetPlan = isEditing ? editedPlan : plan;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      renderLessonPlanToPdfDoc(doc, targetPlan, true);
+      const safeUnit = (targetPlan.unitNumber || '1').replace(/[^a-zA-Z0-9]/g, '');
+      const safeTitle = (targetPlan.lessonTitle || 'Lesson').replace(/[/\\?%*:|"<>]/g, '_').substring(0, 35);
+      const fileName = `LessonPlan_${targetPlan.subject}_${targetPlan.classLevel}_Unit${safeUnit}_${safeTitle}.pdf`;
+      doc.save(fileName);
     } catch (err) {
       console.error('PDF export failed:', err);
       window.print();
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const handleDownloadWordDocx = async () => {
+    setDownloadingDocx(true);
+    try {
+      const targetPlan = isEditing ? editedPlan : plan;
+      const safeUnit = (targetPlan.unitNumber || '1').replace(/[^a-zA-Z0-9]/g, '');
+      const safeTitle = (targetPlan.lessonTitle || 'Lesson').replace(/[/\\?%*:|"<>]/g, '_').substring(0, 35);
+      await exportPlansToCombinedDocx([targetPlan], `Unit_${safeUnit}_${safeTitle}`);
+    } catch (err) {
+      console.error('Word export failed:', err);
+    } finally {
+      setDownloadingDocx(false);
     }
   };
 
@@ -162,10 +167,19 @@ ${plan.selfEvaluation || 'Lesson successfully executed.'}
             <button
               onClick={handleDownloadPDF}
               disabled={downloading}
-              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition shadow-md disabled:opacity-50"
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition shadow-md disabled:opacity-50 cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>{downloading ? 'Exporting PDF...' : 'Export PDF Now'}</span>
+              <span>{downloading ? 'Exporting PDF...' : 'Export PDF'}</span>
+            </button>
+
+            <button
+              onClick={handleDownloadWordDocx}
+              disabled={downloadingDocx}
+              className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1.5 transition shadow-md disabled:opacity-50 cursor-pointer"
+            >
+              <FileText className="w-4 h-4 text-blue-200" />
+              <span>{downloadingDocx ? 'Exporting Word...' : 'Export Word (.docx)'}</span>
             </button>
 
             <button

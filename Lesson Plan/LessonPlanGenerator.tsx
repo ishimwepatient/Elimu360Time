@@ -40,6 +40,7 @@ import { LessonPlanTablePreview } from '../src/components/generator/LessonPlanTa
 import { KinyarwandaWordBankModal } from '../src/components/generator/KinyarwandaWordBankModal';
 import { SchoolProfileReminderBanner } from '../src/components/common/SchoolProfileReminderBanner';
 import { exportPlansToCombinedDocx } from '../src/utils/combinedLessonPlanExport';
+import { SavedPlansReExportModal } from '../src/components/generator/SavedPlansReExportModal';
 import { Layers } from 'lucide-react';
 
 // Self-contained LessonPlanData interface
@@ -503,7 +504,7 @@ interface LessonPlanGeneratorProps {
 }
 
 export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavigate, initialQuestion }) => {
-  const { schoolProfile, updateSchoolProfile, openSchoolProfileModal } = useElimu();
+  const { schoolProfile, updateSchoolProfile, openSchoolProfileModal, savedLessonPlans } = useElimu();
 
   // Form input states with persistent school profile retention
   const [language, setLanguage] = useState<'english' | 'kinyarwanda'>('english');
@@ -626,10 +627,38 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
   const [isExportingZip, setIsExportingZip] = useState<boolean>(false);
   const [exportProgress, setExportProgress] = useState<string>('');
 
-  // Modals for Export Confirmation, Post Generation Flow, & Kinyarwanda Pedagogical Word Bank
+  // Modals for Export Confirmation, Post Generation Flow, Saved Plans Re-Export & Kinyarwanda Pedagogical Word Bank
   const [showBulkExportModal, setShowBulkExportModal] = useState<boolean>(false);
   const [showPostGenModal, setShowPostGenModal] = useState<boolean>(false);
   const [showWordBankModal, setShowWordBankModal] = useState<boolean>(false);
+  const [showSavedPlansModal, setShowSavedPlansModal] = useState<boolean>(false);
+
+  const handleLoadPlanIntoGenerator = (plan: any) => {
+    if (plan.language === 'kinyarwanda' || plan.subject?.toLowerCase().includes('kinyarwanda') || plan.subject?.toLowerCase().includes('imibare')) {
+      setLanguage('kinyarwanda');
+    } else {
+      setLanguage('english');
+    }
+    if (plan.subject) setSubject(plan.subject);
+    if (plan.classLevel) setClassLevel(plan.classLevel);
+    if (plan.unitNumber) setUnitNumber(plan.unitNumber);
+    if (plan.unitTitle) setUnitTitle(plan.unitTitle);
+    if (plan.lessonTitle) setLessonTitles([plan.lessonTitle]);
+    if (plan.duration) setDuration(plan.duration);
+    if (plan.term) setTerm(plan.term);
+    if (plan.date) setDate(plan.date);
+    if (plan.schoolName) setSchoolName(plan.schoolName);
+    if (plan.teacherName) setTeacherName(plan.teacherName);
+    if (plan.specialNeeds) setSpecialNeeds(plan.specialNeeds);
+    if (plan.location) setLocation(plan.location);
+
+    setGeneratedPlans([plan]);
+    setActivePlanIndex(0);
+    setStatusMessage({
+      text: `Loaded "${plan.lessonTitle}" into editor & preview! You can re-export or adapt directly.`,
+      type: 'success'
+    });
+  };
 
   const handleSelectWordFromBank = (word: string, category: string) => {
     if (category === 'inshingaMwarimu' || category === 'inshingaAbana' || category === 'bloom') {
@@ -932,6 +961,20 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {/* Primary button to reach already created lesson plans and re-export in all forms */}
+            <button
+              type="button"
+              onClick={() => setShowSavedPlansModal(true)}
+              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-orange-500/30 text-amber-300 hover:text-white border border-amber-500/40 text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-lg active:scale-95 group"
+              title="Reach created lesson plans to export again in all forms (Combined PDF, Word, Folder, or ZIP)"
+            >
+              <BookOpen className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+              <span>Reach Saved Plans ({savedLessonPlans?.length || 0})</span>
+              <span className="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wide">
+                Re-Export All
+              </span>
+            </button>
+
             <button
               type="button"
               onClick={handleLoadBlankForm}
@@ -968,11 +1011,23 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
         <div className="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
           
           <div className="border-b border-slate-800 pb-4 space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <h2 className="text-lg font-bold text-white flex items-center gap-2 font-display">
                 <Sparkles className="w-5 h-5 text-amber-400" />
                 <span>{language === 'kinyarwanda' ? 'Intambwe ya 1: Ibisobanuro by\'Isomo' : 'Step 1: Enter Lesson Details'}</span>
               </h2>
+
+              {(savedLessonPlans?.length || 0) > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowSavedPlansModal(true)}
+                  className="text-xs font-bold text-amber-400 hover:text-amber-300 underline flex items-center gap-1.5 cursor-pointer shrink-0"
+                  title="Reach already created lesson plans"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Saved Plans ({savedLessonPlans.length})</span>
+                </button>
+              )}
             </div>
             
             {/* Language Selector Switcher */}
@@ -1542,10 +1597,22 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
               <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mx-auto">
                 <BookOpen className="w-6 h-6" />
               </div>
-              <h4 className="text-sm font-bold text-slate-300">No Lesson Plans Generated Yet</h4>
+              <h4 className="text-sm font-bold text-slate-300">No Lesson Plans Generated in This Session Yet</h4>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
                 Fill in your subject and unit title on the left and click <strong>"Generate Lesson Plan"</strong> to preview and download your official REB document.
               </p>
+              {(savedLessonPlans?.length || 0) > 0 && (
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowSavedPlansModal(true)}
+                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs transition flex items-center gap-2 mx-auto cursor-pointer shadow-lg active:scale-95"
+                  >
+                    <Layers className="w-4 h-4 fill-slate-950" />
+                    <span>Reach {savedLessonPlans.length} Created Plans & Export in All Forms</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -1587,6 +1654,14 @@ export const LessonPlanGenerator: React.FC<LessonPlanGeneratorProps> = ({ onNavi
         isOpen={showWordBankModal}
         onClose={() => setShowWordBankModal(false)}
         onSelectWord={handleSelectWordFromBank}
+      />
+
+      {/* Modal to Reach Created Lesson Plans & Re-Export in All Forms */}
+      <SavedPlansReExportModal
+        isOpen={showSavedPlansModal}
+        onClose={() => setShowSavedPlansModal(false)}
+        onNavigateToLibrary={() => onNavigate && onNavigate('library')}
+        onLoadPlanIntoGenerator={handleLoadPlanIntoGenerator}
       />
 
     </div>
